@@ -4,13 +4,24 @@ package fb;
 
 service FacebookClone {
   rpc Register (RegisterRequest) returns (BasicReply) {}
+  rpc List (ListRequest) returns (UserList) {} 
+}
+
+message BasicReply {
+  bool success = 1;
+  string message = 2; // only needed for when success is false
 }
 
 message RegisterRequest {
   string username = 1;
 }
 
-message BasicReply {
-  bool success = 1;
-  string message = 2; // only needed for when success is false
+// we have an empty request here in case we want to add parameters in the future
+// without breaking existing code
+message ListRequest {
+}
+
+message UserList {
+  repeated string all_users = 1;
+  repeated string joined_users = 2;
 }
