@@ -1,6 +1,6 @@
 #include "arguments_parser.h"
 
-std::regex ArgumentsParser::ConnectionStringRegex(R"(((\d{1,3}:){4})|[^\s:]+:\d*)");
+std::regex ArgumentsParser::ConnectionStringRegex(R"(((\d{1,3}\.){3}\d{1,3}|([^\s:]+)):\d*)");
 
 ArgumentsParser::Arguments ArgumentsParser::Parse(int argc, char **argv) {
   Arguments result;
