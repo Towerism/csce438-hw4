@@ -1,14 +1,16 @@
 syntax = "proto3";
 
+package fb;
+
 service FacebookClone {
   rpc Register (RegisterRequest) returns (BasicReply) {}
 }
 
 message RegisterRequest {
-  string userName = 1;
+  string username = 1;
 }
 
 message BasicReply {
   bool success = 1;
-  string reason = 2; // only needed for when success is false
+  string message = 2; // only needed for when success is false
 }

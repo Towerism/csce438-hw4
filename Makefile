@@ -1,5 +1,5 @@
 # List the source file names here for compilation
-FBC_FILES = fbc.cc
+FBC_FILES = fbc.cc arguments_parser.cc fb_client.cc
 FBSD_FILES = fbsd.cc
 PROTOCOL_FILE = fb.proto
 INCLUDE_DIR = $(PROTO_DIR)
