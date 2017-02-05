@@ -27,3 +27,10 @@
 *.exe
 *.out
 *.app
+
+# Project specific files
+/fbc
+/fbsd
+/protocol/*.pb.cc
+/protocol/*.pb.h
+/objects

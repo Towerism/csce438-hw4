@@ -75,6 +75,7 @@ $(FBC): $(FBC_OBJECTS) $(PROTO_OBJECTS)
 
 $(FBSD): $(FBSD_OBJECTS) $(PROTO_OBJECTS)
 	$(CXX) $(LDFLAGS) $(FBSD_OBJECTS) -o $@
+	@mkdir -p users # figure out how to move this out
 
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto %.pb.cc
