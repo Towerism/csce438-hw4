@@ -25,12 +25,12 @@ PROTO_SOURCES = $(patsubst %,$(PROTO_DIR)/%,$(PROTO_FILES))
 SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
 
 # Tempdir where are object files will be
-TEMPDIR = objects
+OBJECTS_DIR = objects
 
 # Generate the object names for our files
-PROTO_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/$(PROTO_DIR)/%.o,$(PROTO_FILES))
-CLIENT_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/$(CLIENT_DIR)/%.o,$(CLIENT_FILES)) $(PROTO_OBJECTS)
-SERVER_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/$(SERVER_DIR)/%.o,$(SERVER_FILES)) $(PROTO_OBJECTS)
+PROTO_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(PROTO_DIR)/%.o,$(PROTO_FILES))
+CLIENT_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(CLIENT_DIR)/%.o,$(CLIENT_FILES)) $(PROTO_OBJECTS)
+SERVER_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(SERVER_DIR)/%.o,$(SERVER_FILES)) $(PROTO_OBJECTS)
 OBJECTS = $(CLIENT_OBJECTS) $(SERVER_OBJECTS)
 
 # Generate the dependencies of our source files
@@ -50,19 +50,17 @@ PROTOS_PATH = $(PROTO_DIR)
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
 GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`
 
-vpath %$(CXX_CONVENTION) $(CLIENT_DIR)
-vpath %$(CXX_CONVENTION) $(SERVER_DIR)
-vpath %$(CXX_CONVENTION) $(PROTO_DIR)
+vpath %$(CXX_CONVENTION) $(CLIENT_DIR):$(SERVER_DIR):$(PROTO_DIR) 
 
 .DEFAULT: all
 
 all: $(PROTO_SOURCES) $(CLIENT) $(SERVER)
 
-$(TEMPDIR)/%.o: %$(CXX_CONVENTION)
+$(OBJECTS_DIR)/%.o: %$(CXX_CONVENTION)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TEMPDIR)/%.d: %$(CXX_CONVENTION)
-	@mkdir -p $(TEMPDIR)/$(CLIENT_DIR) && mkdir -p $(TEMPDIR)/$(SERVER_DIR) && mkdir -p $(TEMPDIR)/$(PROTO_DIR)
+$(OBJECTS_DIR)/%.d: %$(CXX_CONVENTION)
+	@mkdir -p $(OBJECTS_DIR)/$(CLIENT_DIR) && mkdir -p $(OBJECTS_DIR)/$(SERVER_DIR) && mkdir -p $(OBJECTS_DIR)/$(PROTO_DIR)
 	$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
 $(CLIENT): $(CLIENT_OBJECTS)
