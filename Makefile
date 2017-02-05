@@ -30,10 +30,10 @@ SOURCES = $(FBC_SOURCES) $(FBSD_SOURCES)
 TEMPDIR = objects
 
 # Generate the object names for our files
-PROTO_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/%.o,$(PROTO_FILES))
-FBC_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/%.o,$(FBC_FILES)) $(PROTO_OBJECTS)
-FBSD_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/%.o,$(FBSD_FILES)) $(PROTO_OBJECTS)
-OBJECTS = $(FBC_OBJECTS) $(FBSD_OBJECTS) $(PROTO_OBJECTS)
+PROTO_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/$(PROTO_DIR)/%.o,$(PROTO_FILES))
+FBC_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/$(FBC_DIR)/%.o,$(FBC_FILES)) $(PROTO_OBJECTS)
+FBSD_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(TEMPDIR)/$(FBSD_DIR)/%.o,$(FBSD_FILES)) $(PROTO_OBJECTS)
+OBJECTS = $(FBC_OBJECTS) $(FBSD_OBJECTS)
 
 # Generate the dependencies of our source files
 DEPS = $(OBJECTS:.o=.d)
@@ -61,13 +61,13 @@ $(TEMPDIR)/%.o: %$(CXX_CONVENTION)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TEMPDIR)/%.d: %$(CXX_CONVENTION)
-	mkdir -p $(TEMPDIR)
+	@mkdir -p $(TEMPDIR)/$(FBC_DIR) && mkdir -p $(TEMPDIR)/$(FBSD_DIR) && mkdir -p $(TEMPDIR)/$(PROTO_DIR)
 	$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-$(FBC): $(FBC_OBJECTS) $(PROTO_OBJECTS)
+$(FBC): $(FBC_OBJECTS)
 	$(CXX) $(LDFLAGS) $(FBC_OBJECTS) -o $@
 
-$(FBSD): $(FBSD_OBJECTS) $(PROTO_OBJECTS)
+$(FBSD): $(FBSD_OBJECTS)
 	$(CXX) $(LDFLAGS) $(FBSD_OBJECTS) -o $@
 	@mkdir -p users # figure out how to move this out
 
