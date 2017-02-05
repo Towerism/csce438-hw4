@@ -1,8 +1,6 @@
 # List the source file names here for compilation
 CLIENT_FILES = fbc.cc arguments_parser.cc fb_client.cc
 SERVER_FILES = fbsd.cc
-PROTOCOL_FILE = fb.proto
-INCLUDE_DIR = $(PROTO_DIR)
 
 PROTO_FILES = fb.pb.cc fb.grpc.pb.cc
 
@@ -42,6 +40,9 @@ DEPS = $(OBJECTS:.o=.d)
 CXX ?= $(which g++)
 CXXFLAGS ?= -std=c++11 -ggdb -I$(INCLUDE_DIR)
 LDFLAGS ?= -lpthread -lprotobuf -lgrpc -lgrpc++
+
+# Specify folders to add to the compiler's Include path
+INCLUDE_DIR = $(PROTO_DIR)
 
 # GRPC stuff
 PROTOC ?= protoc
