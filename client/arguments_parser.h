@@ -9,11 +9,16 @@ public:
     std::string ConnectionString;
   };
 
-  Arguments Parse(int argc, char **argv);
+  ArgumentsParser(int argc, char** argv) : argc(argc), argv(argv) {}
+
+  Arguments Parse();
 
 private:
-  static Arguments InvalidArguments;
+  int argc;
+  char** argv;
+  Arguments arguments;
 
-  Arguments invalidArguments();
-  bool validateConnectionString(std::string connectionString);
+  bool UnmarshallArguments();
+  Arguments InvalidArguments();
+  bool UnmarshallConnectionString();
 };

@@ -11,8 +11,8 @@ void print_usage(const char *program_name) {
 }
 
 int main(int argc, char **argv) {
-  ArgumentsParser argsParser;
-  auto arguments = argsParser.Parse(argc, argv);
+  ArgumentsParser argsParser(argc, argv);
+  auto arguments = argsParser.Parse();
   if (!arguments.Valid)
     print_usage(argv[0]);
   auto channel = grpc::CreateChannel(arguments.ConnectionString,
