@@ -1,6 +1,6 @@
 #include "arguments_parser.h"
 
-std::regex ArgumentsParser::ConnectionStringRegex(R"(((\d{1,3}\.){3}\d{1,3}|([^\s:]+)):\d*)");
+#include <algorithm>
 
 ArgumentsParser::Arguments ArgumentsParser::Parse(int argc, char **argv) {
   Arguments result;
@@ -19,5 +19,6 @@ ArgumentsParser::Arguments ArgumentsParser::invalidArguments() {
 }
 
 bool ArgumentsParser::validateConnectionString(std::string connectionString) {
-  return std::regex_match(connectionString, ConnectionStringRegex);
+  size_t number_of_colons = std::count(connectionString.begin(), connectionString.end(), ':');
+  return number_of_colons == 1;
 }

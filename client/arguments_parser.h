@@ -1,6 +1,5 @@
 #pragma once
 
-#include <regex>
 #include <string>
 
 class ArgumentsParser {
@@ -13,8 +12,6 @@ public:
   Arguments Parse(int argc, char **argv);
 
 private:
-  static std::regex ConnectionStringRegex;
-
   static Arguments InvalidArguments;
 
   Arguments invalidArguments();
