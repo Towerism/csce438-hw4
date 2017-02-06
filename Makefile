@@ -36,10 +36,18 @@ OBJECTS = $(CLIENT_OBJECTS) $(SERVER_OBJECTS)
 # Generate the dependencies of our source files
 DEPS = $(OBJECTS:.o=.d)
 
+# Libraries which may not be in standard locations
+NON_STANDARD_LIBS = grpc++ grpc
+
+# Generate ldflags for non standard libs
+NON_STANDARD_LDFLAGS = $(shell pkg-config --libs $(NON_STANDARD_LIBS))
+
 # Conventional environment variables
 CXX ?= $(which g++)
-CXXFLAGS ?= -std=c++11 -ggdb -I$(INCLUDE_DIR)
-LDFLAGS ?= -lpthread -lprotobuf -lgrpc -lgrpc++
+CPPFLAGS ?= -I$(INCLUDE_DIR) -I/usr/local/include
+CXXFLAGS ?= -std=c++11 -ggdb
+LDFLAGS ?= $(NON_STANDARD_LDFLAGS) -Wl,--no-as-needed -lgrpc++_reflection \
+	-Wl,--as-needed -lpthread -lprotobuf -ldl
 
 # Specify folders to add to the compiler's Include path
 INCLUDE_DIR = $(PROTO_DIR)
@@ -57,17 +65,17 @@ vpath %$(CXX_CONVENTION) $(CLIENT_DIR):$(SERVER_DIR):$(PROTO_DIR)
 all: $(PROTO_SOURCES) $(CLIENT) $(SERVER)
 
 $(OBJECTS_DIR)/%.o: %$(CXX_CONVENTION)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -c -o $@
 
 $(OBJECTS_DIR)/%.d: %$(CXX_CONVENTION)
 	@mkdir -p $(OBJECTS_DIR)/$(CLIENT_DIR) && mkdir -p $(OBJECTS_DIR)/$(SERVER_DIR) && mkdir -p $(OBJECTS_DIR)/$(PROTO_DIR)
-	$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
 $(CLIENT): $(CLIENT_OBJECTS)
-	$(CXX) $(LDFLAGS) $(CLIENT_OBJECTS) -o $@
+	$(CXX) $^ $(LDFLAGS) -o $@
 
 $(SERVER): $(SERVER_OBJECTS)
-	$(CXX) $(LDFLAGS) $(SERVER_OBJECTS) -o $@
+	$(CXX) $^ $(LDFLAGS) -o $@
 	@mkdir -p users # figure out how to move this out
 
 .PRECIOUS: %.grpc.pb.cc
