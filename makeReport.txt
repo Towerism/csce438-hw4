@@ -1,0 +1,14 @@
+protoc -I protocol --cpp_out=protocol protocol/fb.proto
+protoc -I protocol --grpc_out=protocol --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` protocol/fb.proto
+g++ -std=c++11 -ggdb -Iprotocol protocol/fb.grpc.pb.cc -MM -MT objects/protocol/fb.grpc.pb.o >objects/protocol/fb.grpc.pb.d
+g++ -std=c++11 -ggdb -Iprotocol protocol/fb.pb.cc -MM -MT objects/protocol/fb.pb.o >objects/protocol/fb.pb.d
+g++ -std=c++11 -ggdb -Iprotocol server/fbsd.cc -MM -MT objects/server/fbsd.o >objects/server/fbsd.d
+g++ -std=c++11 -ggdb -Iprotocol client/fb_client.cc -MM -MT objects/client/fb_client.o >objects/client/fb_client.d
+g++ -std=c++11 -ggdb -Iprotocol client/arguments_parser.cc -MM -MT objects/client/arguments_parser.o >objects/client/arguments_parser.d
+g++ -std=c++11 -ggdb -Iprotocol client/fbc.cc -MM -MT objects/client/fbc.o >objects/client/fbc.d
+g++ -std=c++11 -ggdb -Iprotocol -c client/fbc.cc -o objects/client/fbc.o
+g++ -std=c++11 -ggdb -Iprotocol -c client/arguments_parser.cc -o objects/client/arguments_parser.o
+g++ -std=c++11 -ggdb -Iprotocol -c client/fb_client.cc -o objects/client/fb_client.o
+g++ -std=c++11 -ggdb -Iprotocol -c protocol/fb.pb.cc -o objects/protocol/fb.pb.o
+g++ -std=c++11 -ggdb -Iprotocol -c protocol/fb.grpc.pb.cc -o objects/protocol/fb.grpc.pb.o
+g++ -lpthread -lprotobuf -lgrpc -lgrpc++ objects/client/fbc.o objects/client/arguments_parser.o objects/client/fb_client.o objects/protocol/fb.pb.o objects/protocol/fb.grpc.pb.o -o fbc

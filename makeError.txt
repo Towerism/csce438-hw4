@@ -1,0 +1,354 @@
+objects/client/fbc.o: In function `main':
+/home/af-17s/csce438-hw2/client/fbc.cc:19: undefined reference to `grpc::InsecureChannelCredentials()'
+/home/af-17s/csce438-hw2/client/fbc.cc:19: undefined reference to `grpc::CreateChannel(std::string const&, std::shared_ptr<grpc::ChannelCredentials> const&)'
+objects/client/fb_client.o: In function `FbClient::Register(std::string const&)':
+/home/af-17s/csce438-hw2/client/fb_client.cc:19: undefined reference to `grpc::ClientContext::ClientContext()'
+/home/af-17s/csce438-hw2/client/fb_client.cc:19: undefined reference to `grpc::ClientContext::~ClientContext()'
+/home/af-17s/csce438-hw2/client/fb_client.cc:19: undefined reference to `grpc::ClientContext::~ClientContext()'
+objects/client/fb_client.o: In function `google::protobuf::internal::GetEmptyStringAlreadyInited()':
+/usr/include/google/protobuf/generated_message_util.h:86: undefined reference to `google::protobuf::internal::empty_string_'
+/usr/include/google/protobuf/generated_message_util.h:87: undefined reference to `google::protobuf::internal::empty_string_'
+objects/protocol/fb.pb.o: In function `fb::protobuf_AssignDesc_fb_2eproto()':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:45: undefined reference to `google::protobuf::DescriptorPool::generated_pool()'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:45: undefined reference to `google::protobuf::DescriptorPool::FindFileByName(std::string const&) const'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:46: undefined reference to `google::protobuf::internal::LogMessage::LogMessage(google::protobuf::LogLevel, char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:46: undefined reference to `google::protobuf::internal::LogMessage::operator<<(char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:46: undefined reference to `google::protobuf::internal::LogFinisher::operator=(google::protobuf::internal::LogMessage&)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:46: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:62: undefined reference to `google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(google::protobuf::Descriptor const*, google::protobuf::Message const*, int const*, int, int, int, int, int, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:77: undefined reference to `google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(google::protobuf::Descriptor const*, google::protobuf::Message const*, int const*, int, int, int, int, int, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:91: undefined reference to `google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(google::protobuf::Descriptor const*, google::protobuf::Message const*, int const*, int, int, int, int, int, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:107: undefined reference to `google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(google::protobuf::Descriptor const*, google::protobuf::Message const*, int const*, int, int, int, int, int, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:46: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+objects/protocol/fb.pb.o: In function `protobuf_RegisterTypes':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:122: undefined reference to `google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(google::protobuf::Descriptor const*, google::protobuf::Message const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:124: undefined reference to `google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(google::protobuf::Descriptor const*, google::protobuf::Message const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:126: undefined reference to `google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(google::protobuf::Descriptor const*, google::protobuf::Message const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:128: undefined reference to `google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(google::protobuf::Descriptor const*, google::protobuf::Message const*)'
+objects/protocol/fb.pb.o: In function `fb::protobuf_AddDesc_fb_2eproto()':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:149: undefined reference to `google::protobuf::internal::VerifyVersion(int, int, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:159: undefined reference to `google::protobuf::DescriptorPool::InternalAddGeneratedFile(void const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:161: undefined reference to `google::protobuf::MessageFactory::InternalRegisterGeneratedFile(char const*, void (*)(std::string const&))'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:170: undefined reference to `google::protobuf::internal::OnShutdown(void (*)())'
+objects/protocol/fb.pb.o: In function `google::protobuf::io::CodedInputStream::ReadTagWithCutoff(unsigned int)':
+/usr/include/google/protobuf/io/coded_stream.h:1060: undefined reference to `google::protobuf::io::CodedInputStream::ReadTagFallback(unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::BasicReply::MergePartialFromCodedStream(google::protobuf::io::CodedInputStream*)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:285: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:303: undefined reference to `google::protobuf::internal::WireFormatLite::SkipField(google::protobuf::io::CodedInputStream*, unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::BasicReply::SerializeWithCachedSizes(google::protobuf::io::CodedOutputStream*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:322: undefined reference to `google::protobuf::internal::WireFormatLite::WriteBool(int, bool, google::protobuf::io::CodedOutputStream*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:330: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:332: undefined reference to `google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(int, std::string const&, google::protobuf::io::CodedOutputStream*)'
+objects/protocol/fb.pb.o: In function `fb::BasicReply::InternalSerializeWithCachedSizesToArray(bool, unsigned char*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:351: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::WireFormatLite::WriteStringToArray(int, std::string const&, unsigned char*)':
+/usr/include/google/protobuf/wire_format_lite_inl.h:765: undefined reference to `google::protobuf::io::CodedOutputStream::WriteStringWithSizeToArray(std::string const&, unsigned char*)'
+objects/protocol/fb.pb.o: In function `fb::BasicReply::MergeFrom(google::protobuf::Message const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:386: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:393: undefined reference to `google::protobuf::internal::ReflectionOps::Merge(google::protobuf::Message const&, google::protobuf::Message*)'
+objects/protocol/fb.pb.o: In function `fb::BasicReply::MergeFrom(fb::BasicReply const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:403: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:410: undefined reference to `google::protobuf::internal::ArenaStringPtr::AssignWithDefault(std::string const*, google::protobuf::internal::ArenaStringPtr)'
+objects/protocol/fb.pb.o: In function `google::protobuf::io::CodedInputStream::ReadTagWithCutoff(unsigned int)':
+/usr/include/google/protobuf/io/coded_stream.h:1060: undefined reference to `google::protobuf::io::CodedInputStream::ReadTagFallback(unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::RegisterRequest::MergePartialFromCodedStream(google::protobuf::io::CodedInputStream*)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:602: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:620: undefined reference to `google::protobuf::internal::WireFormatLite::SkipField(google::protobuf::io::CodedInputStream*, unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::RegisterRequest::SerializeWithCachedSizes(google::protobuf::io::CodedOutputStream*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:642: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:644: undefined reference to `google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(int, std::string const&, google::protobuf::io::CodedOutputStream*)'
+objects/protocol/fb.pb.o: In function `fb::RegisterRequest::InternalSerializeWithCachedSizesToArray(bool, unsigned char*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:658: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::WireFormatLite::WriteStringToArray(int, std::string const&, unsigned char*)':
+/usr/include/google/protobuf/wire_format_lite_inl.h:765: undefined reference to `google::protobuf::io::CodedOutputStream::WriteStringWithSizeToArray(std::string const&, unsigned char*)'
+objects/protocol/fb.pb.o: In function `fb::RegisterRequest::MergeFrom(google::protobuf::Message const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:688: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:695: undefined reference to `google::protobuf::internal::ReflectionOps::Merge(google::protobuf::Message const&, google::protobuf::Message*)'
+objects/protocol/fb.pb.o: In function `fb::RegisterRequest::MergeFrom(fb::RegisterRequest const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:705: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:709: undefined reference to `google::protobuf::internal::ArenaStringPtr::AssignWithDefault(std::string const*, google::protobuf::internal::ArenaStringPtr)'
+objects/protocol/fb.pb.o: In function `google::protobuf::io::CodedInputStream::ReadTagWithCutoff(unsigned int)':
+/usr/include/google/protobuf/io/coded_stream.h:1060: undefined reference to `google::protobuf::io::CodedInputStream::ReadTagFallback(unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::ListRequest::MergePartialFromCodedStream(google::protobuf::io::CodedInputStream*)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:881: undefined reference to `google::protobuf::internal::WireFormatLite::SkipField(google::protobuf::io::CodedInputStream*, unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::ListRequest::MergeFrom(google::protobuf::Message const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:918: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:925: undefined reference to `google::protobuf::internal::ReflectionOps::Merge(google::protobuf::Message const&, google::protobuf::Message*)'
+objects/protocol/fb.pb.o: In function `fb::ListRequest::MergeFrom(fb::ListRequest const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:935: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+objects/protocol/fb.pb.o: In function `google::protobuf::io::CodedInputStream::ReadTagWithCutoff(unsigned int)':
+/usr/include/google/protobuf/io/coded_stream.h:1060: undefined reference to `google::protobuf::io::CodedInputStream::ReadTagFallback(unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::UserList::MergePartialFromCodedStream(google::protobuf::io::CodedInputStream*)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1068: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1087: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1107: undefined reference to `google::protobuf::internal::WireFormatLite::SkipField(google::protobuf::io::CodedInputStream*, unsigned int)'
+objects/protocol/fb.pb.o: In function `fb::UserList::SerializeWithCachedSizes(google::protobuf::io::CodedOutputStream*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1129: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1131: undefined reference to `google::protobuf::internal::WireFormatLite::WriteString(int, std::string const&, google::protobuf::io::CodedOutputStream*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1139: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1141: undefined reference to `google::protobuf::internal::WireFormatLite::WriteString(int, std::string const&, google::protobuf::io::CodedOutputStream*)'
+objects/protocol/fb.pb.o: In function `fb::UserList::InternalSerializeWithCachedSizesToArray(bool, unsigned char*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1155: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::WireFormatLite::WriteStringToArray(int, std::string const&, unsigned char*)':
+/usr/include/google/protobuf/wire_format_lite_inl.h:765: undefined reference to `google::protobuf::io::CodedOutputStream::WriteStringWithSizeToArray(std::string const&, unsigned char*)'
+objects/protocol/fb.pb.o: In function `fb::UserList::InternalSerializeWithCachedSizesToArray(bool, unsigned char*) const':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1165: undefined reference to `google::protobuf::internal::WireFormatLite::VerifyUtf8String(char const*, int, google::protobuf::internal::WireFormatLite::Operation, char const*)'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::WireFormatLite::WriteStringToArray(int, std::string const&, unsigned char*)':
+/usr/include/google/protobuf/wire_format_lite_inl.h:765: undefined reference to `google::protobuf::io::CodedOutputStream::WriteStringWithSizeToArray(std::string const&, unsigned char*)'
+objects/protocol/fb.pb.o: In function `fb::UserList::MergeFrom(google::protobuf::Message const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1201: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1208: undefined reference to `google::protobuf::internal::ReflectionOps::Merge(google::protobuf::Message const&, google::protobuf::Message*)'
+objects/protocol/fb.pb.o: In function `fb::UserList::MergeFrom(fb::UserList const&)':
+/home/af-17s/csce438-hw2/protocol/fb.pb.cc:1218: undefined reference to `google::protobuf::internal::MergeFromFail(char const*, int)'
+objects/protocol/fb.pb.o: In function `google::protobuf::Closure::Closure()':
+/usr/include/google/protobuf/stubs/callback.h:72: undefined reference to `vtable for google::protobuf::Closure'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::FunctionClosure0::FunctionClosure0(void (*)(), bool)':
+/usr/include/google/protobuf/stubs/callback.h:124: undefined reference to `vtable for google::protobuf::internal::FunctionClosure0'
+objects/protocol/fb.pb.o: In function `google::protobuf::GoogleOnceInit(int*, void (*)())':
+/usr/include/google/protobuf/stubs/once.h:128: undefined reference to `google::protobuf::GoogleOnceInitImpl(int*, google::protobuf::Closure*)'
+/usr/include/google/protobuf/stubs/once.h:128: undefined reference to `google::protobuf::internal::FunctionClosure0::~FunctionClosure0()'
+/usr/include/google/protobuf/stubs/once.h:128: undefined reference to `google::protobuf::internal::FunctionClosure0::~FunctionClosure0()'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::GetEmptyString()':
+/usr/include/google/protobuf/generated_message_util.h:90: undefined reference to `google::protobuf::internal::InitEmptyString()'
+/usr/include/google/protobuf/generated_message_util.h:90: undefined reference to `google::protobuf::internal::empty_string_once_init_'
+objects/protocol/fb.pb.o: In function `google::protobuf::UnknownFieldSet::Clear()':
+/usr/include/google/protobuf/unknown_field_set.h:252: undefined reference to `google::protobuf::UnknownFieldSet::ClearFallback()'
+objects/protocol/fb.pb.o: In function `CreateInternal<google::protobuf::internal::InternalMetadataWithArena::Container>':
+/usr/include/google/protobuf/arena.h:640: undefined reference to `google::protobuf::Arena::AllocateAligned(std::type_info const*, unsigned int)'
+/usr/include/google/protobuf/arena.h:642: undefined reference to `google::protobuf::Arena::AddListNode(void*, void (*)(void*))'
+objects/protocol/fb.pb.o: In function `google::protobuf::MessageLite::MessageLite()':
+/usr/include/google/protobuf/message_lite.h:83: undefined reference to `vtable for google::protobuf::MessageLite'
+objects/protocol/fb.pb.o: In function `google::protobuf::MessageLite::~MessageLite()':
+/usr/include/google/protobuf/message_lite.h:84: undefined reference to `vtable for google::protobuf::MessageLite'
+objects/protocol/fb.pb.o: In function `google::protobuf::Message::Message()':
+/usr/include/google/protobuf/message.h:181: undefined reference to `vtable for google::protobuf::Message'
+objects/protocol/fb.pb.o: In function `google::protobuf::Message::~Message()':
+/usr/include/google/protobuf/message.h:182: undefined reference to `vtable for google::protobuf::Message'
+objects/protocol/fb.pb.o: In function `CreateInternal<std::basic_string<char> >':
+/usr/include/google/protobuf/arena.h:640: undefined reference to `google::protobuf::Arena::AllocateAligned(std::type_info const*, unsigned int)'
+/usr/include/google/protobuf/arena.h:642: undefined reference to `google::protobuf::Arena::AddListNode(void*, void (*)(void*))'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::RepeatedPtrFieldBase::MergeFromInternal(google::protobuf::internal::RepeatedPtrFieldBase const&, void (google::protobuf::internal::RepeatedPtrFieldBase::*)(void**, void**, int, int))':
+/usr/include/google/protobuf/repeated_field.h:1484: undefined reference to `google::protobuf::internal::RepeatedPtrFieldBase::InternalExtend(int)'
+objects/protocol/fb.pb.o: In function `google::protobuf::io::CodedInputStream::ReadVarint64(unsigned long long*)':
+/usr/include/google/protobuf/io/coded_stream.h:926: undefined reference to `google::protobuf::io::CodedInputStream::ReadVarint64Fallback()'
+objects/protocol/fb.pb.o: In function `google::protobuf::io::CodedOutputStream::VarintSize32(unsigned int)':
+/usr/include/google/protobuf/io/coded_stream.h:1232: undefined reference to `google::protobuf::io::CodedOutputStream::VarintSize32Fallback(unsigned int)'
+objects/protocol/fb.pb.o: In function `google::protobuf::internal::WireFormatLite::ReadString(google::protobuf::io::CodedInputStream*, std::string*)':
+/usr/include/google/protobuf/wire_format_lite.h:712: undefined reference to `google::protobuf::internal::WireFormatLite::ReadBytes(google::protobuf::io::CodedInputStream*, std::string*)'
+objects/protocol/fb.pb.o: In function `OwnInternal<fb::BasicReply>':
+/usr/include/google/protobuf/arena.h:824: undefined reference to `google::protobuf::Arena::AddListNode(void*, void (*)(void*))'
+objects/protocol/fb.pb.o: In function `fb::BasicReply const* google::protobuf::internal::DynamicCastToGenerated<fb::BasicReply const>(google::protobuf::Message const*)':
+/usr/include/google/protobuf/generated_message_reflection.h:669: undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o: In function `OwnInternal<fb::RegisterRequest>':
+/usr/include/google/protobuf/arena.h:824: undefined reference to `google::protobuf::Arena::AddListNode(void*, void (*)(void*))'
+objects/protocol/fb.pb.o: In function `fb::RegisterRequest const* google::protobuf::internal::DynamicCastToGenerated<fb::RegisterRequest const>(google::protobuf::Message const*)':
+/usr/include/google/protobuf/generated_message_reflection.h:669: undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o: In function `OwnInternal<fb::ListRequest>':
+/usr/include/google/protobuf/arena.h:824: undefined reference to `google::protobuf::Arena::AddListNode(void*, void (*)(void*))'
+objects/protocol/fb.pb.o: In function `fb::ListRequest const* google::protobuf::internal::DynamicCastToGenerated<fb::ListRequest const>(google::protobuf::Message const*)':
+/usr/include/google/protobuf/generated_message_reflection.h:669: undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o: In function `OwnInternal<fb::UserList>':
+/usr/include/google/protobuf/arena.h:824: undefined reference to `google::protobuf::Arena::AddListNode(void*, void (*)(void*))'
+objects/protocol/fb.pb.o: In function `fb::UserList const* google::protobuf::internal::DynamicCastToGenerated<fb::UserList const>(google::protobuf::Message const*)':
+/usr/include/google/protobuf/generated_message_reflection.h:669: undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o: In function `google::protobuf::RepeatedPtrField<std::string>::UnsafeArenaSwap(google::protobuf::RepeatedPtrField<std::string>*)':
+/usr/include/google/protobuf/repeated_field.h:1983: undefined reference to `google::protobuf::internal::LogMessage::LogMessage(google::protobuf::LogLevel, char const*, int)'
+/usr/include/google/protobuf/repeated_field.h:1983: undefined reference to `google::protobuf::internal::LogMessage::operator<<(char const*)'
+/usr/include/google/protobuf/repeated_field.h:1983: undefined reference to `google::protobuf::internal::LogFinisher::operator=(google::protobuf::internal::LogMessage&)'
+/usr/include/google/protobuf/repeated_field.h:1983: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/usr/include/google/protobuf/repeated_field.h:1983: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+objects/protocol/fb.pb.o: In function `void google::protobuf::internal::RepeatedPtrFieldBase::Clear<google::protobuf::RepeatedPtrField<std::string>::TypeHandler>()':
+/usr/include/google/protobuf/repeated_field.h:1453: undefined reference to `google::protobuf::internal::LogMessage::LogMessage(google::protobuf::LogLevel, char const*, int)'
+/usr/include/google/protobuf/repeated_field.h:1453: undefined reference to `google::protobuf::internal::LogMessage::operator<<(char const*)'
+/usr/include/google/protobuf/repeated_field.h:1453: undefined reference to `google::protobuf::internal::LogFinisher::operator=(google::protobuf::internal::LogMessage&)'
+/usr/include/google/protobuf/repeated_field.h:1453: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/usr/include/google/protobuf/repeated_field.h:1453: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+objects/protocol/fb.pb.o: In function `google::protobuf::RepeatedPtrField<std::string>::TypeHandler::Type const& google::protobuf::internal::RepeatedPtrFieldBase::Get<google::protobuf::RepeatedPtrField<std::string>::TypeHandler>(int) const':
+/usr/include/google/protobuf/repeated_field.h:1407: undefined reference to `google::protobuf::internal::LogMessage::LogMessage(google::protobuf::LogLevel, char const*, int)'
+/usr/include/google/protobuf/repeated_field.h:1407: undefined reference to `google::protobuf::internal::LogMessage::operator<<(char const*)'
+/usr/include/google/protobuf/repeated_field.h:1407: undefined reference to `google::protobuf::internal::LogFinisher::operator=(google::protobuf::internal::LogMessage&)'
+/usr/include/google/protobuf/repeated_field.h:1407: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/usr/include/google/protobuf/repeated_field.h:1408: undefined reference to `google::protobuf::internal::LogMessage::LogMessage(google::protobuf::LogLevel, char const*, int)'
+/usr/include/google/protobuf/repeated_field.h:1408: undefined reference to `google::protobuf::internal::LogMessage::operator<<(char const*)'
+/usr/include/google/protobuf/repeated_field.h:1408: undefined reference to `google::protobuf::internal::LogFinisher::operator=(google::protobuf::internal::LogMessage&)'
+/usr/include/google/protobuf/repeated_field.h:1408: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/usr/include/google/protobuf/repeated_field.h:1407: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/usr/include/google/protobuf/repeated_field.h:1408: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+objects/protocol/fb.pb.o: In function `google::protobuf::RepeatedPtrField<std::string>::TypeHandler::Type* google::protobuf::internal::RepeatedPtrFieldBase::Add<google::protobuf::RepeatedPtrField<std::string>::TypeHandler>(google::protobuf::RepeatedPtrField<std::string>::TypeHandler::Type*)':
+/usr/include/google/protobuf/repeated_field.h:1435: undefined reference to `google::protobuf::internal::RepeatedPtrFieldBase::Reserve(int)'
+objects/protocol/fb.pb.o: In function `void google::protobuf::internal::RepeatedPtrFieldBase::MergeFrom<google::protobuf::RepeatedPtrField<std::string>::TypeHandler>(google::protobuf::internal::RepeatedPtrFieldBase const&)':
+/usr/include/google/protobuf/repeated_field.h:1472: undefined reference to `google::protobuf::internal::LogMessage::LogMessage(google::protobuf::LogLevel, char const*, int)'
+/usr/include/google/protobuf/repeated_field.h:1472: undefined reference to `google::protobuf::internal::LogMessage::operator<<(char const*)'
+/usr/include/google/protobuf/repeated_field.h:1472: undefined reference to `google::protobuf::internal::LogFinisher::operator=(google::protobuf::internal::LogMessage&)'
+/usr/include/google/protobuf/repeated_field.h:1472: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+/usr/include/google/protobuf/repeated_field.h:1472: undefined reference to `google::protobuf::internal::LogMessage::~LogMessage()'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb8UserListE[_ZTVN2fb8UserListE]+0x10): undefined reference to `google::protobuf::Message::GetTypeName() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb8UserListE[_ZTVN2fb8UserListE]+0x2c): undefined reference to `google::protobuf::Message::InitializationErrorString() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb8UserListE[_ZTVN2fb8UserListE]+0x30): undefined reference to `google::protobuf::Message::CheckTypeAndMergeFrom(google::protobuf::MessageLite const&)'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb8UserListE[_ZTVN2fb8UserListE]+0x54): undefined reference to `google::protobuf::Message::DiscardUnknownFields()'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb8UserListE[_ZTVN2fb8UserListE]+0x58): undefined reference to `google::protobuf::Message::SpaceUsed() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb11ListRequestE[_ZTVN2fb11ListRequestE]+0x10): undefined reference to `google::protobuf::Message::GetTypeName() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb11ListRequestE[_ZTVN2fb11ListRequestE]+0x2c): undefined reference to `google::protobuf::Message::InitializationErrorString() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb11ListRequestE[_ZTVN2fb11ListRequestE]+0x30): undefined reference to `google::protobuf::Message::CheckTypeAndMergeFrom(google::protobuf::MessageLite const&)'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb11ListRequestE[_ZTVN2fb11ListRequestE]+0x54): undefined reference to `google::protobuf::Message::DiscardUnknownFields()'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb11ListRequestE[_ZTVN2fb11ListRequestE]+0x58): undefined reference to `google::protobuf::Message::SpaceUsed() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb15RegisterRequestE[_ZTVN2fb15RegisterRequestE]+0x10): undefined reference to `google::protobuf::Message::GetTypeName() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb15RegisterRequestE[_ZTVN2fb15RegisterRequestE]+0x2c): undefined reference to `google::protobuf::Message::InitializationErrorString() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb15RegisterRequestE[_ZTVN2fb15RegisterRequestE]+0x30): undefined reference to `google::protobuf::Message::CheckTypeAndMergeFrom(google::protobuf::MessageLite const&)'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb15RegisterRequestE[_ZTVN2fb15RegisterRequestE]+0x54): undefined reference to `google::protobuf::Message::DiscardUnknownFields()'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb15RegisterRequestE[_ZTVN2fb15RegisterRequestE]+0x58): undefined reference to `google::protobuf::Message::SpaceUsed() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb10BasicReplyE[_ZTVN2fb10BasicReplyE]+0x10): undefined reference to `google::protobuf::Message::GetTypeName() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb10BasicReplyE[_ZTVN2fb10BasicReplyE]+0x2c): undefined reference to `google::protobuf::Message::InitializationErrorString() const'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb10BasicReplyE[_ZTVN2fb10BasicReplyE]+0x30): undefined reference to `google::protobuf::Message::CheckTypeAndMergeFrom(google::protobuf::MessageLite const&)'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb10BasicReplyE[_ZTVN2fb10BasicReplyE]+0x54): undefined reference to `google::protobuf::Message::DiscardUnknownFields()'
+objects/protocol/fb.pb.o:(.rodata._ZTVN2fb10BasicReplyE[_ZTVN2fb10BasicReplyE]+0x58): undefined reference to `google::protobuf::Message::SpaceUsed() const'
+objects/protocol/fb.pb.o:(.rodata._ZTIN2fb8UserListE[_ZTIN2fb8UserListE]+0x8): undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o:(.rodata._ZTIN2fb11ListRequestE[_ZTIN2fb11ListRequestE]+0x8): undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o:(.rodata._ZTIN2fb15RegisterRequestE[_ZTIN2fb15RegisterRequestE]+0x8): undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.pb.o:(.rodata._ZTIN2fb10BasicReplyE[_ZTIN2fb10BasicReplyE]+0x8): undefined reference to `typeinfo for google::protobuf::Message'
+objects/protocol/fb.grpc.pb.o: In function `grpc::FillMetadataMap(grpc_metadata_array*, std::multimap<grpc::string_ref, grpc::string_ref, std::less<grpc::string_ref>, std::allocator<std::pair<grpc::string_ref const, grpc::string_ref> > >*)':
+/usr/local/include/grpc++/impl/codegen/call.h:74: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/call.h:74: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/call.h:75: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/call.h:75: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::FillMetadataArray(std::multimap<std::string, std::string, std::less<std::string>, std::allocator<std::pair<std::string const, std::string> > > const&)':
+/usr/local/include/grpc++/impl/codegen/call.h:87: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/call.h:87: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `google::protobuf::io::CodedInputStream::CodedInputStream(google::protobuf::io::ZeroCopyInputStream*)':
+/usr/include/google/protobuf/io/coded_stream.h:1328: undefined reference to `google::protobuf::io::CodedInputStream::default_recursion_limit_'
+/usr/include/google/protobuf/io/coded_stream.h:1328: undefined reference to `google::protobuf::io::CodedInputStream::default_recursion_limit_'
+/usr/include/google/protobuf/io/coded_stream.h:1330: undefined reference to `google::protobuf::io::CodedInputStream::Refresh()'
+objects/protocol/fb.grpc.pb.o: In function `google::protobuf::io::ZeroCopyInputStream::ZeroCopyInputStream()':
+/usr/include/google/protobuf/io/zero_copy_stream.h:126: undefined reference to `vtable for google::protobuf::io::ZeroCopyInputStream'
+objects/protocol/fb.grpc.pb.o: In function `google::protobuf::io::ZeroCopyOutputStream::ZeroCopyOutputStream()':
+/usr/include/google/protobuf/io/zero_copy_stream.h:183: undefined reference to `vtable for google::protobuf::io::ZeroCopyOutputStream'
+objects/protocol/fb.grpc.pb.o: In function `grpc::internal::GrpcBufferWriter::GrpcBufferWriter(grpc_byte_buffer**, int)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:61: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:61: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:60: undefined reference to `google::protobuf::io::ZeroCopyOutputStream::~ZeroCopyOutputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::internal::GrpcBufferWriter::~GrpcBufferWriter()':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:67: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:67: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:65: undefined reference to `google::protobuf::io::ZeroCopyOutputStream::~ZeroCopyOutputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::internal::GrpcBufferWriter::Next(void**, int*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:76: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:76: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:80: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:80: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:82: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/proto_utils.h:82: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::internal::GrpcBufferReader::GrpcBufferReader(grpc_byte_buffer*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:114: undefined reference to `google::protobuf::io::ZeroCopyInputStream::~ZeroCopyInputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::internal::GrpcBufferReader::~GrpcBufferReader()':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:122: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:122: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:121: undefined reference to `google::protobuf::io::ZeroCopyInputStream::~ZeroCopyInputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::internal::GrpcBufferReader::Next(void const**, int*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:132: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:132: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:138: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:138: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:141: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/proto_utils.h:141: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::GrpcLibraryCodegen::GrpcLibraryCodegen()':
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:56: undefined reference to `grpc::g_glip'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:56: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:56: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:59: undefined reference to `grpc::g_glip'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:59: undefined reference to `grpc::g_glip'
+objects/protocol/fb.grpc.pb.o: In function `grpc::GrpcLibraryCodegen::~GrpcLibraryCodegen()':
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:62: undefined reference to `grpc::g_glip'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:62: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:62: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:65: undefined reference to `grpc::g_glip'
+/usr/local/include/grpc++/impl/codegen/grpc_library.h:65: undefined reference to `grpc::g_glip'
+objects/protocol/fb.grpc.pb.o: In function `grpc::CompletionQueue::CompletionQueue()':
+/usr/local/include/grpc++/impl/codegen/completion_queue.h:102: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/completion_queue.h:102: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::CompletionQueue::~CompletionQueue()':
+/usr/local/include/grpc++/impl/codegen/completion_queue.h:112: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/completion_queue.h:112: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::CompletionQueue::Pluck(grpc::CompletionQueueTag*)':
+/usr/local/include/grpc++/impl/codegen/completion_queue.h:206: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/completion_queue.h:206: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::RegisterRequest, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:200: undefined reference to `google::protobuf::MessageLite::SerializeToZeroCopyStream(google::protobuf::io::ZeroCopyOutputStream*) const'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::ListRequest, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:190: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:190: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:191: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/proto_utils.h:191: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::ListRequest, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:200: undefined reference to `google::protobuf::MessageLite::SerializeToZeroCopyStream(google::protobuf::io::ZeroCopyOutputStream*) const'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:(.rodata._ZTVN4grpc8internal16GrpcBufferWriterE[_ZTVN4grpc8internal16GrpcBufferWriterE]+0x1c): undefined reference to `google::protobuf::io::ZeroCopyOutputStream::WriteAliasedRaw(void const*, int)'
+objects/protocol/fb.grpc.pb.o:(.rodata._ZTIN4grpc8internal16GrpcBufferReaderE[_ZTIN4grpc8internal16GrpcBufferReaderE]+0x8): undefined reference to `typeinfo for google::protobuf::io::ZeroCopyInputStream'
+objects/protocol/fb.grpc.pb.o:(.rodata._ZTIN4grpc8internal16GrpcBufferWriterE[_ZTIN4grpc8internal16GrpcBufferWriterE]+0x8): undefined reference to `typeinfo for google::protobuf::io::ZeroCopyOutputStream'
+objects/protocol/fb.grpc.pb.o: In function `grpc::RpcMethodHandler<fb::FacebookClone::Service, fb::ListRequest, fb::UserList>::RunHandler(grpc::MethodHandler::HandlerParameter const&)':
+/usr/local/include/grpc++/impl/codegen/method_handler_impl.h:62: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/method_handler_impl.h:62: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::RpcMethodHandler<fb::FacebookClone::Service, fb::RegisterRequest, fb::BasicReply>::RunHandler(grpc::MethodHandler::HandlerParameter const&)':
+/usr/local/include/grpc++/impl/codegen/method_handler_impl.h:62: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/method_handler_impl.h:62: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::ClientAsyncResponseReader<fb::UserList>::ReadInitialMetadata(void*)':
+/usr/local/include/grpc++/impl/codegen/async_unary_call.h:79: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/async_unary_call.h:79: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::ListRequest, void>::Deserialize(grpc_byte_buffer*, google::protobuf::Message*, int)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:220: undefined reference to `google::protobuf::io::CodedInputStream::SetTotalBytesLimit(int, int)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:222: undefined reference to `google::protobuf::MessageLite::ParseFromCodedStream(google::protobuf::io::CodedInputStream*)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::RegisterRequest, void>::Deserialize(grpc_byte_buffer*, google::protobuf::Message*, int)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:212: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:212: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:220: undefined reference to `google::protobuf::io::CodedInputStream::SetTotalBytesLimit(int, int)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:222: undefined reference to `google::protobuf::MessageLite::ParseFromCodedStream(google::protobuf::io::CodedInputStream*)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::UserList, void>::Deserialize(grpc_byte_buffer*, google::protobuf::Message*, int)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:212: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:212: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:220: undefined reference to `google::protobuf::io::CodedInputStream::SetTotalBytesLimit(int, int)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:222: undefined reference to `google::protobuf::MessageLite::ParseFromCodedStream(google::protobuf::io::CodedInputStream*)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::BasicReply, void>::Deserialize(grpc_byte_buffer*, google::protobuf::Message*, int)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:212: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:212: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:220: undefined reference to `google::protobuf::io::CodedInputStream::SetTotalBytesLimit(int, int)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:222: undefined reference to `google::protobuf::MessageLite::ParseFromCodedStream(google::protobuf::io::CodedInputStream*)'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:229: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:218: undefined reference to `google::protobuf::io::CodedInputStream::~CodedInputStream()'
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::UserList, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:190: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:190: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:191: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:191: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:194: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/proto_utils.h:194: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::UserList, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:200: undefined reference to `google::protobuf::MessageLite::SerializeToZeroCopyStream(google::protobuf::io::ZeroCopyOutputStream*) const'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::BasicReply, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:190: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:190: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:191: undefined reference to `grpc::g_core_codegen_interface'
+objects/protocol/fb.grpc.pb.o:/usr/local/include/grpc++/impl/codegen/proto_utils.h:191: more undefined references to `grpc::g_core_codegen_interface' follow
+objects/protocol/fb.grpc.pb.o: In function `grpc::SerializationTraits<fb::BasicReply, void>::Serialize(google::protobuf::Message const&, grpc_byte_buffer**, bool*)':
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:200: undefined reference to `google::protobuf::MessageLite::SerializeToZeroCopyStream(google::protobuf::io::ZeroCopyOutputStream*) const'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+/usr/local/include/grpc++/impl/codegen/proto_utils.h:201: undefined reference to `grpc::g_core_codegen_interface'
+collect2: error: ld returned 1 exit status
+make: *** [fbc] Error 1
