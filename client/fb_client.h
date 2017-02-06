@@ -1,3 +1,5 @@
+#pragma once
+
 #include "fb.grpc.pb.h"
 
 #include <memory>
