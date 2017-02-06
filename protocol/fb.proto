@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package fb;
 
-service FacebookClone {
+service Fakebook {
   rpc Register (RegisterRequest) returns (BasicReply) {}
   rpc List (ListRequest) returns (UserList) {} 
 }

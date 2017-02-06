@@ -7,7 +7,7 @@ using grpc::ClientContext;
 using grpc::Status;
 using fb::RegisterRequest;
 using fb::BasicReply;
-using fb::FacebookClone;
+using fb::Fakebook;
 
 // Register a user name with the server
 bool FbClient::Register(const std::string &username) {

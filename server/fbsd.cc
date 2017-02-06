@@ -39,11 +39,11 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using fb::FacebookClone;
+using fb::Fakebook;
 using fb::RegisterRequest;
 using fb::BasicReply;
 
-class FacebookCloneServiceImpl final : public FacebookClone::Service{
+class FakebookServiceImpl final : public Fakebook::Service{
 	Status Register(ServerContext* context, const RegisterRequest * request, BasicReply *reply) override{
 		reply->set_success(false);
 		reply->set_message("Not implemented yet!");	
@@ -54,7 +54,7 @@ class FacebookCloneServiceImpl final : public FacebookClone::Service{
 
 void RunServer(const int port){
 	string address = "localhost:" + to_string(port);
-	FacebookCloneServiceImpl service;
+	FakebookServiceImpl service;
 	ServerBuilder builder;
 	//Listen on address without authentication
 	builder.AddListeningPort(address, grpc::InsecureServerCredentials());

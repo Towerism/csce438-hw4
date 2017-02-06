@@ -7,11 +7,11 @@
 class FbClient {
 public:
   FbClient(std::shared_ptr<grpc::ChannelInterface> channel)
-    : stub(fb::FacebookClone::NewStub(channel)) {}
+    : stub(fb::Fakebook::NewStub(channel)) {}
 
   // Register a user name with the server
   bool Register(const std::string& username);
 
 private:
-  std::unique_ptr<fb::FacebookClone::Stub> stub;
+  std::unique_ptr<fb::Fakebook::Stub> stub;
 };
