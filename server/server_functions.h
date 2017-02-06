@@ -1,3 +1,4 @@
+#include "common.h"
 #define USER_FOLDER "/Users/"
 #define ALL_USERS_LIST "all_users.txt"
 #define FOLLOWING_LIST "_following_list.txt"
@@ -82,6 +83,7 @@ int registerUser(string client){
 
 
 
+
 /// <Title>  postMessage  </Title>
 /// <Purpose> Post a message to the users chatroom </Purpose>
 /// <Inputs>
@@ -110,27 +112,63 @@ int registerUser(string client){
 int postMessage(string client, string message){
 	// Add message to New-Messages file for all of the users followers
 	vector<string> followers;
-	if(readFile(client + str(FOLLOWED_BY_LIST), followers) != 0){
+	if(readFile(string(USER_FOLDER) + client + string(FOLLOWED_BY_LIST), followers) != 0){
 		return 1;
 	}
 	for(auto follower:followers){
 		// IMPLEMENT: Safety checks for files existing
 		vector<string> followerNewMessages;
-		readFile(follower + str(NEW_MESSAGE), followerNewMessages);
+		readFile(string(USER_FOLDER) + follower + str(NEW_MESSAGE), followerNewMessages);
 		followerNewMessages.push_back(message);
 		while(followerNewMessages.size() > 20){
 			followerNewMessages.erase(followerNewMessages.begin());
 		}
-		writeFile(follower + str(NEW_MESSAGE), followerNewMessages, true);
+		writeFile(string(USER_FOLDER) + follower + str(NEW_MESSAGE), followerNewMessages, true);
 	}
 	return 0;
 }
 
+// list
+// register
+// post
 
+/// <Title>  Join  </Title>
+/// <Purpose> Join a different users page (follow them)  </Purpose>
+/// <Inputs>
+/// 	<Param>
+///			<Title> client </Title>
+///			<Value> User name of client sending message </Value>
+///		</Param>
+///		<Param>
+///			<Title> friend </Title>
+///			<Value> Name of the new user client wants to follow  </Value>
+///		</Param>
+///	</Inputs>
+/// <Output>
+///		<Param>
+///			<Title> Success </Title>
+/// 		<Value> 0 </Value>
+///		</Param>
+///		<Param>
+///			<Title> Friend Not Found </Title>
+///			<Value> 1 </Value>
+///		<Param>
+///			<Title> Failure </Title>
+///			<Value> - 1 </Value>
+///		</Param>
+/// </Output>
 
+int joinFriend(string client, string friend){
+	vector<string> clientVec = {client};
+	if(writeFile(string(USER_FOLDER) + friend + string(FOLLOWED_BY), clientVec) != 0){
+		// Couldn't access friends file for some reason. 
+		return 1;
+	}
 
-
-
+	vector<string> friendVec = {friend};
+	writeFile(string(USER_FOLDER) + client + string(FOLLOWING), friendVec);
+	return 0;
+}
 
 
 
