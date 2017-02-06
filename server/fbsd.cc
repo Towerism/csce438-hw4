@@ -53,7 +53,7 @@ class FacebookCloneServiceImpl final : public FacebookClone::Service{
 };
 
 void RunServer(const int port){
-	string address = "10.0.0.1:" + to_string(port);
+	string address = "localhost:" + to_string(port);
 	FacebookCloneServiceImpl service;
 	ServerBuilder builder;
 	//Listen on address without authentication
