@@ -40,6 +40,8 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
+using grpc::ListRequest;
+using grpc::UserList;
 using fb::Fakebook;
 using fb::RegisterRequest;
 using fb::BasicReply;
@@ -58,6 +60,23 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		}
 		return Status::OK;
 		// return Status::INTERNAL;
+	} 
+	Status List(ServerContext* context, const ListRequest * request, UserList *reply) override{
+		//reply
+		vector<string> allUsers;
+		vector<string> clientFollowing;
+		int result = listCommand(request->username(), allUsers, clientFollowing);
+		if(result == 0){
+			
+		
+			for(int i=0; i< allUsers.size(); ++i){
+				reply->set_all_users(i, allUsers[i]);
+			}
+			for(int i = 0; i < clientFollowing.size(); ++i){
+				reply->set_joined_users(i, clientFollowing[i]);
+			}
+		}
+		return Status::OK;
 	} 
 };
 
