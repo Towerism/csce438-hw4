@@ -35,6 +35,7 @@
 #include <fb.grpc.pb.h>
 #include <grpc++/grpc++.h>
 #include "common.h"
+#include "server_functions.h"
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -45,8 +46,16 @@ using fb::BasicReply;
 
 class FakebookServiceImpl final : public Fakebook::Service{
 	Status Register(ServerContext* context, const RegisterRequest * request, BasicReply *reply) override{
-		reply->set_success(false);
-		reply->set_message("Not implemented yet!");	
+		// Username is a const string, so passing to a string makes it non const
+		int registerResult = registerUser(request->username());
+		if(registerResult != 0){
+			reply->set_success(false);
+			reply->set_message("Not implemented yet!");
+		}
+		else{
+			reply->set_success(true);
+			reply->set_message("");
+		}
 		return Status::OK;
 		// return Status::INTERNAL;
 	} 

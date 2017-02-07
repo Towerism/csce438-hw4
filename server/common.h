@@ -4,5 +4,6 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <unistd.h>
 using namespace std;
 #endif // FACEBOOK_CLONE_SERVER_HEADER_GUARD
