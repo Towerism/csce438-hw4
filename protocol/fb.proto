@@ -33,3 +33,13 @@ message UserList {
   repeated string all_users = 1;
   repeated string joined_users = 2;
 }
+
+message MessageList {
+  repeated Message messages = 1;
+}
+
+message Message {
+  string username = 1;
+  string date = 2;
+  string message = 3;
+}
