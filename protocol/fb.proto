@@ -27,6 +27,7 @@ message JoinRequest {
 // we have an empty request here in case we want to add parameters in the future
 // without breaking existing code
 message ListRequest {
+  string username = 1;
 }
 
 message UserList {
