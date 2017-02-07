@@ -128,9 +128,157 @@ int postMessage(string client, string message){
 	return 0;
 }
 
-// list
-// register
-// post
+// <Title>  removeFromFile  </Title>
+/// <Purpose> helper function for leaveUser. Removes an undesired line from a file </Purpose>
+/// <Inputs>
+/// 	<Param>
+///			<Title> fileUse </Title>
+///			<Value> file extension (_following_list.txt) </Value>
+///		</Param>
+///		<Param>
+///			<Title> removeFrom </Title>
+///			<Value> The username that data is being removed from  </Value>
+///		</Param>
+///		<Param>
+///			<Title> removeName </Title>
+///			<Value> the line (username) to be removed </Value>
+///		</Param>
+///	</Inputs>
+/// <Output>
+///		<Param>
+///			<Title> Success </Title>
+/// 		<Value> 0 </Value>
+///		</Param>
+///		<Param>
+///			<Title> Client not following user to begin with </Title>
+///			<Value> 1 </Value>
+///		<Param>
+///			<Title> Failure </Title>
+///			<Value> - 1 </Value>
+///		</Param>
+/// </Output>
+
+
+int removeFromFile(string fileUse, string removeFrom, string removeName){
+	vector<string> clientFollowing;
+	readFile(string(USER_FOLDER) + removeFrom + fileUse, clientFollowing);
+	int removeLocation = -1;
+	for	(int i= 0; i< clientFollowing.size(); ++i){
+		if(clientFollowing[i] == removeName){
+			removeLocation = i;
+		}
+	}
+	if(removeLocation == -1){
+		// User was not part of the clients following list anyways
+		return 1;
+	}
+	clientFollowing.erase(clientFollowing.begin() + i);
+	writeFile(string(USER_FOLDER) + removeFrom + fileUse), clientFollowing);
+	return 0;
+
+}
+
+// <Title>  leaveUser  </Title>
+/// <Purpose> Unsubscribe CLIENT from USER </Purpose>
+/// <Inputs>
+/// 	<Param>
+///			<Title> client </Title>
+///			<Value> User name of client requesting to unfriend someone </Value>
+///		</Param>
+///		<Param>
+///			<Title> user </Title>
+///			<Value> The username of the friend to leave  </Value>
+///		</Param>
+///	</Inputs>
+/// <Output>
+///		<Param>
+///			<Title> Success </Title>
+/// 		<Value> 0 </Value>
+///		</Param>
+///		<Param>
+///			<Title> Client not following user to begin with </Title>
+///			<Value> 1 </Value>
+///		<Param>
+///			<Title> Failure </Title>
+///			<Value> - 1 </Value>
+///		</Param>
+/// </Output>
+
+int leaveUser(string client, string user){
+	// Remove USER from CLIENT following list
+	if(	removeFromFile(string(FOLLOWING_LIST), client, user) != 0){
+		// Failed to remove user from client following list
+		return 1;
+	}
+	// Remove CLIENT from USER followed_by list
+	if( removeFromFile(string(FOLLOWED_BY_LIST), user, client) != 0){
+		// Failed to remove client from user followed by list
+		return -1;
+	}
+	// Remove USER messages from CLIENT NEW_MESSAGE
+	return 0;
+}
+
+
+
+
+
+// <Title>  checkRecent  </Title>
+/// <Purpose> Return any new messages to the user </Purpose>
+/// <Inputs>
+/// 	<Param>
+///			<Title> client </Title>
+///			<Value> User name of client requesting new messages </Value>
+///		</Param>
+///		<Param>
+///			<Title> lastReceived </Title>
+///			<Value> The last string the client received  </Value>
+///		</Param>
+///		<Param>
+///			<Title> newMessages </Title>
+///			<Value> Empty string vector to bind new messages to </Value>
+///		</Param>
+///	</Inputs>
+/// <Output>
+///		<Param>
+///			<Title> Success </Title>
+/// 		<Value> 0 </Value>
+///		</Param>
+///		<Param>
+///			<Title>  </Title>
+///			<Value> 1 </Value>
+///		<Param>
+///			<Title> Failure </Title>
+///			<Value> - 1 </Value>
+///		</Param>
+/// </Output>
+int checkRecent(string client, string lastReceived, vector<string> &newMessages){
+	vector<string> recentMessages;
+	// recentMessages[0] = Oldest message
+	// recentMessages[recentMessages.size()] = Newest message
+	readFile(string(USER_FOLDER) + client + string(NEW_MESSAGE), recentMessages);
+	receivedPosition = -1;
+	for(int i = 0; i < recentMessages.size(); ++i){
+		if(recentMessages[i] == lastReceived){
+			receivedPosition = i;
+		}
+	}
+	if (receivedPosition == recentMessages.size() - 1){
+		// Last received message is most recent message, return empty vector
+		return 0;
+	}
+	if (receivedPosition == -1){
+		// lastReceived message was so old there are at least 20 new messages
+		newMessages = recentMessages;
+		return 0;
+	}
+	for(int i = receivedPosition + 1; i< recentMessages.size(); ++i){
+		newMessages.push_back(recentMessages[i]);
+	}
+	return 0;
+}
+
+
 
 /// <Title>  Join  </Title>
 /// <Purpose> Join a different users page (follow them)  </Purpose>
@@ -159,6 +307,12 @@ int postMessage(string client, string message){
 /// </Output>
 
 int joinFriend(string client, string friend){
+	// Test to make sure friend refers to someone with an account
+	vector<string> friendResult;
+	if(readFile(string(USER_FOLDER) + friend + string(FOLLOWED_BY, friendResult)) != 0){
+		// Friend either doesn't exist or their account has errors
+		return 1;
+	}
 	vector<string> clientVec = {client};
 	if(writeFile(string(USER_FOLDER) + friend + string(FOLLOWED_BY), clientVec) != 0){
 		// Couldn't access friends file for some reason. 
@@ -166,7 +320,10 @@ int joinFriend(string client, string friend){
 	}
 
 	vector<string> friendVec = {friend};
-	writeFile(string(USER_FOLDER) + client + string(FOLLOWING), friendVec);
+	if(writeFile(string(USER_FOLDER) + client + string(FOLLOWING), friendVec) != 0){
+	cerr << "Error: " + client + " failed to JOIN " + friend << endl;
+	return -1;
+}
 	return 0;
 }
 
