@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
     print_usage(argv[0]);
   auto channel = grpc::CreateChannel(arguments.ConnectionString,
                                      grpc::InsecureChannelCredentials());
-  FbClient client(channel);
-  if (!client.Register("username"))
+  FbClient client("username", channel);
+  if (!client.Register())
     return 1;
   std::string command;
   std::string argument;
@@ -35,11 +35,12 @@ int main(int argc, char **argv) {
   while (true) {
     switch (mode) {
     case Mode::Command:
-      std::cin >> command >> argument;
+      std::cin >> command;
       if (command == "JOIN") {
+        std::cin >> argument;
         client.Join(argument);
       } else if (command == "LIST") {
-        client.List()
+        client.List();
       }
       break;
     case Mode::Chat:
