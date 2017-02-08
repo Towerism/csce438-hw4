@@ -14,22 +14,34 @@ bool FbClient::Register() {
   RegisterRequest request;
   request.set_username(username);
 
-  BasicReply reply;
   ClientContext context;
-  Status status = stub->Register(&context, request, &reply);
+  status = stub->Register(&context, request, &basicReply);
 
-  if (status.ok()) {
-    if (reply.success())
-      return true;
-    else {
-      std::cout << "Failed: " << reply.message() << std::endl;
-      return false;
-    }
-  } else {
-    std::cout << status.error_code() << ": " << status.error_message()
-              << std::endl;
-    return false;
-  }
+  return PrintPossibleStatusFailuresForBasicReply();
+}
+
+bool FbClient::PrintPossibleStatusFailuresForBasicReply() {
+  if (status.ok())
+    return PrintPossibleBasicReplyFailure();
+  PrintStatusError();
+  return false;
+}
+
+bool FbClient::PrintPossibleBasicReplyFailure() {
+  if (basicReply.success())
+    return true;
+  PrintBasicReplyError();
+  return false;
+}
+
+void FbClient::PrintStatusError() {
+  std::cout << status.error_code() << ": " << status.error_message()
+            << std::endl;
+}
+
+void FbClient::PrintBasicReplyError() {
+  std::cout << "Failed: " << basicReply.message() << std::endl;
+  basicReply.clear_message();
 }
 
 bool FbClient::Join(std::string username) {
@@ -37,22 +49,10 @@ bool FbClient::Join(std::string username) {
   JoinRequest request;
   request.set_username(username);
 
-  BasicReply reply;
   ClientContext context;
-  Status status = stub->Join(&context, request, &reply);
+  status = stub->Join(&context, request, &basicReply);
 
-  if (status.ok()) {
-    if (reply.success())
-      return true;
-    else {
-      std::cout << "Failed: " << reply.message() << std::endl;
-      return false;
-    }
-  } else {
-    std::cout << status.error_code() << ": " << status.error_message()
-              << std::endl;
-    return false;
-  }
+  return PrintPossibleStatusFailuresForBasicReply();
 }
 
 void FbClient::List() {
@@ -61,7 +61,7 @@ void FbClient::List() {
 
   UserList userList;
   ClientContext context;
-  Status status = stub->List(&context, request, &userList);
+  status = stub->List(&context, request, &userList);
   if (status.ok()) {
     std::cout << "All chat rooms:\n";
     for (auto user : userList.all_users()) {
@@ -72,7 +72,6 @@ void FbClient::List() {
       std::cout << "\t" << user << std::endl;
     }
   } else {
-    std::cout << status.error_code() << ": " << status.error_message()
-              << std::endl;
+    PrintStatusError();
   }
 }

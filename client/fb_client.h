@@ -20,6 +20,12 @@ public:
 
 private:
   std::string username;
-
   std::unique_ptr<fb::Fakebook::Stub> stub;
+  grpc::Status status;
+  fb::BasicReply basicReply;
+
+  void PrintStatusError();
+  void PrintBasicReplyError();
+  bool PrintPossibleStatusFailuresForBasicReply();
+  bool PrintPossibleBasicReplyFailure();
 };
