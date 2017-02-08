@@ -40,11 +40,7 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using grpc::ListRequest;
-using grpc::UserList;
-using fb::Fakebook;
-using fb::RegisterRequest;
-using fb::BasicReply;
+using namespace fb;
 
 class FakebookServiceImpl final : public Fakebook::Service{
 	Status Register(ServerContext* context, const RegisterRequest * request, BasicReply *reply) override{
@@ -69,11 +65,11 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		if(result == 0){
 			
 		
-			for(int i=0; i< allUsers.size(); ++i){
-				reply->set_all_users(i, allUsers[i]);
+			for(auto& user : allUsers){
+				reply->add_all_users(user);
 			}
-			for(int i = 0; i < clientFollowing.size(); ++i){
-				reply->set_joined_users(i, clientFollowing[i]);
+			for(auto& user : clientFollowing){
+				reply->add_joined_users(user);
 			}
 		}
 		return Status::OK;
