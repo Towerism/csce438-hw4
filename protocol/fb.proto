@@ -5,7 +5,9 @@ package fb;
 service Fakebook {
   rpc Register (RegisterRequest) returns (BasicReply) {}
   rpc Join (JoinRequest) returns (BasicReply) {}
+  rpc Leave (LeaveRequest) returns (BasicReply) {}
   rpc List (ListRequest) returns (UserList) {} 
+  rpc Chat (Message) returns (BasicReply) {}
 }
 
 message BasicReply {
@@ -18,6 +20,10 @@ message RegisterRequest {
 }
 
 message JoinRequest {
+  string username = 1;
+}
+
+message LeaveRequest {
   string username = 1;
 }
 
