@@ -17,15 +17,10 @@ message RegisterRequest {
   string username = 1;
 }
 
-// at the moment the JoinRequest is the same as RegisterRequest
-// we will keep them separate to remain flexible if in the future
-// the parameters of these requests diverge
 message JoinRequest {
   string username = 1;
 }
 
-// we have an empty request here in case we want to add parameters in the future
-// without breaking existing code
 message ListRequest {
   string username = 1;
 }
