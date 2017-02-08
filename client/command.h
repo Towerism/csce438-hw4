@@ -10,10 +10,12 @@ public:
       delete nextCommand;
   }
   virtual void Execute(std::string commandMatch) = 0;
-  Command *SetNextCommand(Command *command) {
-    nextCommand = command;
-    return command;
-  }
+
+  // attempt to to execute next command based on command matching
+  // if the next command is executed, returns true, otherwise returns false
+  bool ExecuteNextCommand(std::string match, std::string commandMatch);
+
+  Command *SetNextCommand(Command *command);
 
 protected:
   Command *nextCommand = nullptr;

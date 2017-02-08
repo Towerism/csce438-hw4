@@ -1,5 +1,7 @@
 # List the source file names here for compilation
-CLIENT_FILES = fbc.cc arguments_parser.cc fb_client.cc command_stream.cc join_command.cc list_command.cc command_factory.cc
+CLIENT_FILES = fbc.cc arguments_parser.cc fb_client.cc command.cc \
+               command_stream.cc join_command.cc list_command.cc \
+               command_factory.cc
 SERVER_FILES = fbsd.cc
 
 PROTO_FILES = fb.proto
