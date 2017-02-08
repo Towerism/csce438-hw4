@@ -8,6 +8,7 @@ service Fakebook {
   rpc Leave (LeaveRequest) returns (BasicReply) {}
   rpc List (ListRequest) returns (UserList) {} 
   rpc Chat (Message) returns (BasicReply) {}
+  rpc WhatsNew (Message) returns (MessageList) {}
 }
 
 message BasicReply {
