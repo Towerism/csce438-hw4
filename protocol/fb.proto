@@ -21,10 +21,12 @@ message RegisterRequest {
 
 message JoinRequest {
   string username = 1;
+  string channelname = 2;
 }
 
 message LeaveRequest {
   string username = 1;
+  string channelname = 2;
 }
 
 message ListRequest {
