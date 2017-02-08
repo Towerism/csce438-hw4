@@ -3,6 +3,7 @@
 #include <iostream>
 
 bool CommandStream::ReadCommandLine() {
+  std::cout << ":: ";
   getline(std::cin, commandline);
   commandStream.clear();
   commandStream.str(commandline);
