@@ -7,6 +7,7 @@ public:
   struct Arguments {
     bool Valid = true; // Whether or not the parse was successful
     std::string ConnectionString;
+    std::string Username;
   };
 
   ArgumentsParser(int argc, char** argv) : argc(argc), argv(argv) {}
@@ -21,4 +22,5 @@ private:
   bool UnmarshallArguments();
   Arguments InvalidArguments();
   bool UnmarshallConnectionString();
+  bool UnmarshallUsername();
 };

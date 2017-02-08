@@ -1,8 +1,10 @@
 #include <cstdio>
 #include <fb.grpc.pb.h>
 #include <grpc++/grpc++.h>
+#include <sstream>
 
 #include "arguments_parser.h"
+#include "command_stream.h"
 #include "fb_client.h"
 
 void print_usage(const char *program_name) {
@@ -21,26 +23,31 @@ int main(int argc, char **argv) {
     print_usage(argv[0]);
   auto channel = grpc::CreateChannel(arguments.ConnectionString,
                                      grpc::InsecureChannelCredentials());
-  FbClient client("username", channel);
+  FbClient client(arguments.Username, channel);
   if (!client.Register())
     return 1;
-  std::string command;
-  std::string argument;
-  std::string message; // used for chat
   Mode mode = Mode::Command;
   std::cout << "Available commands:\n"
             << "JOIN <user>\n"
             << "LIST"
             << std::endl;
+  CommandStream commandStream;
+  std::string command, argument;
   while (true) {
     switch (mode) {
     case Mode::Command:
-      std::cin >> command;
+      if (!commandStream.ReadCommandLine())
+        continue;
+      command = commandStream.Command();
       if (command == "JOIN") {
-        std::cin >> argument;
+        argument = commandStream.Argument();
+        if (!commandStream.IsGood())
+          continue;
         client.Join(argument);
       } else if (command == "LIST") {
         client.List();
+      } else {
+        std::cout << "Unfamiliar command line: " << commandStream.CommandLine() << std::endl;
       }
       break;
     case Mode::Chat:
