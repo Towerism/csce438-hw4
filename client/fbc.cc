@@ -2,10 +2,12 @@
 #include <fb.grpc.pb.h>
 #include <grpc++/grpc++.h>
 #include <sstream>
+#include <memory>
 
 #include "arguments_parser.h"
 #include "command_stream.h"
 #include "fb_client.h"
+#include "command_factory.h"
 
 void print_usage(const char *program_name) {
   printf("Usage: %s <host>:<port>\n", program_name);
@@ -32,24 +34,17 @@ int main(int argc, char **argv) {
             << "LIST"
             << std::endl;
   CommandStream commandStream;
-  std::string command, argument;
+  std::string command;
   while (true) {
     switch (mode) {
-    case Mode::Command:
+    case Mode::Command: {
+      auto commandExecutor = CommandFactory::MakeCommand(client, commandStream);
       if (!commandStream.ReadCommandLine())
         continue;
       command = commandStream.Command();
-      if (command == "JOIN") {
-        argument = commandStream.Argument();
-        if (!commandStream.IsGood())
-          continue;
-        client.Join(argument);
-      } else if (command == "LIST") {
-        client.List();
-      } else {
-        std::cout << "Unfamiliar command line: " << commandStream.CommandLine() << std::endl;
-      }
+      commandExecutor->Execute(command);
       break;
+    }
     case Mode::Chat:
       break;
     }
