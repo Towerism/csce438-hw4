@@ -105,7 +105,45 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		return Status::OK;
 	} 
 	Status Chat(ServerContext* context, const Message * request, BasicReply *reply) override{
-		
+		// SerializeToString(string * output)
+		// ParseFromString(const string& data)	
+		string msgSerialize = "";
+//		request->SerializeToString(&msgSerialize);
+		Message post;
+		post.set_username(request->username());
+		post.set_message(request->message());
+		// Add a time stamp
+		std::time_t t = std::time(NULL);
+		char dateString[100];
+		if(std::strftime(dateString, 100, "%d/%m/%Y %T", std::localtime(&t))){
+			post.set_date(string(dateString));
+		}
+		bool postSuccess = post.SerializeToString(&msgSerialize);
+		int result = postMessage(request->username(), msgSerialize);
+		if(result == 0){
+			reply -> set_success(true);
+			reply -> set_message("");
+		}	
+		else{
+			reply->set_success(false);
+			if(result == 1)
+				reply->set_message("Either Server error, or missuplied client name.");
+		}
+		return Status::OK;
+	}
+	Status WhatsNew(ServerContext * context, const Message * prev, MessageList * reply) override{
+		string msgSerialize = "";
+		bool serialSuccess = prev -> SerializeToString(&msgSerialize);
+		string tempUsername = "user";
+		vector<string> newMessages;
+		int result = checkRecent(tempUsername, msgSerialize, newMessages);
+		if (result == 0){
+			for(int i = 0; i < newMessages.size(); ++i){
+				Message msg;
+				bool success = msg.ParseFromString(newMessages[i]);
+			//	reply->add_messages(msg);
+			}
+		}
 		return Status::OK;
 	}
 };

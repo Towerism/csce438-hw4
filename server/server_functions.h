@@ -6,19 +6,6 @@
 #define NEW_MESSAGE "_new_messages.txt"
 
 
-
-
-
-
-
-
-
-
-int writeMessage(Message post){
- return 0;
-}
-
-
 /// <Title>  readFile   </Title>
 /// <Purpose> Opens a file and returns a string vector of the contents </Purpose>
 /// <Inputs>
@@ -226,7 +213,7 @@ int registerUser(const string client){
 ///			<Value> 1 </Value>
 ///		<Param>
 ///			<Title> Failure </Title>
-///			<Value> - 1 </Value>
+///			<Value> 2 </Value>
 ///		</Param>
 /// </Output>
 int postMessage(string client, string message){
