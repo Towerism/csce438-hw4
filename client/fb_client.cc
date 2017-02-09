@@ -119,7 +119,8 @@ void FbClient::SendWhatsNewRequest(WhatsNewRequest request) {
       return;
     }
     for (auto message : messageList.messages()) {
-      printf("%s [%s]: %s\n", message.username(), message.date(), message.message());
+      printf("%s [%s]: %s\n", message.username().c_str(),
+             message.date().c_str(), message.message().c_str());
     }
   } else {
     PrintStatusError();
