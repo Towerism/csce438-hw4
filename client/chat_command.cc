@@ -12,14 +12,18 @@ void ChatCommand::Execute(std::string commandMatch) {
   client.WhatsNew();
   CommandStream stream;
   std::string message;
+  PollForNewMessages();
+  while (true) {
+    message = stream.ReadLine();
+    client.Chat(message);
+  }
+}
+
+void ChatCommand::PollForNewMessages() {
   std::thread([&] {
       while (true) {
         std::this_thread::sleep_for(POLL_RATE);
         client.WhatsNewPoll();
       }
     }).detach();
-  while (true) {
-    message = stream.ReadLine();
-    client.Chat(message);
-  }
 }

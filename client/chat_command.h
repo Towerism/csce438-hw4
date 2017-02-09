@@ -14,4 +14,6 @@ public:
 private:
   std::string match;
   FbClient& client;
+
+  void PollForNewMessages();
 };
