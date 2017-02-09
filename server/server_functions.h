@@ -215,9 +215,17 @@ int registerUser(const string client){
 ///			<Title> Failure </Title>
 ///			<Value> 2 </Value>
 ///		</Param>
+///		<Param>
+///			<Title> No message to post </Title>
+///			<Value> 3 </Value>
+///		</Param>
 /// </Output>
 int postMessage(string client, string message){
 	// Add message to New-Messages file for all of the users followers
+	if(message.size() == 0){
+		return 3;
+	}
+	message.erase(0,1); // Remove prepended newLine character from gRPC
 	vector<string> followers;
 	if(readFile(string(USER_FOLDER) + client + string(FOLLOWED_BY_LIST), followers) != 0){
 		return 1;
@@ -266,20 +274,33 @@ int postMessage(string client, string message){
 /// </Output>
 
 
-int removeFromFile(string fileUse, string removeFrom, string removeName){
+int removeFromFile(string fileUse, string removeFrom, string removeName, bool isMessages = false){
 	vector<string> clientFollowing;
 	readFile(string(USER_FOLDER) + removeFrom + fileUse, clientFollowing);
-	int removeLocation = -1;
-	for	(int i= 0; i< clientFollowing.size(); ++i){
-		if(clientFollowing[i] == removeName){
-			removeLocation = i;
+	if(isMessages){
+		clientFollowing.erase(std::remove_if(clientFollowing.begin(), clientFollowing.end(), [&](string s){
+		s = "\n" + s;
+		Message msg;
+		msg.ParseFromString(s);
+		if(msg.username() == removeName){
+			return true;
 		}
+		return false;
+	}), clientFollowing.end());
 	}
-	if(removeLocation == -1){
-		// User was not part of the clients following list anyways
-		return 1;
+	else{
+		int removeLocation = -1;
+		for	(int i= 0; i< clientFollowing.size(); ++i){
+			if(clientFollowing[i] == removeName){
+				removeLocation = i;
+			}
+		}
+		if(removeLocation == -1){
+			// User was not part of the clients following list anyways
+			return 1;
+		}
+		clientFollowing.erase(clientFollowing.begin() + removeLocation);
 	}
-	clientFollowing.erase(clientFollowing.begin() + removeLocation);
 	writeFile(string(USER_FOLDER) + removeFrom + fileUse, clientFollowing, true);
 	return 0;
 
@@ -309,6 +330,10 @@ int removeFromFile(string fileUse, string removeFrom, string removeName){
 ///			<Title> Failure </Title>
 ///			<Value> 2 </Value>
 ///		</Param>
+///		<Param>
+///			<Title> Failed to remove from Messages </Title>
+///			<Value> 3 </Value>
+///		</Param>
 /// </Output>
 
 int leaveUser(string client, string user){
@@ -323,6 +348,9 @@ int leaveUser(string client, string user){
 		return 2;
 	}
 	// Remove USER messages from CLIENT NEW_MESSAGE
+	if( removeFromFile(string(NEW_MESSAGE), client, user, true) != 0){
+		return 3;
+	}
 	return 0;
 }
 
@@ -356,10 +384,13 @@ int leaveUser(string client, string user){
 ///			<Value> 1 </Value>
 ///		<Param>
 ///			<Title> Failure </Title>
-///			<Value> - 1 </Value>
+///			<Value> 2 </Value>
 ///		</Param>
 /// </Output>
 int checkRecent(string client, string lastReceived, vector<string> &newMessages){
+	if(lastReceived != ""){
+		lastReceived.erase(0,1); // Remove the prepended newLine character, courtesy of gRPC
+	}
 	vector<string> recentMessages;
 	// recentMessages[0] = Oldest message
 	// recentMessages[recentMessages.size()] = Newest message
@@ -369,13 +400,18 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 		if(recentMessages[i] == lastReceived){
 			receivedPosition = i;
 		}
+		recentMessages[i] = "\n" + recentMessages[i]; // Prepend gRPC new line character
 	}
+	//	cerr << "Position in recentMessages vector of provided string: " << receivedPosition << endl;
+		//cerr << "Queue from  checkRecent. Size: " << recentMessages.size();
+
 	if (receivedPosition == recentMessages.size() - 1){
 		// Last received message is most recent message, return empty vector
 		return 0;
 	}
 	if (receivedPosition == -1){
 		// lastReceived message was so old there are at least 20 new messages
+		// Or, an empty string was given in order to retrieve all messages
 		newMessages = recentMessages;
 		return 0;
 	}
@@ -459,7 +495,7 @@ int joinFriend(string client, string user){
 
 	vector<string> friendVec = {user};
 	if(writeFile(string(USER_FOLDER) + client + string(FOLLOWING_LIST), friendVec) != 0){
-		cerr << "Error: " + client + " failed to JOIN " + user << endl;
+		//cerr << "Error: " + client + " failed to JOIN " + user << endl;
 		return 2;
 	}
 	return 0;

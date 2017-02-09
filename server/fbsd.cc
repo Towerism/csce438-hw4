@@ -109,7 +109,6 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		return Status::OK;
 	} 
 	Status Chat(ServerContext* context, const Message * request, BasicReply *reply) override{
-		cerr << "Chat called on sesrver" << endl;
 		// SerializeToString(string * output)
 		// ParseFromString(const string& data)	
 		string msgSerialize = "";
@@ -124,7 +123,6 @@ class FakebookServiceImpl final : public Fakebook::Service{
 			post.set_date(string(dateString));
 		}
 		bool postSuccess = post.SerializeToString(&msgSerialize);
-		cerr << "result of serializing message: " << msgSerialize << endl;
 		int result = postMessage(request->username(), msgSerialize);
 		if(result == 0){
 			reply -> set_success(true);
@@ -134,6 +132,10 @@ class FakebookServiceImpl final : public Fakebook::Service{
 			reply->set_success(false);
 			if(result == 1)
 				reply->set_message("Either Server error, or missuplied client name.");
+			else if (result == 2)
+				reply -> set_message("Server couldn't access files");
+			else if (result == 3)
+				reply -> set_message("");
 		}
 		return Status::OK;
 	}
@@ -143,11 +145,11 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		bool serialSuccess = request->message().SerializeToString(&msgSerialize);
 		vector<string> newMessages;
 		int result = checkRecent(request->username(), msgSerialize, newMessages);
+		//cerr << "WhatsNew called for " << request->username() << ". Result vector: " << newMessages.size() << endl;
 		if (result == 0){
 			for(int i = 0; i < newMessages.size(); ++i){
-				Message msg;
-				bool success = msg.ParseFromString(newMessages[i]);
-			//	reply->add_messages(msg);
+				Message * msg = reply->add_messages();
+				bool success = msg->ParseFromString(newMessages[i]);
 			}
 		}
 		return Status::OK;
