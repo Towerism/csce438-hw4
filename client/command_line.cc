@@ -20,7 +20,8 @@ namespace CommandLine {
   void PrintAvailableCommands() {
     std::cout << "Available commands:\n"
               << "\tJOIN <user>\n"
-              << "\tLIST"
+              << "\tLIST\n"
+              << "\tCHAT"
               << std::endl;
   }
 }

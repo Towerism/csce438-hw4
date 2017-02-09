@@ -1,7 +1,7 @@
 # List the source file names here for compilation
 CLIENT_FILES = fbc.cc arguments_parser.cc fb_client.cc command.cc \
                command_stream.cc join_command.cc list_command.cc \
-               command_factory.cc command_line.cc
+               chat_command.cc command_factory.cc command_line.cc
 SERVER_FILES = fbsd.cc
 
 PROTO_FILES = fb.proto
@@ -91,7 +91,7 @@ $(CLIENT): $(CLIENT_OBJECTS)
 
 $(SERVER): $(SERVER_OBJECTS)
 	$(CXX) $^ $(LDFLAGS) -o $@
-	@$(MKDIR) users # figure out how to move this out
+	@$(MKDIR) users
 
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto %.pb.cc
