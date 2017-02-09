@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fb.grpc.pb.h>
 #include <grpc++/grpc++.h>
+#include <algorithm>
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;

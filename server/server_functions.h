@@ -41,7 +41,7 @@ int readFile(string filename, vector<string> &result){
 	//if( access( filename.c_str(), F_OK ) == -1 ){
 	//	return -2;
 	//}
-	cout << "Read file requested for: " << filename << endl;
+	//cout << "Read file requested for: " << filename << endl;
 	ifstream file(filename);
 	if(!file.is_open() || !file.good()){
 		return -3;
@@ -415,11 +415,26 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 ///			<Title> Failure </Title>
 ///			<Value> 2 </Value>
 ///		</Param>
-/// </Output>
+////		<Param>
+///			<Title> Invalid arguments</Title>
+///			<Value> 3 </Value>
+///		</Param>
+///		<Param>
+///			<Title> client already follows user </Title>
+///			<Value> 4 </Value>
+///		</Param>
+///		<Param>
+///			<Title> Client trying to follow themselves </Title>
+///			<Value> 5 </Value>
+///		</Param>
+// </Output>
 
 int joinFriend(string client, string user){
 	if(client == "" || user == ""){
 		return 3;
+	}
+	if(client == user){
+		return 5;
 	}
 	// Test to make sure friend refers to someone with an account
 	vector<string> friendResult;
@@ -428,6 +443,14 @@ int joinFriend(string client, string user){
 		// Friend either doesn't exist or their account has errors
 		return 1;
 	}
+	// Check if user is already being followed by client
+//	if(std::find(friendResult.begin(), friendResult.end(), user) != friendResult.end()){
+	for(auto following:friendResult){
+		if(following == client){
+			return 4;
+		}
+	}
+//	}	
 	vector<string> clientVec = {client};
 	if(writeFile(string(USER_FOLDER) + user + string(FOLLOWED_BY_LIST), clientVec) != 0){
 		// Couldn't access friends file for some reason. 

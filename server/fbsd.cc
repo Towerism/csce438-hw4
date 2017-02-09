@@ -83,6 +83,10 @@ class FakebookServiceImpl final : public Fakebook::Service{
 				reply -> set_message("Server file error");
 			else if (result == 3)
 				reply -> set_message("Invalid arguments! One of the inputs was blank.");
+			else if (result == 4)
+				reply->set_message(string("You have already joined " + request->channelname()));
+			else if(result == 5)
+				reply->set_message("Did you really try to follow yourself? Conceited.");
 			else
 				reply -> set_message("Unspecified error!");
 		}
