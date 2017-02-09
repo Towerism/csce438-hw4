@@ -56,6 +56,18 @@ bool FbClient::Join(std::string channelname) {
   return PrintPossibleStatusFailuresForBasicReply();
 }
 
+bool FbClient::Leave(std::string channelname) {
+  // Data we are sending to the server.
+  LeaveRequest request;
+  request.set_username(username);
+  request.set_channelname(channelname);
+
+  ClientContext context;
+  status = stub->Leave(&context, request, &basicReply);
+
+  return PrintPossibleStatusFailuresForBasicReply();
+}
+
 void FbClient::List() {
   ListRequest request;
   request.set_username(username);

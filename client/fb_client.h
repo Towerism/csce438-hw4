@@ -13,7 +13,9 @@ public:
   bool Register();
 
   // Join a user's chat room
-  bool Join(std::string username);
+  bool Join(std::string channelname);
+
+  bool Leave(std::string channelname);
 
   // List users and joined users
   void List();
