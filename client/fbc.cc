@@ -7,7 +7,7 @@
 #include "fb_client.h"
 
 void printUsage(const char *program_name) {
-  printf("Usage: %s <host>:<port>\n", program_name);
+  printf("Usage: %s <host>:<port> <username>\n", program_name);
   std::exit(EXIT_FAILURE);
 }
 
