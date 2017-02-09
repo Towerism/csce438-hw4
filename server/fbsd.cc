@@ -131,12 +131,11 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		}
 		return Status::OK;
 	}
-	Status WhatsNew(ServerContext * context, const Message * prev, MessageList * reply) override{
+	Status WhatsNew(ServerContext * context, const WhatsNewRequest * request, MessageList * reply) override{
 		string msgSerialize = "";
-		bool serialSuccess = prev -> SerializeToString(&msgSerialize);
-		string tempUsername = "user";
+		bool serialSuccess = request->message().SerializeToString(&msgSerialize);
 		vector<string> newMessages;
-		int result = checkRecent(tempUsername, msgSerialize, newMessages);
+		int result = checkRecent(request->username(), msgSerialize, newMessages);
 		if (result == 0){
 			for(int i = 0; i < newMessages.size(); ++i){
 				Message msg;
