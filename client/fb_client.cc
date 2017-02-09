@@ -44,10 +44,11 @@ void FbClient::PrintBasicReplyError() {
   basicReply.clear_message();
 }
 
-bool FbClient::Join(std::string username) {
+bool FbClient::Join(std::string channelname) {
   // Data we are sending to the server.
   JoinRequest request;
   request.set_username(username);
+  request.set_channelname(channelname);
 
   ClientContext context;
   status = stub->Join(&context, request, &basicReply);
