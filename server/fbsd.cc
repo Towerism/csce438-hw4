@@ -119,7 +119,7 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		// Add a time stamp
 		std::time_t t = std::time(NULL);
 		char dateString[100];
-		if(std::strftime(dateString, 100, "%d/%m/%Y %T", std::localtime(&t))){
+		if(std::strftime(dateString, 100, "%m/%d/%Y %T", std::localtime(&t))){
 			post.set_date(string(dateString));
 		}
 		bool postSuccess = post.SerializeToString(&msgSerialize);
