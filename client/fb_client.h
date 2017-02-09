@@ -20,6 +20,12 @@ public:
   // List users and joined users
   void List();
 
+  // Send chat message
+  bool Chat(std::string text);
+
+  // Get last 20 messages from server
+  void WhatsNew();
+
 private:
   std::string username;
   std::unique_ptr<fb::Fakebook::Stub> stub;
@@ -30,4 +36,6 @@ private:
   void PrintBasicReplyError();
   bool PrintPossibleStatusFailuresForBasicReply();
   bool PrintPossibleBasicReplyFailure();
+
+  void SendWhatsNewRequest(fb::WhatsNewRequest request);
 };

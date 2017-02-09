@@ -1,6 +1,7 @@
 #include "fb_client.h"
 
 #include <grpc++/grpc++.h>
+#include <iostream>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -83,6 +84,42 @@ void FbClient::List() {
     std::cout << "\nChat rooms you've joined:\n";
     for (auto user : userList.joined_users()) {
       std::cout << "\t" << user << std::endl;
+    }
+  } else {
+    PrintStatusError();
+  }
+}
+
+void FbClient::WhatsNew() {
+  WhatsNewRequest request;
+  request.set_username(username);
+  request.clear_username();
+
+  SendWhatsNewRequest(request);
+}
+
+bool FbClient::Chat(std::string text) {
+  Message request;
+  request.set_username(username);
+  request.set_message(text);
+
+  ClientContext context;
+  status = stub->Chat(&context, request, &basicReply);
+
+  return PrintPossibleStatusFailuresForBasicReply();
+}
+
+void FbClient::SendWhatsNewRequest(WhatsNewRequest request) {
+  MessageList messageList;
+  ClientContext context;
+  status = stub->WhatsNew(&context, request, &messageList);
+  if (status.ok()) {
+    if (messageList.messages_size() == 0) {
+      std::cout << "No new messages\n";
+      return;
+    }
+    for (auto message : messageList.messages()) {
+      printf("%s [%s]: %s\n", message.username(), message.date(), message.message());
     }
   } else {
     PrintStatusError();

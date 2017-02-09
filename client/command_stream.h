@@ -6,6 +6,7 @@
 class CommandStream {
 public:
   bool ReadCommandLine();
+  std::string ReadLine();
   std::string CommandLine();
   std::string Command();
   std::string Argument();

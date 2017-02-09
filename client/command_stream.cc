@@ -11,6 +11,11 @@ bool CommandStream::ReadCommandLine() {
   return IsGood();
 }
 
+std::string CommandStream::ReadLine() {
+  getline(std::cin, commandline);
+  return commandline;
+}
+
 std::string CommandStream::CommandLine() {
   return commandStream.str();
 }
