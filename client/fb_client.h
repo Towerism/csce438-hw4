@@ -26,11 +26,15 @@ public:
   // Get last 20 messages from server
   void WhatsNew();
 
+  // Polls for any new messages from server after the most recent message we've received
+  void WhatsNewPoll();
+
 private:
   std::string username;
   std::unique_ptr<fb::Fakebook::Stub> stub;
   grpc::Status status;
   fb::BasicReply basicReply;
+  fb::Message mostRecentMessage;
 
   void PrintStatusError();
   void PrintBasicReplyError();

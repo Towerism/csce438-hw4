@@ -90,14 +90,6 @@ void FbClient::List() {
   }
 }
 
-void FbClient::WhatsNew() {
-  WhatsNewRequest request;
-  request.set_username(username);
-  request.clear_username();
-
-  SendWhatsNewRequest(request);
-}
-
 bool FbClient::Chat(std::string text) {
   Message request;
   request.set_username(username);
@@ -109,20 +101,33 @@ bool FbClient::Chat(std::string text) {
   return PrintPossibleStatusFailuresForBasicReply();
 }
 
+void FbClient::WhatsNew() {
+  WhatsNewRequest request;
+  request.set_username(username);
+  request.clear_message();
+
+  SendWhatsNewRequest(request);
+}
+
 void FbClient::SendWhatsNewRequest(WhatsNewRequest request) {
   MessageList messageList;
   ClientContext context;
   status = stub->WhatsNew(&context, request, &messageList);
   if (status.ok()) {
-    if (messageList.messages_size() == 0) {
-      std::cout << "No new messages\n";
-      return;
-    }
     for (auto message : messageList.messages()) {
       printf("%s [%s]: %s\n", message.username().c_str(),
              message.date().c_str(), message.message().c_str());
+      mostRecentMessage = message;
     }
   } else {
     PrintStatusError();
   }
+}
+
+void FbClient::WhatsNewPoll() {
+  WhatsNewRequest request;
+  request.set_username(username);
+  request.set_allocated_message(new Message(mostRecentMessage));
+
+  SendWhatsNewRequest(request);
 }
