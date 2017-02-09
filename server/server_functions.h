@@ -6,6 +6,19 @@
 #define NEW_MESSAGE "_new_messages.txt"
 
 
+
+
+
+
+
+
+
+
+int writeMessage(Message post){
+ return 0;
+}
+
+
 /// <Title>  readFile   </Title>
 /// <Purpose> Opens a file and returns a string vector of the contents </Purpose>
 /// <Inputs>
@@ -38,11 +51,12 @@
 ///		</Param>
 /// </Output>
 int readFile(string filename, vector<string> &result){
-	if( access( filename.c_str(), F_OK ) == -1 ){
-		return -2;
-	}
+	//if( access( filename.c_str(), F_OK ) == -1 ){
+	//	return -2;
+	//}
+	cout << "Read file requested for: " << filename << endl;
 	ifstream file(filename);
-	if(!file.is_open()){
+	if(!file.is_open() || !file.good()){
 		return -3;
 	}
 	string line;
@@ -306,7 +320,7 @@ int removeFromFile(string fileUse, string removeFrom, string removeName){
 ///			<Value> 1 </Value>
 ///		<Param>
 ///			<Title> Failure </Title>
-///			<Value> - 1 </Value>
+///			<Value> 2 </Value>
 ///		</Param>
 /// </Output>
 
@@ -319,7 +333,7 @@ int leaveUser(string client, string user){
 	// Remove CLIENT from USER followed_by list
 	if( removeFromFile(string(FOLLOWED_BY_LIST), user, client) != 0){
 		// Failed to remove client from user followed by list
-		return -1;
+		return 2;
 	}
 	// Remove USER messages from CLIENT NEW_MESSAGE
 	return 0;
@@ -403,33 +417,41 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 ///			<Title> Success </Title>
 /// 		<Value> 0 </Value>
 ///		</Param>
+///     <Param>
+///			<Title> Empty input </Title>
+//			<value 3
+///		</Param>
 ///		<Param>
 ///			<Title> Friend Not Found </Title>
 ///			<Value> 1 </Value>
 ///		<Param>
 ///			<Title> Failure </Title>
-///			<Value> - 1 </Value>
+///			<Value> 2 </Value>
 ///		</Param>
 /// </Output>
 
 int joinFriend(string client, string user){
+	if(client == "" || user == ""){
+		return 3;
+	}
 	// Test to make sure friend refers to someone with an account
 	vector<string> friendResult;
-	if(readFile(string(USER_FOLDER) + user + string(FOLLOWED_BY_LIST), friendResult) != 0){
+	int exists = readFile(string(USER_FOLDER) + user + string(FOLLOWED_BY_LIST), friendResult);
+	if(exists  != 0){
 		// Friend either doesn't exist or their account has errors
 		return 1;
 	}
 	vector<string> clientVec = {client};
 	if(writeFile(string(USER_FOLDER) + user + string(FOLLOWED_BY_LIST), clientVec) != 0){
 		// Couldn't access friends file for some reason. 
-		return 1;
+		return 2;
 	}
 
 	vector<string> friendVec = {user};
 	if(writeFile(string(USER_FOLDER) + client + string(FOLLOWING_LIST), friendVec) != 0){
-	cerr << "Error: " + client + " failed to JOIN " + user << endl;
-	return -1;
-}
+		cerr << "Error: " + client + " failed to JOIN " + user << endl;
+		return 2;
+	}
 	return 0;
 }
 

@@ -32,15 +32,8 @@
  */
 
 
-#include <fb.grpc.pb.h>
-#include <grpc++/grpc++.h>
 #include "common.h"
 #include "server_functions.h"
-using grpc::Server;
-using grpc::ServerBuilder;
-using grpc::ServerContext;
-using grpc::Status;
-using namespace fb;
 
 class FakebookServiceImpl final : public Fakebook::Service{
 	Status Register(ServerContext* context, const RegisterRequest * request, BasicReply *reply) override{
@@ -73,7 +66,48 @@ class FakebookServiceImpl final : public Fakebook::Service{
 			}
 		}
 		return Status::OK;
+	}
+	Status Join(ServerContext* context, const JoinRequest * request, BasicReply *reply) override{
+		// Join username to channelname
+		int result = joinFriend(request->username(), request->channelname());
+		if (result == 0){
+			reply -> set_success(true);
+			reply -> set_message("");
+		}
+		else{
+			//cout << "joinFriend: " << result << endl;
+			reply -> set_success(false);
+			if(result == 1)
+				reply -> set_message("Channel not found, are you sure you typed it correctly?");
+			else if (result == 2)
+				reply -> set_message("Server file error");
+			else if (result == 3)
+				reply -> set_message("Invalid arguments! One of the inputs was blank.");
+			else
+				reply -> set_message("Unspecified error!");
+		}
+		return Status::OK;	
+	}
+	Status Leave(ServerContext* context, const LeaveRequest * request, BasicReply *reply) override{
+	
+		int result = leaveUser(request->username(), request ->channelname());
+		if ( result == 0){
+			reply -> set_success(true);
+			reply -> set_message("");
+		}
+		else{
+			reply -> set_success(false);
+			if (result == 1)
+				reply -> set_message("Not subscribed to " + request->channelname() + " to begin with.");
+			else if (result == 2)
+				reply -> set_message("Server file error.");
+		}
+		return Status::OK;
 	} 
+	Status Chat(ServerContext* context, const Message * request, BasicReply *reply) override{
+		
+		return Status::OK;
+	}
 };
 
 void RunServer(const int port){
