@@ -7,11 +7,10 @@
 
 class ListCommand : public Command {
 public:
-  ListCommand(std::string match, FbClient& client)
-    : match(match), client(client) {}
+  ListCommand(FbClient& client)
+    : client(client) {}
 
-  void Execute(std::string commandMatch) override;
+  void Execute() override;
 private:
-  std::string match;
   FbClient& client;
 };

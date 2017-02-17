@@ -7,12 +7,11 @@
 
 class JoinCommand : public Command {
 public:
-  JoinCommand(std::string match, FbClient& client, CommandStream& commandStream)
-    : match(match), client(client), commandStream(commandStream) {}
+  JoinCommand(FbClient& client, CommandStream& commandStream)
+    : client(client), commandStream(commandStream) {}
 
-  void Execute(std::string commandMatch) override;
+  void Execute() override;
 private:
-  std::string match;
   FbClient& client;
   CommandStream& commandStream;
 };

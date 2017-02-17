@@ -1,8 +1,6 @@
 #include "join_command.h"
 
-void JoinCommand::Execute(std::string commandMatch) {
-  if (ExecuteNextCommand(match, commandMatch))
-    return;
+void JoinCommand::Execute() {
   auto argument = commandStream.Argument();
   if (!commandStream.IsGood())
     return;

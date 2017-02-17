@@ -7,12 +7,11 @@
 
 class ChatCommand : public Command {
 public:
-  ChatCommand(std::string match, FbClient& client)
-    : match(match), client(client) {}
+  ChatCommand(FbClient& client)
+    : client(client) {}
 
-  void Execute(std::string commandMatch) override;
+  void Execute() override;
 private:
-  std::string match;
   FbClient& client;
 
   void PollForNewMessages();

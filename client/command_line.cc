@@ -7,13 +7,14 @@ namespace CommandLine {
   void Run(FbClient& client) {
     PrintAvailableCommands();
     CommandStream commandStream;
-    std::string command;
+    std::string commandString;
+    std::unique_ptr<Command> command;
     while (true) {
-      auto commandExecutor = CommandFactory::MakeCommand(client, commandStream);
       if (!commandStream.ReadCommandLine())
         continue;
-      command = commandStream.Command();
-      commandExecutor->Execute(command);
+      commandString = commandStream.Command();
+      auto command = CommandFactory::MakeCommand(commandString, client, commandStream);
+      command->Execute();
     }
   }
 

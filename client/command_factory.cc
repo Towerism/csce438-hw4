@@ -7,15 +7,15 @@
 #include "null_command.h"
 
 std::unique_ptr<Command>
-CommandFactory::MakeCommand(FbClient &client, CommandStream &commandStream) {
-  Command *joinCommand = new JoinCommand("JOIN", client, commandStream);
-  Command *leaveCommand = new LeaveCommand("LEAVE", client, commandStream);
-  Command *listCommand = new ListCommand("LIST", client);
-  Command *chatCommand = new ChatCommand("CHAT", client);
-  Command *nullCommand = new NullCommand(commandStream);
-  joinCommand->SetNextCommand(leaveCommand)
-    ->SetNextCommand(listCommand)
-    ->SetNextCommand(chatCommand)
-    ->SetNextCommand(nullCommand);
-  return std::unique_ptr<Command>(joinCommand);
+CommandFactory::MakeCommand(std::string command, FbClient &client, CommandStream &commandStream) {
+  if (command == "JOIN")
+    return std::unique_ptr<Command>(new JoinCommand(client, commandStream));
+  else if (command == "LEAVE")
+    return std::unique_ptr<Command>(new LeaveCommand(client, commandStream));
+  else if (command == "LIST")
+    return std::unique_ptr<Command>(new ListCommand(client));
+  else if (command == "CHAT")
+    return std::unique_ptr<Command>(new ChatCommand(client));
+  else
+    return std::unique_ptr<Command>(new NullCommand(commandStream));
 }

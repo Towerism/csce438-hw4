@@ -1,8 +1,6 @@
 #include "leave_command.h"
 
-void LeaveCommand::Execute(std::string commandMatch) {
-  if (ExecuteNextCommand(match, commandMatch))
-    return;
+void LeaveCommand::Execute() {
   auto argument = commandStream.Argument();
   if (!commandStream.IsGood())
     return;

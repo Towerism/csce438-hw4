@@ -5,9 +5,7 @@
 
 #define POLL_RATE std::chrono::milliseconds(250)
 
-void ChatCommand::Execute(std::string commandMatch) {
-  if (ExecuteNextCommand(match, commandMatch))
-    return;
+void ChatCommand::Execute() {
   std::cout << "You are now in CHAT mode...\n";
   client.WhatsNew();
   CommandStream stream;
