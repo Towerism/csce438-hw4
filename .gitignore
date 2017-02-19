@@ -35,3 +35,6 @@
 /protocol/*.pb.h
 /objects
 /users
+
+# Compilation library
+compile_commands.json
