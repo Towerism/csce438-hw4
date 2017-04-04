@@ -41,11 +41,11 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 		int registerResult = registerUser(request->username());
 		if(registerResult != 0){
 			reply->set_msg("Somehow the register operation failed\n.");
-      return Status::CANCELLED;
+	        return Status::CANCELLED;
 		}
 		else{
 			
-			reply->set_message("Login Successful");
+			reply->set_msg("Login Successful");
 		}
 		return Status::OK;
 		// return Status::INTERNAL;
@@ -68,25 +68,25 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	Status Join(ServerContext* context, const Request * request, Reply *reply) override{
 		// Join username to channelname
 		string username = request->username();
-    string friendName = arguments(0);
+	    string friendName = request->arguments(0);
 		int result = joinFriend(username,friendName);
 		if (result == 0){
-			reply -> set_message("Join Successful");
+			reply -> set_msg("Join Successful");
 		}
 		else{
 			//cout << "joinFriend: " << result << endl;
 			if(result == 1)
-				reply -> set_message("Channel not found, are you sure you typed it correctly?");
+				reply -> set_msg("Channel not found, are you sure you typed it correctly?");
 			else if (result == 2)
-				reply -> set_message("Server file error");
+				reply -> set_msg("Server file error");
 			else if (result == 3)
-				reply -> set_message("Invalid arguments! One of the inputs was blank.");
+				reply -> set_msg("Invalid arguments! One of the inputs was blank.");
 			else if (result == 4)
-				reply->set_message(string("You have already joined " + friendName ));
+				reply->set_msg(string("You have already joined " + friendName ));
 			else if(result == 5)
-				reply->set_message("Did you really try to follow yourself? Conceited.");
+				reply->set_msg("Did you really try to follow yourself? Conceited.");
 			else
-				reply -> set_message("Unspecified error!");
+				reply -> set_msg("Unspecified error!");
 		}
 		return Status::OK;	
 	}
@@ -96,13 +96,13 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 
 		int result = leaveUser(username,friendName);
 		if ( result == 0){
-			reply -> set_message("Channel left successfully.");
+			reply -> set_msg("Channel left successfully.");
 		}
 		else{
 			if (result == 1)
-				reply -> set_message("Not subscribed to " + friendName + " to begin with.");
+				reply -> set_msg("Not subscribed to " + friendName + " to begin with.");
 			else if (result == 2)
-				reply -> set_message("Server file error.");
+				reply -> set_msg("Server file error.");
 		}
 		return Status::OK;
 	} 
