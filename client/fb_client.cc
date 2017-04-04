@@ -24,26 +24,20 @@ bool FbClient::Register() {
 
 bool FbClient::PrintPossibleStatusFailuresForBasicReply() {
   if (status.ok())
-    return PrintPossibleBasicReplyFailure();
+    return PrintReplyMessage();
   PrintStatusError();
   return false;
 }
 
-bool FbClient::PrintPossibleBasicReplyFailure() {
-  if (true)
-    return true;
-  PrintBasicReplyError();
-  return false;
+bool FbClient::PrintReplyMessage() {
+  std::cout << "Failed: " << reply.msg() << std::endl;
+  reply.clear_msg();
+  return true;
 }
 
 void FbClient::PrintStatusError() {
   std::cout << status.error_code() << ": " << status.error_message()
             << std::endl;
-}
-
-void FbClient::PrintBasicReplyError() {
-  std::cout << "Failed: " << reply.msg() << std::endl;
-  reply.clear_msg();
 }
 
 bool FbClient::Join(std::string channelname) {
@@ -109,7 +103,7 @@ bool FbClient::Chat() {
   std::thread reader([&]() {
       Message m;
       while(stream->Read(&m)){
-        std::cout << m.username() << " -- " << m.msg() << std::endl;
+        std::cout << m.username() << ": " << m.msg() << std::endl;
       }
     });
 

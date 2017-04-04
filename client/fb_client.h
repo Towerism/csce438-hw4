@@ -38,9 +38,8 @@ private:
   hw2::Message mostRecentMessage;
 
   void PrintStatusError();
-  void PrintBasicReplyError();
   bool PrintPossibleStatusFailuresForBasicReply();
-  bool PrintPossibleBasicReplyFailure();
+  bool PrintReplyMessage();
   hw2::Message MakeMessage(const std::string& username, const std::string& msg);
 
   void SendWhatsNewRequest(hw2::WhatsNewRequest request);
