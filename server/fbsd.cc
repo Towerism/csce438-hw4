@@ -35,48 +35,46 @@
 #include "common.h"
 #include "server_functions.h"
 
-class FakebookServiceImpl final : public Fakebook::Service{
-	Status Register(ServerContext* context, const RegisterRequest * request, BasicReply *reply) override{
+class MessengerServiceImpl final : public MessengerServer::Service{
+	Status Login(ServerContext* context, const Request * request, Reply *reply) override{
 		// Username is a const string, so passing to a string makes it non const
 		int registerResult = registerUser(request->username());
 		if(registerResult != 0){
-			reply->set_success(false);
-			reply->set_message("Not implemented yet!");
+			reply->set_msg("Somehow the register operation failed\n.");
+      return Status::CANCELLED;
 		}
 		else{
-			reply->set_success(true);
-			reply->set_message("");
+			
+			reply->set_message("Login Successful");
 		}
 		return Status::OK;
 		// return Status::INTERNAL;
 	} 
-	Status List(ServerContext* context, const ListRequest * request, UserList *reply) override{
+	Status List(ServerContext* context, const Request * request,ListReply *list_reply) override{
 		//reply
 		vector<string> allUsers;
 		vector<string> clientFollowing;
 		int result = listCommand(request->username(), allUsers, clientFollowing);
 		if(result == 0){
-			
-		
 			for(auto& user : allUsers){
-				reply->add_all_users(user);
+				list_reply->add_all_rooms(user);
 			}
 			for(auto& user : clientFollowing){
-				reply->add_joined_users(user);
+				list_reply->add_joined_rooms(user);
 			}
 		}
 		return Status::OK;
 	}
-	Status Join(ServerContext* context, const JoinRequest * request, BasicReply *reply) override{
+	Status Join(ServerContext* context, const Request * request, Reply *reply) override{
 		// Join username to channelname
-		int result = joinFriend(request->username(), request->channelname());
+		string username = request->username();
+    string friendName = arguments(0);
+		int result = joinFriend(username,friendName);
 		if (result == 0){
-			reply -> set_success(true);
-			reply -> set_message("");
+			reply -> set_message("Join Successful");
 		}
 		else{
 			//cout << "joinFriend: " << result << endl;
-			reply -> set_success(false);
 			if(result == 1)
 				reply -> set_message("Channel not found, are you sure you typed it correctly?");
 			else if (result == 2)
@@ -84,7 +82,7 @@ class FakebookServiceImpl final : public Fakebook::Service{
 			else if (result == 3)
 				reply -> set_message("Invalid arguments! One of the inputs was blank.");
 			else if (result == 4)
-				reply->set_message(string("You have already joined " + request->channelname()));
+				reply->set_message(string("You have already joined " + friendName ));
 			else if(result == 5)
 				reply->set_message("Did you really try to follow yourself? Conceited.");
 			else
@@ -92,25 +90,40 @@ class FakebookServiceImpl final : public Fakebook::Service{
 		}
 		return Status::OK;	
 	}
-	Status Leave(ServerContext* context, const LeaveRequest * request, BasicReply *reply) override{
-	
-		int result = leaveUser(request->username(), request ->channelname());
+	Status Leave(ServerContext* context, const Request * request, Reply *reply) override{
+    string username = request->username();
+    string friendName = request->arguments(0);	
+
+		int result = leaveUser(username,friendName);
 		if ( result == 0){
-			reply -> set_success(true);
-			reply -> set_message("");
+			reply -> set_message("Channel left successfully.");
 		}
 		else{
-			reply -> set_success(false);
 			if (result == 1)
-				reply -> set_message("Not subscribed to " + request->channelname() + " to begin with.");
+				reply -> set_message("Not subscribed to " + friendName + " to begin with.");
 			else if (result == 2)
 				reply -> set_message("Server file error.");
 		}
 		return Status::OK;
 	} 
-	Status Chat(ServerContext* context, const Message * request, BasicReply *reply) override{
+	Status Chat(ServerContext* context, ServerReaderWriter<Message, Message>* stream) override{
 		// SerializeToString(string * output)
 		// ParseFromString(const string& data)	
+    Message message;
+    while(stream->Read(&message)){
+      string username = message.username();
+      google::protobuf::Timestamp temptime = message.timestamp();
+      string time = google::protobuf::util::TimeUtil::ToString(temptime);
+      
+    }
+
+
+
+
+/*
+
+
+
 		string msgSerialize = "";
 //		request->SerializeToString(&msgSerialize);
 		Message post;
@@ -138,27 +151,13 @@ class FakebookServiceImpl final : public Fakebook::Service{
 				reply -> set_message("");
 		}
 		return Status::OK;
-	}
-
-	Status WhatsNew(ServerContext * context, const WhatsNewRequest * request, MessageList * reply) override{
-		string msgSerialize = "";
-		bool serialSuccess = request->message().SerializeToString(&msgSerialize);
-		vector<string> newMessages;
-		int result = checkRecent(request->username(), msgSerialize, newMessages);
-		//cerr << "WhatsNew called for " << request->username() << ". Result vector: " << newMessages.size() << endl;
-		if (result == 0){
-			for(int i = 0; i < newMessages.size(); ++i){
-				Message * msg = reply->add_messages();
-				bool success = msg->ParseFromString(newMessages[i]);
-			}
-		}
-		return Status::OK;
+*/
 	}
 };
 
 void RunServer(const int port){
 	string address = "localhost:" + to_string(port);
-	FakebookServiceImpl service;
+	MessengerServiceImpl service;
 	ServerBuilder builder;
 	//Listen on address without authentication
 	builder.AddListeningPort(address, grpc::InsecureServerCredentials());

@@ -36,6 +36,9 @@ message Message {
   google.protobuf.Timestamp timestamp = 3;
 }
 
+// old values
+
+
 message BasicReply {
   bool success = 1;
   string message = 2; // only needed for when success is false
