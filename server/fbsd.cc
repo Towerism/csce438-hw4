@@ -35,6 +35,8 @@
 #include "common.h"
 #include "server_functions.h"
 
+void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
+
 class MessengerServiceImpl final : public MessengerServer::Service{
 	Status Login(ServerContext* context, const Request * request, Reply *reply) override{
 		// Username is a const string, so passing to a string makes it non const
@@ -110,48 +112,23 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 		// SerializeToString(string * output)
 		// ParseFromString(const string& data)	
     Message message;
+	thread updateThread;
+	atomic<bool> clientConnected = ATOMIC_VAR_INIT(false);
     while(stream->Read(&message)){
       string username = message.username();
-      google::protobuf::Timestamp temptime = message.timestamp();
-      string time = google::protobuf::util::TimeUtil::ToString(temptime);
-      
+	  if(message.msg() != "Set Stream"){
+		// Set stream is sent to initialize stream and receive newest messages
+        string msgSerialize = "";
+  	    bool postSuccess = message.SerializeToString(&msgSerialize);
+        int result = postMessage(username, msgSerialize);
+	  }
+	  else{
+		updateThread = thread(whatsNew, username, stream, ref(clientConnected ));
+      }
     }
-
-
-
-
-/*
-
-
-
-		string msgSerialize = "";
-//		request->SerializeToString(&msgSerialize);
-		Message post;
-		post.set_username(request->username());
-		post.set_message(request->message());
-		// Add a time stamp
-		std::time_t t = std::time(NULL);
-		char dateString[100];
-		if(std::strftime(dateString, 100, "%m/%d/%Y %T", std::localtime(&t))){
-			post.set_date(string(dateString));
-		}
-		bool postSuccess = post.SerializeToString(&msgSerialize);
-		int result = postMessage(request->username(), msgSerialize);
-		if(result == 0){
-			reply -> set_success(true);
-			reply -> set_message("");
-		}	
-		else{
-			reply->set_success(false);
-			if(result == 1)
-				reply->set_message("Either Server error, or missuplied client name.");
-			else if (result == 2)
-				reply -> set_message("Server couldn't access files");
-			else if (result == 3)
-				reply -> set_message("");
-		}
-		return Status::OK;
-*/
+	clientConnected= false;
+	updateThread.join();
+	return Status::OK;
 	}
 };
 
@@ -190,3 +167,29 @@ int main(int argc, char** argv) {
 	RunServer(port);
 	return 0;
 }
+
+
+
+void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected){
+    // Check for any new messages, send to user
+	auto POLL_RATE =  std::chrono::milliseconds(250);
+    string mostRecent = "";
+    while(connected){
+        vector<string> messages;
+        int result = checkRecent(username, mostRecent, messages);
+        if (result != 0){
+            // Cry softly since 0 is the only thing checkRecent is programmed to return
+            cout << "Massive fail, CheckRecent returned an undefined value\n";
+        }
+        Message outMsg;
+        for(auto i:messages){
+            outMsg.set_msg(i);
+            stream->Write(outMsg);
+        }
+		if(messages.size() > 0){
+        	mostRecent = messages[messages.size()-1];
+		}
+		std::this_thread::sleep_for(POLL_RATE);
+    }
+}
+
