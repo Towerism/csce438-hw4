@@ -7,14 +7,7 @@
 
 void ChatCommand::Execute() {
   std::cout << "You are now in CHAT mode...\n";
-  client.WhatsNew();
-  CommandStream stream;
-  std::string message;
-  PollForNewMessages();
-  while (true) {
-    message = stream.ReadLine();
-    client.Chat(message);
-  }
+  client.Chat();
 }
 
 void ChatCommand::PollForNewMessages() {
