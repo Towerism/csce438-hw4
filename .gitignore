@@ -31,6 +31,7 @@
 # Project specific files
 /fbc
 /fbsd
+/fbmaster
 /protocol/*.pb.cc
 /protocol/*.pb.h
 /objects
