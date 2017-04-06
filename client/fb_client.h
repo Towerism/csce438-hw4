@@ -24,12 +24,6 @@ public:
   // Enter chat mode
   bool Chat();
 
-  // Get last 20 messages from server
-  void WhatsNew();
-
-  // Polls for any new messages from server after the most recent message we've received
-  void WhatsNewPoll();
-
 private:
   std::string username;
   std::unique_ptr<hw2::MessengerServer::Stub> stub;
@@ -41,6 +35,4 @@ private:
   bool PrintPossibleStatusFailuresForBasicReply();
   bool PrintReplyMessage();
   hw2::Message MakeMessage(const std::string& username, const std::string& msg);
-
-  void SendWhatsNewRequest(hw2::WhatsNewRequest request);
 };

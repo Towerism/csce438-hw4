@@ -124,24 +124,3 @@ Message FbClient::MakeMessage(const std::string& username, const std::string& ms
   return m;
 }
 
-void FbClient::WhatsNew() {
-  WhatsNewRequest request;
-  request.set_username(username);
-  request.clear_message();
-
-  SendWhatsNewRequest(request);
-}
-
-void FbClient::SendWhatsNewRequest(WhatsNewRequest request) {
-  MessageList messageList;
-  ClientContext context;
-  status = stub->WhatsNew(&context, request, &messageList);
-}
-
-void FbClient::WhatsNewPoll() {
-  WhatsNewRequest request;
-  request.set_username(username);
-  request.set_allocated_message(new Message(mostRecentMessage));
-
-  SendWhatsNewRequest(request);
-}

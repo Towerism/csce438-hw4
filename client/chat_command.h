@@ -14,5 +14,4 @@ public:
 private:
   FbClient& client;
 
-  void PollForNewMessages();
 };

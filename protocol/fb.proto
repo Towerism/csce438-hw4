@@ -5,12 +5,10 @@ import "google/protobuf/timestamp.proto";
 
 service MessengerServer {
   rpc Login (Request) returns (Reply) {}
-  rpc Register (RegisterRequest) returns (BasicReply) {}
   rpc Join (Request) returns (Reply) {}
   rpc Leave (Request) returns (Reply) {}
   rpc List (Request) returns (ListReply) {} 
   rpc Chat (stream Message) returns (stream Message) {}
-  rpc WhatsNew (WhatsNewRequest) returns (MessageList) {}
 }
 
 message ListReply {
@@ -36,42 +34,3 @@ message Message {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// old values
-
-
-message BasicReply {
-  bool success = 1;
-  string message = 2; // only needed for when success is false
-}
-
-message RegisterRequest {
-  string username = 1;
-}
-
-message JoinRequest {
-  string username = 1;
-  string channelname = 2;
-}
-
-message LeaveRequest {
-  string username = 1;
-  string channelname = 2;
-}
-
-message ListRequest {
-  string username = 1;
-}
-
-message WhatsNewRequest {
-  string username = 1;
-  Message message = 2;
-}
-
-message UserList {
-  repeated string all_users = 1;
-  repeated string joined_users = 2;
-}
-
-message MessageList {
-  repeated Message messages = 1;
-}
