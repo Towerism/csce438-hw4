@@ -30,7 +30,7 @@ bool FbClient::PrintPossibleStatusFailuresForBasicReply() {
 }
 
 bool FbClient::PrintReplyMessage() {
-  std::cout << "Failed: " << reply.msg() << std::endl;
+  std::cout << reply.msg() << std::endl;
   reply.clear_msg();
   return true;
 }
