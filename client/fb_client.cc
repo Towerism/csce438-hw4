@@ -107,6 +107,9 @@ bool FbClient::Chat() {
       }
     });
 
+  writer.join();
+  reader.join();
+
   return PrintPossibleStatusFailuresForBasicReply();
 }
 
