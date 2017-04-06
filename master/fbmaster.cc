@@ -31,8 +31,18 @@
  *
  */
 #include "common.h"
-#include <iostream>
-unordered_map<string, int> workerThreads; 
+struct WorkerProcess{
+	string host;
+	int port;
+	int clientsConnected;
+	WorkerProcess(){
+		host = ""; port = 0; clientsConnected = 0;
+	}
+};
+
+vector<WorkerProcess> workerThreads; 
+
+
 /*
 	purpose: 
 		1) Listen and wait for connection
@@ -43,7 +53,14 @@ unordered_map<string, int> workerThreads;
 */
 class MasterServiceImpl final : public MasterServer::Service{
 	Status ConnectionPoint(ServerContext *context, const Empty *request, ConnectionReply * reply) override{
-	// Add all ip's of master to 
+		//Client is requesting a worker thread. Assign and close connection
+
+		// Balance loading 
+	
+		// grab anything with low number of clients attached
+		reply->add_locations("");
+	
+		return Status::OK; 
 	}
 };
 
@@ -79,10 +96,17 @@ void monitorIO(){
 			cerr << "Select generated error" << endl;
 			break;
 		}
-		string address, prt;
-		cin >> address >> prt;
-		int port = stoi(prt);
-		workerThreads.insert({address, port});
+		string address;
+		int clientsConnected = 0;
+		int port;
+		cin >> address >> port; 
+		
+		// Validate that address is a real place
+		cout << address << " Succesfully imported. INPUT NOT VALIDATED  " << endl;
+		WorkerProcess wp;
+		wp.host = address;
+		wp.port = port;
+		workerThreads.push_back(wp);
 	}
 }
 

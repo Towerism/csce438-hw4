@@ -1,11 +1,9 @@
 #ifndef MASTER_HEADER_GUARD
 #define MASTER_HEADER_GUARD
 #include <ctime>
-
+#include <master.grpc.pb.h>
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/duration.pb.h>
-#include <thread>
-#include <unordered_set>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -17,6 +15,11 @@
 // For monitoring input
 #include <sys/select.h>
 #include <sys/types.h>
+#include <iostream>
+#include <thread>
+// For maintaining database of how active workers are
+#include <tuple>
+#include <unordered_map>
 
 using google::protobuf::Timestamp;
 using google::protobuf::Duration;
@@ -27,6 +30,9 @@ using grpc::ServerReader;
 using grpc::ServerReaderWriter;
 using grpc::ServerWriter;
 using grpc::Status;
+using hw2::ConnectionReply;
+using hw2::MasterServer;
+using hw2::Empty;
 using hw2::ConnectionReply;
 using namespace std;
 
