@@ -1,3 +1,14 @@
 syntax = "proto3";
 
 package hw2;
+
+service MasterServer{
+	rpc ConnectionPoint(Empty) returns (ConnectionReply) {}
+}
+message ConnectionReply{
+	repeated string ip = 1;
+	repeated string port = 2;
+}
+message Empty{
+
+}
