@@ -112,8 +112,8 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 		// SerializeToString(string * output)
 		// ParseFromString(const string& data)	
     Message message;
-	thread updateThread;
-	atomic<bool> clientConnected = ATOMIC_VAR_INIT(false);
+	thread updateThread[1];
+	atomic<bool> clientConnected = ATOMIC_VAR_INIT(true);
     while(stream->Read(&message)){
       string username = message.username();
 	  if(message.msg() != "Set Stream"){
@@ -123,11 +123,11 @@ class MessengerServiceImpl final : public MessengerServer::Service{
         int result = postMessage(username, msgSerialize);
 	  }
 	  else{
-		updateThread = thread(whatsNew, username, stream, ref(clientConnected ));
+		updateThread[0] = thread(whatsNew, username, stream, ref(clientConnected ));
       }
     }
 	clientConnected= false;
-	updateThread.join();
+	updateThread[0].join();
 	return Status::OK;
 	}
 };
@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
 
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected){
     // Check for any new messages, send to user
-	auto POLL_RATE =  std::chrono::milliseconds(250);
+    std::chrono::milliseconds POLL_RATE(250);
     string mostRecent = "";
     while(connected){
         vector<string> messages;
@@ -183,7 +183,7 @@ void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  ato
         }
         Message outMsg;
         for(auto i:messages){
-            outMsg.set_msg(i);
+            outMsg.ParseFromString(i);
             stream->Write(outMsg);
         }
 		if(messages.size() > 0){
