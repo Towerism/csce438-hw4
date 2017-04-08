@@ -72,7 +72,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 			else if(workerThreads[i].clientsConnected == minClients[minClients.size() -1].clientsConnected){
 				minClients.push_back(workerThreads[i]);
 			}
-		}
+		} 
 		// Add information for chosen host
 		int chosen = select_randomly(minClients.begin(), minClients.end());
 		reply->add_locations(minClients[chosen].host + ":" + to_string(minClients[chosen].port));
