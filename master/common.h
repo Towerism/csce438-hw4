@@ -35,6 +35,8 @@ using hw2::MasterServer;
 using hw2::Empty;
 using hw2::ConnectionReply;
 using hw2::WorkerInfo;
+using hw2::ServerInfo;
+using hw2::MasterInfo;
 using namespace std;
 
 

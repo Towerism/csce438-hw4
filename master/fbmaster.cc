@@ -35,6 +35,7 @@ struct WorkerProcess{
 	string host;
 	int port;
 	int clientsConnected;
+    ServerReaderWriter<MasterInfo, ServerInfo> *pipe;
 	WorkerProcess(){
 		host = ""; port = 0; clientsConnected = 0;
 	}
@@ -42,7 +43,8 @@ struct WorkerProcess{
 
 vector<WorkerProcess> workerThreads; 
 
-void insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
+/// Returns TRUE if new host, FALSE otherwise
+bool insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
 
 /*
 	purpose: 
@@ -84,12 +86,75 @@ class MasterServiceImpl final : public MasterServer::Service{
 		}
 		return Status::OK;
 	}
-	Status RegisterWorker(ServerContext *context, const WorkerInfo *request, Empty *reply) override{
-		WorkerProcess newWp;
-		newWp.host = request->host();
-		newWp.clientsConnected = request->client_count();
-		newWp.port = request->port();
-		insertOrdered(newWp);
+
+	Status MasterWorkerCommunication(ServerContext *context, ServerReaderWriter<MasterInfo, ServerInfo>* stream) override{
+		ServerInfo message;
+		WorkerProcess myself;
+		while(stream->Read(&message)){
+			switch(message.message_type()){
+				case ServerInfo::REGISTER:{
+					// REGISTER WORKER
+					WorkerInfo request = message.worker();
+			        myself.host = request.host();
+			        myself.clientsConnected = request.client_count();
+			        myself.port = request.port();
+					myself.pipe = stream;
+			        bool newHost = insertOrdered(myself);
+					if(newHost){
+						// Spawn 2 clones
+							MasterInfo instruction;
+							instruction.set_message_type(MasterInfo::SPAWN_CLONE);
+							stream->Write(instruction);
+							stream->Write(instruction);	
+						// Initiate replication of data to this host
+						// Assign to other workers so they know to communicate with this server too
+						for(auto worker:workerThreads){
+							
+						}
+					}
+					break;
+				}
+				case ServerInfo::UPDATE_CLIENT:{
+					// Change number of users connected to worker
+					WorkerInfo data = message.worker();
+					for(auto worker:workerThreads){
+						if(worker.host == data.host() && worker.port == data.port()){
+							worker.clientsConnected = data.client_count();
+						}
+					}
+					break;
+				}
+			}
+	   }
+		/*
+			Worker has disconnected. Try to spin up a new worker on the server. If server down, inform others
+		*/
+		int removeLocation =-1;
+		for(int index=0; index < workerThreads.size(); ++index){
+			if(workerThreads[index].host == myself.host && workerThreads[index].port == myself.port){
+				removeLocation = index;
+				break;
+			}
+		}
+		workerThreads.erase(workerThreads.begin() +  removeLocation);
+		MasterInfo instruction;
+		instruction.set_message_type(MasterInfo::SPAWN_CLONE);
+		WorkerInfo downed;
+		downed.set_host(myself.host);
+		downed.set_port(myself.port);
+		bool foundReplica = false;
+		for(auto worker:workerThreads){
+			if(worker.host == myself.host){
+				worker.pipe->Write(instruction);
+				foundReplica = true;
+			}
+		}
+		if(!foundReplica){
+			// No more replicas on this server, tell other workers not to bother talking to it anymore
+		}
+		else{
+			// Tell workers this thread is down.
+		}
 		return Status::OK;
 	}
 };
@@ -164,14 +229,15 @@ int main(int argc, char** argv) {
 
 
 
-void insertOrdered(WorkerProcess w){
+bool insertOrdered(WorkerProcess w){
 	for(int i = 0; i < workerThreads.size(); ++i){
 		if(workerThreads[i].host == w.host){
 			// Insert element here
 			workerThreads.insert(workerThreads.begin() + i, w);
-			return;
+			return false;
 		}
 	}
 	// No matching host
 	workerThreads.push_back(w);
+	return true;
 }

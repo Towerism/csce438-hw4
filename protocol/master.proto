@@ -9,7 +9,7 @@ service MasterServer{
 		// Can return Empty since don't need anything from master
 		//     and if master crashes, replacement will be on same port
 	rpc UpdateClientInfo(WorkerInfo) returns(Empty) {}
-	rpc RegisterWorker(WorkerInfo) returns (Empty) {} 
+	rpc MasterWorkerCommunication(stream ServerInfo) returns(stream MasterInfo){} 
 }
 message ConnectionReply{
 	repeated string locations = 1;
@@ -21,4 +21,22 @@ message WorkerInfo{
 	string host =1;
 	int32 port =2;
 	int32 client_count =3;
+}
+message ServerInfo{
+	enum Action{
+		REGISTER = 0;
+		UPDATE_CLIENT = 1;
+		WORKER_DOWN = 2;
+	}
+	Action message_type = 1;
+	WorkerInfo worker = 2;
+}
+message MasterInfo{
+	enum Action{
+		UPDATE_WORKER = 0;
+		REMOVE_SERVER = 1;
+		SPAWN_CLONE = 2;
+	}
+	Action message_type = 1;
+	WorkerInfo worker= 2;
 }
