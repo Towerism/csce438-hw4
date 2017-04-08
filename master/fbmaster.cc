@@ -61,19 +61,21 @@ class MasterServiceImpl final : public MasterServer::Service{
 			cerr << "Client tried to connect, but no worker processes have registered!" << endl;
 			return Status::CANCELLED;
 		}
-		// Select worker from each host with fewest number of attached clients
-		WorkerProcess prev = workerThreads[0];
+		// Select worker with fewest number of attached clients
+		vector<WorkerProcess> minClients;
+		minClients.push_back(workerThreads[0]);
 		for(int i = 0; i < workerThreads.size(); ++i){
-			if(workerThreads[i].host != prev.host){
-				reply->add_locations(prev.host + ":" + to_string(prev.port));
-				prev = workerThreads[i];
+			if(workerThreads[i].clientsConnected < minClients[minClients.size()-1].clientsConnected){
+				minClients.clear();
+				minClients.push_back(workerThreads[i]);
 			}
-			else if(workerThreads[i].clientsConnected < prev.clientsConnected){
-				prev = workerThreads[i];
+			else if(workerThreads[i].clientsConnected == minClients[minClients.size() -1]){
+				minClients.push_back(workerThreads[i]);
 			}
 		}
-		// Add information for last host
-		reply->add_locations(prev.host + ":" + to_string(prev.port));
+		// Add information for chosen host
+		int chosen = select_randomly(minClients.begin(), minClients.end());
+		reply->add_locations(minClients[chosen].host + ":" + to_string(minClients[chosen].port));
 	
 		return Status::OK; 
 	}
