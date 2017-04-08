@@ -107,11 +107,24 @@ class MasterServiceImpl final : public MasterServer::Service{
 							MasterInfo instruction;
 							instruction.set_message_type(MasterInfo::SPAWN_CLONE);
 							stream->Write(instruction);
-							stream->Write(instruction);	
-						// Initiate replication of data to this host
+							stream->Write(instruction);
+							vector<MasterInfo> newWorkers;
+							for(auto worker:workerThreads){
+								if(worker.host == myself.host){
+									MasterInfo mi;
+									WorkerInfo wi;
+									wi.host = myself.host;
+									wi.port = worker.port;
+									wi.clientsConnected = worker.clientsConnected;
+									mi.set_message_type(MasterInfo::ADD_REMOTE);
+									mi.set_worker(wi);
+									newWorkers.push_back(mi);
+								}
+							}
 						// Assign to other workers so they know to communicate with this server too
 						for(auto worker:workerThreads){
-							
+							MasterInfo mi = *select_randomly(newWorkers.begin(), newWorkers.end());
+							worker.pipe->Write(mi);
 						}
 					}
 					break;
