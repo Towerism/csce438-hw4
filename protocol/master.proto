@@ -5,10 +5,20 @@ package hw2;
 
 service MasterServer{
 	rpc ConnectionPoint(Empty) returns (ConnectionReply) {}
+	// Give master update on how many clients connected
+		// Can return Empty since don't need anything from master
+		//     and if master crashes, replacement will be on same port
+	rpc UpdateClientInfo(WorkerInfo) returns(Empty) {}
+	rpc RegisterWorker(WorkerInfo) returns (Empty) {} 
 }
 message ConnectionReply{
 	repeated string locations = 1;
 }
 message Empty{
 
+}
+message WorkerInfo{
+	string host =1;
+	int32 port =2;
+	int32 client_count =3;
 }

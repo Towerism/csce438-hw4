@@ -42,7 +42,6 @@ struct WorkerProcess{
 
 vector<WorkerProcess> workerThreads; 
 
-void insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
 
 /*
 	purpose: 
@@ -75,23 +74,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 	
 		return Status::OK; 
 	}
-	Status UpdateClientInfo(ServerContext *context, const WorkerInfo *request, Empty *reply) override{
-		for(int i=0; i < workerThreads.size(); ++i){
-			if(workerThreads[i].host == string( request->host()) && workerThreads[i].port == request->port()){
-				workerThreads[i].clientsConnected = request->client_count();
-				break;
-			}
-		}
-		return Status::OK;
-	}
-	Status RegisterWorker(ServerContext *context, const WorkerInfo *request, Empty *reply) override{
-		WorkerProcess newWp;
-		newWp.host = request->host();
-		newWp.clientsConnected = request->client_count();
-		newWp.port = request->port();
-		insertOrdered(newWp);
-		return Status::OK;
-	}
+	Status UpdateClientInfo(ServerContext *context, const 
 };
 
 
@@ -114,6 +97,17 @@ void RunServer(const int port){
     server->Wait();
 }
 
+void insertOrdered(WorkerProcess w){
+	for(int i = 0; i < workerThreads.size(); ++i){
+		if(workerThreads[i].host == w.host){
+			// Insert element here
+			workerThreads.insert(workerThreads.begin() + i, w);
+			return;
+		}
+	}
+	// No matching host
+	workerThreads.push_back(w);
+}
 void monitorIO(){
 	// Monitor the assigned Input feed for this thread such that worker threads can be added.
 	cout << "To add worker threads, use the format <address> <port>" << endl;
@@ -160,18 +154,4 @@ int main(int argc, char** argv) {
     RunServer(port);
 	t.join();
     return 0;
-}
-
-
-
-void insertOrdered(WorkerProcess w){
-	for(int i = 0; i < workerThreads.size(); ++i){
-		if(workerThreads[i].host == w.host){
-			// Insert element here
-			workerThreads.insert(workerThreads.begin() + i, w);
-			return;
-		}
-	}
-	// No matching host
-	workerThreads.push_back(w);
 }
