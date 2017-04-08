@@ -158,7 +158,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 		downed.set_host(myself.host);
 		downed.set_port(myself.port);
 		bool foundReplica = false;
-		vector<WorkerInfo> backupWorkers;
+		vector<WorkerProcess> backupWorkers;
 		for(auto worker:workerThreads){
 			if(worker.host == myself.host){
 				worker.pipe->Write(instruction);
@@ -177,15 +177,19 @@ class MasterServiceImpl final : public MasterServer::Service{
 			}
 		}
 		else{
-			WorkerInfo wi = select_randomly(backupWorkers);
+			WorkerProcess wi = select_randomly(backupWorkers);
 			wi.pipe->Write(instruction);
 			// Tell workers a replacement link
 			for(auto worker:workerThreads){
-				WorkerInfo wi = select_randomly(backupWorkers);
+				WorkerProcess wp = select_randomly(backupWorkers);
 				MessageInfo mi;
+				WorkerInfo wi;
+				wi.set_client_count(wp.clientsConnected);
+				wi.set_host(wp.host);
+				wi.set_port(wp.port);
 				mi.set_allocated_worker(&wi);
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
-				worker.pipe->Write();
+				worker.pipe->Write(mi);
 			}
 		}
 		return Status::OK;
