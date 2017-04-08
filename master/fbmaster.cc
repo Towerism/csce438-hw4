@@ -177,11 +177,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 			}
 		}
 		else{
-			WorkerProcess wi = select_randomly(backupWorkers);
+			WorkerProcess wi = select_randomly(backupWorkers.start(), backupWorkers.end());
 			wi.pipe->Write(instruction);
 			// Tell workers a replacement link
 			for(auto worker:workerThreads){
-				WorkerProcess wp = select_randomly(backupWorkers);
+				WorkerProcess wp = select_randomly(backupWorkers.start(), backupWorkers.end());
 				MessageInfo mi;
 				WorkerInfo wi;
 				wi.set_client_count(wp.clientsConnected);
