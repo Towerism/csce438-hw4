@@ -74,8 +74,8 @@ class MasterServiceImpl final : public MasterServer::Service{
 			}
 		} 
 		// Add information for chosen host
-		int chosen = *select_randomly(minClients.begin(), minClients.end());
-		reply->add_locations(minClients[chosen].host + ":" + to_string(minClients[chosen].port));
+		WorkerProcess chosen = *select_randomly(minClients.begin(), minClients.end());
+		reply->add_locations(chosen.host + ":" + to_string(chosen.port));
 	
 		return Status::OK; 
 	}
