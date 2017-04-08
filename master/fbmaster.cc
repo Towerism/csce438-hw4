@@ -69,7 +69,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 				minClients.clear();
 				minClients.push_back(workerThreads[i]);
 			}
-			else if(workerThreads[i].clientsConnected == minClients[minClients.size() -1]){
+			else if(workerThreads[i].clientsConnected == minClients[minClients.size() -1].clientsConnected){
 				minClients.push_back(workerThreads[i]);
 			}
 		}
