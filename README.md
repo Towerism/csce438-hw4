@@ -2,8 +2,8 @@
 An improved chat room server and client inspired by twitter feeds
 
 
-To Implement:
-master:
-  currently has nothing for handling replication. 
-  currently cannot handle if a new server comes online
-  currently cannot handle rebalancing connection points between servers
+To Implement:  
+master:  
+&nbsp;&nbsp;&nbsp;&nbsp;currently has nothing for handling replication.   
+&nbsp;&nbsp;&nbsp;&nbsp;currently cannot handle if a new server comes online  
+&nbsp;&nbsp;&nbsp;&nbsp;currently cannot handle rebalancing connection points between servers  
