@@ -116,7 +116,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 									wi.set_host(worker.host);
 									wi.set_port(worker.port);
 									wi.set_client_count(worker.clientsConnected);
-									mi.set_message_type(MasterInfo::ADD_REMOTE);
+									mi.set_message_type(MasterInfo::UPDATE_WORKER);
 									mi.set_allocated_worker(&wi);
 									newWorkers.push_back(mi);
 								}
@@ -158,17 +158,35 @@ class MasterServiceImpl final : public MasterServer::Service{
 		downed.set_host(myself.host);
 		downed.set_port(myself.port);
 		bool foundReplica = false;
+		vector<WorkerInfo> backupWorkers;
 		for(auto worker:workerThreads){
 			if(worker.host == myself.host){
 				worker.pipe->Write(instruction);
+				backupWorkers.push_back(worker);
 				foundReplica = true;
+				break;
 			}
 		}
 		if(!foundReplica){
 			// No more replicas on this server, tell other workers not to bother talking to it anymore
+			MasterInfo mi;
+			mi.set_message_type(MasterInfo::REMOVE_SERVER);
+			mi.set_allocated_worker(&downed);
+			for(auto worker:workerThreads){
+				worker.pipe->Write(mi);
+			}
 		}
 		else{
-			// Tell workers this thread is down.
+			WorkerInfo wi = select_randomly(backupWorkers);
+			wi.pipe->Write(instruction);
+			// Tell workers a replacement link
+			for(auto worker:workerThreads){
+				WorkerInfo wi = select_randomly(backupWorkers);
+				MessageInfo mi;
+				mi.set_allocated_worker(&wi);
+				mi.set_message_type(MasterInfo::UPDATE_WORKER);
+				worker.pipe->Write();
+			}
 		}
 		return Status::OK;
 	}

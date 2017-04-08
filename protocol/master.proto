@@ -33,10 +33,10 @@ message ServerInfo{
 }
 message MasterInfo{
 	enum Action{
-		UPDATE_WORKER = 0;
+		UPDATE_WORKER = 0; 
+		// When client receives update, add to backups if host not allocated yet.
 		REMOVE_SERVER = 1;
 		SPAWN_CLONE = 2;
-		ADD_REMOTE = 3;
 	}
 	Action message_type = 1;
 	WorkerInfo worker= 2;
