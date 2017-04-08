@@ -113,11 +113,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 								if(worker.host == myself.host){
 									MasterInfo mi;
 									WorkerInfo wi;
-									wi.host = myself.host;
-									wi.port = worker.port;
-									wi.clientsConnected = worker.clientsConnected;
+									wi.set_host(worker.host);
+									wi.set_port(worker.port);
+									wi.set_client_count(worker.clientsConnected);
 									mi.set_message_type(MasterInfo::ADD_REMOTE);
-									mi.set_worker(wi);
+									mi.set_allocated_worker(&wi);
 									newWorkers.push_back(mi);
 								}
 							}
