@@ -14,7 +14,7 @@ class MasterChannel{
 	
 	public:
 	// Send new information to master
-	bool sendCommand(hw2::ServerInfo&);
+	void sendCommand(hw2::ServerInfo&);
 	MasterChannel(hw2::WorkerInfo wi, std::shared_ptr<grpc::ChannelInterface> channel):myInfo( wi),stub(hw2::MasterServer::NewStub(channel)){
 		}
 		

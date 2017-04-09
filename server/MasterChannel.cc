@@ -10,7 +10,7 @@ bool MasterChannel::sendCommand(hw2::ServerInfo &value){
 	}
 	return true;
 }
-bool MasterChannel::CommandChat(){
+void MasterChannel::CommandChat(){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
 
