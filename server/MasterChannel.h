@@ -4,12 +4,20 @@
 #include <condition_variable>
 class MasterChannel{
 	public:
-	MasterChannel(std::shared_ptr<grpc::ChannelInterface> channel):stub(hw2::MasterServer::NewStub(channel)){}
-	
+	MasterChannel(hw2::WorkerInfo wi, std::shared_ptr<grpc::ChannelInterface> channel):myInfo( wi),stub(hw2::MasterServer::NewStub(channel)){
+		CommandChat();
+		hw2::ServerInfo si;
+		si.set_allocated_worker(&myInfo);
+		si.set_message_type(hw2::ServerInfo::REGISTER);
+		sendCommand(si);
+		}
+	// Establish connection to master
 	bool CommandChat();
-	bool sendCommand(hw2::ServerInfo);
+	// Send new information to master
+	bool sendCommand(&hw2::ServerInfo);
 	
 	private:
+	hw2::WorkerInfo myInfo;
 	std::unique_ptr<hw2::MasterServer::Stub> stub;
 	std::mutex sendMutex;
 	std::condition_variable cvMutex;

@@ -34,7 +34,9 @@
 
 #include "common.h"
 #include "server_functions.h"
+#include "MasterChannel.h"
 
+MasterChannel *masterChannel;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
 
 class MessengerServiceImpl final : public MessengerServer::Service{
@@ -133,7 +135,8 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 };
 
 void RunServer(const int port){
-	string address = "localhost:" + to_string(port);
+	string host = "localhost";
+	string address = host + ":" + to_string(port);
 	MessengerServiceImpl service;
 	ServerBuilder builder;
 	//Listen on address without authentication
@@ -143,6 +146,14 @@ void RunServer(const int port){
 	// Assemble server
 	std::unique_ptr<Server> server(builder.BuildAndStart());
 	cout << "Server listening on " << address << endl;
+	string masterConnectionInfo = address;
+	hw2::WorkerInfo wi;
+	int masterPort = port;
+	wi.set_host(host);
+	wi.set_port(masterPort);
+	string masterConnectionInfo = host + ":" + to_string(port);
+	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
+	masterChannel = new MasterChannel(chnl);
 	
 	// Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
 	server->Wait();
