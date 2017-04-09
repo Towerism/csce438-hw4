@@ -33,6 +33,7 @@
 #include "common.h"
 struct WorkerProcess{
 	string host;
+	int clientPort;
 	int port;
 	int clientsConnected;
     ServerReaderWriter<MasterInfo, ServerInfo> *pipe;
@@ -75,7 +76,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 		} 
 		// Add information for chosen host
 		WorkerProcess chosen = *select_randomly(minClients.begin(), minClients.end());
-		reply->add_locations(chosen.host + ":" + to_string(chosen.port));
+		reply->add_locations(chosen.host + ":" + to_string(chosen.clientPort));
 	
 		return Status::OK; 
 	}
@@ -97,9 +98,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 				case ServerInfo::REGISTER:{
 					// REGISTER WORKER
 					WorkerInfo request = message.worker();
+					cout << "Request to register from: " << request.host() << ":" << request.port() << endl;
 			        myself.host = request.host();
 			        myself.clientsConnected = request.client_count();
 			        myself.port = request.port();
+					myself.clientPort = request.client_port();
 					myself.pipe = stream;
 			        bool newHost = insertOrdered(myself);
 					if(newHost){

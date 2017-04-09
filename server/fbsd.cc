@@ -30,7 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#define MASTER_PORT 123456
+#define MASTER_HOST "127.0.1.1"
 
 #include "common.h"
 #include "server_functions.h"
@@ -147,11 +148,11 @@ void RunServer(const string host, const int port){
 	std::unique_ptr<Server> server(builder.BuildAndStart());
 	cout << "Server listening on " << address << endl;
 	hw2::WorkerInfo wi;
-	int masterPort = port + 1;
+	int masterPort = port + 1; // port other Worker Threads can contact me at
 	wi.set_host(host);
 	wi.set_port(masterPort);
 	wi.set_client_port(port);
-	string masterConnectionInfo = host + ":" + to_string(masterPort);
+	string masterConnectionInfo = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 	masterChannel = new MasterChannel(wi, chnl);
 	thread commandThread[1];
