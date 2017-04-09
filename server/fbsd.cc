@@ -153,9 +153,16 @@ void RunServer(const int port){
 	string masterConnectionInfo = host + ":" + to_string(masterPort);
 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 	masterChannel = new MasterChannel(wi, chnl);
-	
+	thread commandThread[1];
+		commandThread[0] = thread(masterChannel->CommandChat());
+		hw2::ServerInfo si;
+		si.set_allocated_worker(&myInfo);
+		si.set_message_type(hw2::ServerInfo::REGISTER);
+		masterChannel->sendCommand(si);
 	// Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
+	
 	server->Wait();
+	commandThread[0].join();
 }
 
 

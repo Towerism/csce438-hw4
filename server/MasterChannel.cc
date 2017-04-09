@@ -11,7 +11,7 @@ bool MasterChannel::sendCommand(hw2::ServerInfo &value){
 	return true;
 }
 bool MasterChannel::CommandChat(){
-	ClientContext context;
+  ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
 
   std::thread writer([&] {
