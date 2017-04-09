@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
 		printf("USAGE: ./fbsd <Port>\n");
 		return 2;
 	}
-	RunServer(host,port);
+	RunServer(string(argv[1]),port);
 	return 0;
 }
 
