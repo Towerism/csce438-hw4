@@ -203,7 +203,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 };
 
 
-void RunServer(VOID){
+void RunServer(){
     string address = string(MASTER_HOST) + to_string(MASTER_PORT);
     MasterServiceImpl service;
     ServerBuilder builder;
