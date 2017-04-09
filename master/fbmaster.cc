@@ -204,8 +204,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 
 
 void RunServer(){
-    // string address = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
-    string address = to_string(MASTER_PORT);
+    string address = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
     MasterServiceImpl service;
     ServerBuilder builder;
     //Listen on address without authentication
