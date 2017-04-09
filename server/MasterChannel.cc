@@ -4,7 +4,7 @@ using grpc::ClientContext;
 void MasterChannel::sendCommand(hw2::ServerInfo &value){
 	outMessage = value;
 	{
-		std::lock_guard<std::mutex> lk(m);
+		std::lock_guard<std::mutex> lk(sendMutex);
 		ready = true;
 		cvMutex.notify_one();
 	}
