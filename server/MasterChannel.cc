@@ -10,7 +10,7 @@ bool MasterChannel::sendCommand(hw2::ServerInfo &value){
 	}
 	return true;
 }
-void MasterChannel::CommandChat(){
+int MasterChannel::CommandChat(){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
 
@@ -56,5 +56,5 @@ void MasterChannel::CommandChat(){
   writer.join();
   reader.join();
 
-	
+	return 0;
 }
