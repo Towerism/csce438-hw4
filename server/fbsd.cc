@@ -31,7 +31,7 @@
  *
  */
 #define MASTER_PORT 123456
-#define MASTER_HOST "127.0.1.1"
+#define MASTER_HOST "lenss-comp1"
 
 #include "common.h"
 #include "server_functions.h"

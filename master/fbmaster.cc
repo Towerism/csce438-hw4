@@ -32,7 +32,7 @@
  */
 #include "common.h"
 #define MASTER_PORT 123456
-#define MASTER_HOST "lenss-comp3"
+#define MASTER_HOST "lenss-comp1"
 
 struct WorkerProcess{
 	string host;
@@ -114,25 +114,28 @@ class MasterServiceImpl final : public MasterServer::Service{
 							instruction.set_message_type(MasterInfo::SPAWN_CLONE);
 							stream->Write(instruction);
 							stream->Write(instruction);
-							vector<MasterInfo> newWorkers;
+							vector<MasterInfo*> newWorkers;
+							MasterInfo *mi = new MasterInfo();
+							WorkerInfo *wi = new WorkerInfo();
 							for(auto worker:workerThreads){
 								if(worker.host == myself.host){
-									MasterInfo mi;
-									WorkerInfo wi;
-									wi.set_host(worker.host);
-									wi.set_port(worker.port);
-									wi.set_client_count(worker.clientsConnected);
-									mi.set_message_type(MasterInfo::UPDATE_WORKER);
-									mi.set_allocated_worker(&wi);
+									wi->set_host(worker.host);
+									wi->set_port(worker.port);
+									wi->set_client_count(worker.clientsConnected);
+									mi->set_message_type(MasterInfo::UPDATE_WORKER);
+									mi->set_allocated_worker(wi);
 									newWorkers.push_back(mi);
 								}
 							}
+							cout << "added all workers with same host to vector" << endl;
 						// Assign to other workers so they know to communicate with this server too
 						for(auto worker:workerThreads){
-							MasterInfo mi = *select_randomly(newWorkers.begin(), newWorkers.end());
-							worker.pipe->Write(mi);
+							MasterInfo *mi = *select_randomly(newWorkers.begin(), newWorkers.end());
+							worker.pipe->Write(*mi);
 						}
+						cout << "Sent new host info to all workers" << endl;
 					}
+					cout << "New Host commands sent succesfully" << endl;
 					break;
 				}
 				case ServerInfo::UPDATE_CLIENT:{
@@ -160,9 +163,9 @@ class MasterServiceImpl final : public MasterServer::Service{
 		workerThreads.erase(workerThreads.begin() +  removeLocation);
 		MasterInfo instruction;
 		instruction.set_message_type(MasterInfo::SPAWN_CLONE);
-		WorkerInfo downed;
-		downed.set_host(myself.host);
-		downed.set_port(myself.port);
+		WorkerInfo *downed = new WorkerInfo();
+		downed->set_host(myself.host);
+		downed->set_port(myself.port);
 		bool foundReplica = false;
 		vector<WorkerProcess> backupWorkers;
 		for(auto worker:workerThreads){
@@ -177,7 +180,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 			// No more replicas on this server, tell other workers not to bother talking to it anymore
 			MasterInfo mi;
 			mi.set_message_type(MasterInfo::REMOVE_SERVER);
-			mi.set_allocated_worker(&downed);
+			mi.set_allocated_worker(downed);
 			for(auto worker:workerThreads){
 				worker.pipe->Write(mi);
 			}
@@ -189,11 +192,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 			for(auto worker:workerThreads){
 				WorkerProcess wp = *select_randomly(backupWorkers.begin(), backupWorkers.end());
 				MasterInfo mi;
-				WorkerInfo wi;
-				wi.set_client_count(wp.clientsConnected);
-				wi.set_host(wp.host);
-				wi.set_port(wp.port);
-				mi.set_allocated_worker(&wi);
+				WorkerInfo *wi = new WorkerInfo();
+				wi->set_client_count(wp.clientsConnected);
+				wi->set_host(wp.host);
+				wi->set_port(wp.port);
+				mi.set_allocated_worker(wi);
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
 				worker.pipe->Write(mi);
 			}
@@ -204,6 +207,10 @@ class MasterServiceImpl final : public MasterServer::Service{
 
 
 void RunServer(){
+	char hostname[100];
+	size_t len;
+	gethostname(hostname, len);
+	cout << "Host from gethostname: |" << hostname << "|, MASTER_HOST: |" << MASTER_HOST << "|" << endl;
     string address = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
     MasterServiceImpl service;
     ServerBuilder builder;
