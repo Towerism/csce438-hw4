@@ -31,6 +31,9 @@
  *
  */
 #include "common.h"
+#define MASTER_PORT 123456
+#define MASTER_HOST "lenss-comp3"
+
 struct WorkerProcess{
 	string host;
 	int clientPort;
@@ -200,8 +203,8 @@ class MasterServiceImpl final : public MasterServer::Service{
 };
 
 
-void RunServer(const int port){
-    string address = "localhost:" + to_string(port);
+void RunServer(VOID){
+    string address = string(MASTER_HOST) + to_string(MASTER_PORT);
     MasterServiceImpl service;
     ServerBuilder builder;
     //Listen on address without authentication
@@ -247,24 +250,15 @@ void monitorIO(){
 }
 
 int main(int argc, char** argv) {
-    if(argc < 2 || argc > 3){
-        printf("Invalid arguments.\n");
-        printf("USAGE: ./fbmaster <Port>\n");
-        return 1;
-    }
-    int port = -1;
-    try{
-        port = stoi(argv[1]);
-    }
-    catch(...){
-        printf("Error converting port to int!\n");
-        printf("USAGE: ./fbmaster <Port>\n");
-        return 2;
-    }
-	thread t(monitorIO);
-    RunServer(port);
-	t.join();
-    return 0;
+  if(argc > 2 ){
+    printf("Invalid arguments.\n");
+    printf("USAGE: %s \n", argv[0]);
+    return 1;
+  }
+  thread t(monitorIO);
+  RunServer();
+  t.join();
+  return 0;
 }
 
 

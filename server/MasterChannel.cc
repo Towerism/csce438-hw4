@@ -31,24 +31,24 @@ int MasterChannel::CommandChat(){
       MasterInfo m;
       while(stream->Read(&m)){
         // Process commands
-		switch(m.message_type()){
-			case hw2::MasterInfo::UPDATE_WORKER:{
-				WorkerInfo wi = m.worker();
-				// Check if wi.host() matches with any host in workerDB
-				// If not, add wi
-				break;
-			}
-			case hw2::MasterInfo::REMOVE_SERVER:{
-				// Check if wi.host() matches with any host in workerDB
-				// If so, remove wi
-				WorkerInfo wi = m.worker();
-				break;
-			}
-			case hw2::MasterInfo::SPAWN_CLONE:{
-				// Spawn a clone
-				break;
-			}
-		}
+        switch(m.message_type()){
+          case hw2::MasterInfo::UPDATE_WORKER:{
+            WorkerInfo wi = m.worker();
+            // Check if wi.host() matches with any host in workerDB
+            // If not, add wi
+            break;
+          }
+          case hw2::MasterInfo::REMOVE_SERVER:{
+            // Check if wi.host() matches with any host in workerDB
+            // If so, remove wi
+            WorkerInfo wi = m.worker();
+            break;
+          }
+          case hw2::MasterInfo::SPAWN_CLONE:{
+            // Spawn a clone
+            break;
+          }
+        }
       }
     });
 
