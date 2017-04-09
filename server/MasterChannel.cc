@@ -1,14 +1,13 @@
 #include "MasterChannel.h"
 using grpc::ClientContext;
 
-bool MasterChannel::sendCommand(hw2::ServerInfo &value){
+void MasterChannel::sendCommand(hw2::ServerInfo &value){
 	outMessage = value;
 	{
 		std::lock_guard<std::mutex> lk(m);
 		ready = true;
 		cvMutex.notify_one();
 	}
-	return true;
 }
 int MasterChannel::CommandChat(){
   ClientContext context;
@@ -17,12 +16,12 @@ int MasterChannel::CommandChat(){
   std::thread writer([&] {
       while(true){
 		  std::unique_lock<std::mutex> lk(sendMutex);
-		  cvMutex.wait(lk, []{return ready;});
+		  cvMutex.wait(lk, [&]{return ready;});
 		  ready = false;
 		  
           stream->Write(outMessage);
 		  lk.unlock();
-		  cv.notify_one();
+		  cvMutex.notify_one();
       }
       stream->WritesDone();
     });
@@ -32,7 +31,7 @@ int MasterChannel::CommandChat(){
       MasterInfo m;
       while(stream->Read(&m)){
         // Process commands
-		switch(m.message_type){
+		switch(m.message_type()){
 			case hw2::MasterInfo::UPDATE_WORKER:{
 				WorkerInfo wi = m.worker();
 				// Check if wi.host() matches with any host in workerDB
