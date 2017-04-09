@@ -134,8 +134,8 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	}
 };
 
-void RunServer(const int port){
-	string host = "localhost";
+void RunServer(const string host, const int port){
+	//string host = "127.0.1.1";
 	string address = host + ":" + to_string(port);
 	MessengerServiceImpl service;
 	ServerBuilder builder;
@@ -147,9 +147,10 @@ void RunServer(const int port){
 	std::unique_ptr<Server> server(builder.BuildAndStart());
 	cout << "Server listening on " << address << endl;
 	hw2::WorkerInfo wi;
-	int masterPort = port;
+	int masterPort = port + 1;
 	wi.set_host(host);
 	wi.set_port(masterPort);
+	wi.set_client_port(port);
 	string masterConnectionInfo = host + ":" + to_string(masterPort);
 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 	masterChannel = new MasterChannel(wi, chnl);
@@ -167,21 +168,21 @@ void RunServer(const int port){
 
 
 int main(int argc, char** argv) {
-	if(argc < 2 || argc > 3){
+	if(argc < 3 || argc > 4){
 		printf("Invalid arguments.\n");
-		printf("USAGE: ./fbsd <Port>\n");
+		printf("USAGE: ./fbsd <host|ip> <Port>\n");
 		return 1;
 	}
 	int port = -1;
 	try{
-		port = stoi(argv[1]);
+		port = stoi(argv[2]);
 	}
 	catch(...){
 		printf("Error converting port to int!\n");
 		printf("USAGE: ./fbsd <Port>\n");
 		return 2;
 	}
-	RunServer(port);
+	RunServer(host,port);
 	return 0;
 }
 

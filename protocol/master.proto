@@ -21,6 +21,7 @@ message WorkerInfo{
 	string host =1;
 	int32 port =2;
 	int32 client_count =3;
+	int32 client_port =4;
 }
 message ServerInfo{
 	enum Action{
