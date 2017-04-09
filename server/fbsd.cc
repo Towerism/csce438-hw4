@@ -154,7 +154,7 @@ void RunServer(const int port){
 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 	masterChannel = new MasterChannel(wi, chnl);
 	thread commandThread[1];
-		commandThread[0] = thread(MasterChannel::CommandChat, masterChannel);
+		commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel);
 		hw2::ServerInfo si;
 		si.set_allocated_worker(&wi);
 		si.set_message_type(hw2::ServerInfo::REGISTER);
