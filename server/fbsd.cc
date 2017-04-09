@@ -146,14 +146,13 @@ void RunServer(const int port){
 	// Assemble server
 	std::unique_ptr<Server> server(builder.BuildAndStart());
 	cout << "Server listening on " << address << endl;
-	string masterConnectionInfo = address;
 	hw2::WorkerInfo wi;
 	int masterPort = port;
 	wi.set_host(host);
 	wi.set_port(masterPort);
-	string masterConnectionInfo = host + ":" + to_string(port);
+	string masterConnectionInfo = host + ":" + to_string(masterPort);
 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
-	masterChannel = new MasterChannel(chnl);
+	masterChannel = new MasterChannel(wi, chnl);
 	
 	// Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
 	server->Wait();

@@ -1,7 +1,7 @@
 #include "MasterChannel.h"
 using grpc::ClientContext;
 
-bool MasterChannel::sendCommand(&hw2::ServerInfo value){
+bool MasterChannel::sendCommand(hw2::ServerInfo &value){
 	outMessage = value;
 	{
 		std::lock_guard<std::mutex> lk(m);

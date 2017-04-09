@@ -14,7 +14,7 @@ class MasterChannel{
 	// Establish connection to master
 	bool CommandChat();
 	// Send new information to master
-	bool sendCommand(&hw2::ServerInfo);
+	bool sendCommand(hw2::ServerInfo&);
 	
 	private:
 	hw2::WorkerInfo myInfo;
