@@ -47,6 +47,7 @@ void MasterChannel::CommandChat(){
 			}
 			case hw2::MasterInfo::SPAWN_CLONE:{
 				// Spawn a clone
+				break;
 			}
 		}
       }
