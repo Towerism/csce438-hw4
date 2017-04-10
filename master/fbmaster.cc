@@ -184,6 +184,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 			for(auto worker:workerThreads){
 				worker.pipe->Write(mi);
 			}
+			cerr << "Worker with port: " << myself.clientPort << " disconnected. No more workers on server: "<< myself.host << endl;
 		}
 		else{
 			WorkerProcess wi = *select_randomly(backupWorkers.begin(), backupWorkers.end());
@@ -200,6 +201,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
 				worker.pipe->Write(mi);
 			}
+			cerr << "Worker with port: " << myself.clientPort << " disconnected. Told other workers to use other workers on host: " << myself.host<< endl; 
 		}
 		return Status::OK;
 	}
@@ -216,7 +218,7 @@ void RunServer(){
     builder.RegisterService(&service);
     // Assemble server
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    cout << "Server listening on " << address << endl;
+    cout << "Master listening on " << address << endl;
 
     // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
 
