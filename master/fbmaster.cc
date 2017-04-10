@@ -32,7 +32,6 @@
  */
 #include "common.h"
 #define MASTER_PORT 123456
-#define MASTER_HOST "lenss-comp1"
 
 struct WorkerProcess{
 	string host;
@@ -210,8 +209,7 @@ void RunServer(){
 	char hostname[100];
 	size_t len;
 	gethostname(hostname, len);
-	cout << "Host from gethostname: |" << hostname << "|, MASTER_HOST: |" << MASTER_HOST << "|" << endl;
-    string address = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
+    string address = string(hostname) + ":" + to_string(MASTER_PORT);
     MasterServiceImpl service;
     ServerBuilder builder;
     //Listen on address without authentication
