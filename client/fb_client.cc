@@ -18,6 +18,7 @@ FbClient::FbClient(std::string username, std::shared_ptr<ChannelInterface> chann
     throw BadMasterChannelException();
   auto client_worker_channel = grpc::CreateChannel(worker_location,
                                                    grpc::InsecureChannelCredentials());
+  std::cout << "worker location received at " << worker_location << std::endl;
   stub = hw2::MessengerServer::NewStub(client_worker_channel);
 }
 
