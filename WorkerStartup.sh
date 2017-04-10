@@ -1,3 +1,4 @@
+#!/bin/sh
 # usage .WorkerStartup.sh [Master Address]
 
 master_address=$(cat default_master_address)

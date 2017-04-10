@@ -1,3 +1,4 @@
+#!/bin/sh
 # usage ./ClientStartup.sh <username> [Master Address]
 
 master_address=$(cat default_master_address)
