@@ -207,10 +207,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 
 
 void RunServer(){
-	char hostname[100];
-	size_t len;
-	gethostname(hostname, len);
-    string address = string(hostname) + ":" + to_string(MASTER_PORT);
+    string address = "0.0.0.0:" + to_string(MASTER_PORT);
     MasterServiceImpl service;
     ServerBuilder builder;
     //Listen on address without authentication

@@ -136,38 +136,37 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 };
 
 void RunServer(const int port){
-	char hostString[100];
+  string address = "0.0.0.0:" + to_string(port);
+  MessengerServiceImpl service;
+  ServerBuilder builder;
+  //Listen on address without authentication
+  builder.AddListeningPort(address, grpc::InsecureServerCredentials());
+  // Register "service" as the instance thorough which we'll communicate
+  builder.RegisterService(&service);
+  // Assemble server
+  std::unique_ptr<Server> server(builder.BuildAndStart());
+  cout << "Server listening on " << address << endl;
+  hw2::WorkerInfo wi;
+  int masterPort = port + 1; // port other Worker Threads can contact me at
+	char hostname[100];
 	size_t len;
-	gethostname(hostString, len);
-    string host = string(hostString);
-	string address = host + ":" + to_string(port);
-	MessengerServiceImpl service;
-	ServerBuilder builder;
-	//Listen on address without authentication
-	builder.AddListeningPort(address, grpc::InsecureServerCredentials());
-	// Register "service" as the instance thorough which we'll communicate
-	builder.RegisterService(&service);
-	// Assemble server
-	std::unique_ptr<Server> server(builder.BuildAndStart());
-	cout << "Server listening on " << address << endl;
-	hw2::WorkerInfo wi;
-	int masterPort = port + 1; // port other Worker Threads can contact me at
-	wi.set_host(host);
-	wi.set_port(masterPort);
-	wi.set_client_port(port);
-	string masterConnectionInfo = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
-	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
-	masterChannel = new MasterChannel(wi, chnl);
-	thread commandThread[1];
-		commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel);
-		hw2::ServerInfo si;
-		si.set_allocated_worker(&wi);
-		si.set_message_type(hw2::ServerInfo::REGISTER);
-		masterChannel->sendCommand(si);
-	// Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
-	
-	server->Wait();
-	commandThread[0].join();
+	gethostname(hostname, len);
+  wi.set_host(std::string(hostname));
+  wi.set_port(masterPort);
+  wi.set_client_port(port);
+  string masterConnectionInfo = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
+  auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
+  masterChannel = new MasterChannel(wi, chnl);
+  thread commandThread[1];
+  commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel);
+  hw2::ServerInfo si;
+  si.set_allocated_worker(&wi);
+  si.set_message_type(hw2::ServerInfo::REGISTER);
+  masterChannel->sendCommand(si);
+  // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
+  
+  server->Wait();
+  commandThread[0].join();
 }
 
 
