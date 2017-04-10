@@ -1,13 +1,14 @@
 #include <cstdio>
 #include <fb.grpc.pb.h>
 #include <grpc++/grpc++.h>
+#include <iostream>
 
 #include "arguments_parser.h"
 #include "command_line.h"
 #include "fb_client.h"
 
 void printUsage(const char *program_name) {
-  printf("Usage: %s <host>:<port> <username>\n", program_name);
+  std::cerr << "Usage: "<< program_name << " <username> <host>:<port>\n";
   std::exit(EXIT_FAILURE);
 }
 
