@@ -135,8 +135,11 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	}
 };
 
-void RunServer(const string host, const int port){
-	//string host = "127.0.1.1";
+void RunServer(const int port){
+	char hostString[100];
+	size_t len;
+	gethostname(hostString, len);
+    string host = string(hostString);
 	string address = host + ":" + to_string(port);
 	MessengerServiceImpl service;
 	ServerBuilder builder;
@@ -169,21 +172,21 @@ void RunServer(const string host, const int port){
 
 
 int main(int argc, char** argv) {
-	if(argc < 3 || argc > 4){
+	if(argc < 2 || argc > 3){
 		printf("Invalid arguments.\n");
-		printf("USAGE: ./fbsd <host|ip> <Port>\n");
+		printf("USAGE: ./fbsd <Port>\n");
 		return 1;
 	}
 	int port = -1;
 	try{
-		port = stoi(argv[2]);
+		port = stoi(argv[1]);
 	}
 	catch(...){
 		printf("Error converting port to int!\n");
 		printf("USAGE: ./fbsd <Port>\n");
 		return 2;
 	}
-	RunServer(string(argv[1]),port);
+	RunServer(port);
 	return 0;
 }
 
