@@ -18,9 +18,13 @@ int main(int argc, char **argv) {
     printUsage(argv[0]);
   auto channel = grpc::CreateChannel(arguments.ConnectionString,
                                      grpc::InsecureChannelCredentials());
-  FbClient client(arguments.Username, channel);
+  try {
+    FbClient client(arguments.Username, channel);
   if (!client.Register())
     return 1;
   CommandLine::Run(client);
   return 0;
+  } catch (FbClient::BadMasterChannelException e) {
+    std::cerr << e.what() << "\n";
+  }
 }

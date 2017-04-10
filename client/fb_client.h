@@ -4,11 +4,18 @@
 
 #include <string>
 #include <memory>
+#include "master_client.h"
 
 class FbClient {
 public:
-  FbClient(std::string username, std::shared_ptr<grpc::ChannelInterface> channel)
-    : username(username), stub(hw2::MessengerServer::NewStub(channel)) {}
+  class BadMasterChannelException : public std::exception {
+  public:
+    const char* what() const noexcept override {
+      return "Fatal Error: Unable to connect to the Master Server";
+    }
+  };
+
+  FbClient(std::string username, std::shared_ptr<grpc::ChannelInterface> channel);
 
   // Register a user name
   bool Register();
@@ -30,6 +37,7 @@ private:
   grpc::Status status;
   hw2::Reply reply;
   hw2::Message mostRecentMessage;
+  MasterClient masterClient;
 
   void PrintStatusError();
   bool PrintPossibleStatusFailuresForBasicReply();

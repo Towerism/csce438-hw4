@@ -5,10 +5,21 @@
 #include <thread>
 
 using grpc::Channel;
+using grpc::ChannelInterface;
 using grpc::ClientContext;
 using grpc::Status;
 
 using namespace hw2;
+FbClient::FbClient(std::string username, std::shared_ptr<ChannelInterface> channel)
+  : username(username), masterClient(channel) {
+  std::string worker_location;
+  auto result = masterClient.ConnectionPoint(worker_location);
+  if (!result.ok())
+    throw BadMasterChannelException();
+  auto client_worker_channel = grpc::CreateChannel(worker_location,
+                                                   grpc::InsecureChannelCredentials());
+  stub = hw2::MessengerServer::NewStub(client_worker_channel);
+}
 
 // Register a user name with the server
 bool FbClient::Register() {

@@ -12,7 +12,7 @@ service MasterServer{
 	rpc MasterWorkerCommunication(stream ServerInfo) returns(stream MasterInfo){} 
 }
 message ConnectionReply{
-	repeated string locations = 1;
+	string location = 1;
 }
 message Empty{
 
