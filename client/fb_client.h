@@ -8,13 +8,6 @@
 
 class FbClient {
 public:
-  class BadMasterChannelException : public std::exception {
-  public:
-    const char* what() const noexcept override {
-      return "Fatal Error: Unable to connect to the Master Server";
-    }
-  };
-
   FbClient(std::string username, std::shared_ptr<grpc::ChannelInterface> channel);
 
   // Register a user name

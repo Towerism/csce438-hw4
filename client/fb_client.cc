@@ -3,6 +3,7 @@
 #include <grpc++/grpc++.h>
 #include <iostream>
 #include <thread>
+#include <stdexcept>
 
 using grpc::Channel;
 using grpc::ChannelInterface;
@@ -14,8 +15,12 @@ FbClient::FbClient(std::string username, std::shared_ptr<ChannelInterface> chann
   : username(username), masterClient(channel) {
   std::string worker_location;
   auto result = masterClient.ConnectionPoint(worker_location);
-  if (!result.ok())
-    throw BadMasterChannelException();
+  if (!result.ok()) {
+    if (result.error_code() == grpc::StatusCode::CANCELLED)
+      throw std::runtime_error(result.error_message());
+    else
+      throw std::runtime_error("Unable to connect to master.");
+  }
   auto client_worker_channel = grpc::CreateChannel(worker_location,
                                                    grpc::InsecureChannelCredentials());
   std::cout << "worker location received at " << worker_location << std::endl;

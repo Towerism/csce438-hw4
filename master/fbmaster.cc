@@ -62,7 +62,8 @@ class MasterServiceImpl final : public MasterServer::Service{
 		//Client is requesting a worker thread. Assign and close connection
 		if(workerThreads.size() == 0){
 			cerr << "Client tried to connect, but no worker processes have registered!" << endl;
-			return Status::CANCELLED;
+      Status status(grpc::StatusCode::CANCELLED, "(Master) No workers available");
+			return status;
 		}
 		// Select worker with fewest number of attached clients
 		vector<WorkerProcess> minClients;
