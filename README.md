@@ -19,7 +19,7 @@ This script can be run on any machine. It takes no arguments. Just run it to
 spin up the master server.
 
 ```
-$ MasterStartup.sh
+Usage: MasterStartup.sh
 ```
 
 ### WorkerStartup.sh
@@ -27,7 +27,7 @@ This script can be run on any machine. It takes one optional argument which will
 override the default master address.
 
 ```
-$ MasterStartup.sh [Master Address]
+Usage: MasterStartup.sh [Master Address]
 ```
 
 ### ClientStartup.sh
@@ -35,13 +35,13 @@ This script can be run on any machine. It takes one required and one optional
 argument which will override the default master address.
 
 ```
-$ MasterStartup.sh <User Name> [Master Address]
+Usage: MasterStartup.sh <User Name> [Master Address]
 ```
 
 ## Running on Different Machines
 Run each command on a different machine (obviously master should be started lenss-comp1):
 ```
-$ MasterStartup.sh
+ MasterStartup.sh
 ```
 ```
 $ WorkerStartup.sh
