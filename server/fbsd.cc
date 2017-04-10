@@ -31,7 +31,7 @@
  *
  */
 #define MASTER_PORT 123456
-#define MASTER_HOST "lenss-comp1"
+#define MASTER_HOST "localhost"
 
 #include "common.h"
 #include "server_functions.h"
@@ -135,7 +135,7 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	}
 };
 
-void RunServer(const int port){
+void RunServer(const int port, std::string masterHost){
   string address = "0.0.0.0:" + to_string(port);
   MessengerServiceImpl service;
   ServerBuilder builder;
@@ -146,21 +146,21 @@ void RunServer(const int port){
   // Assemble server
   std::unique_ptr<Server> server(builder.BuildAndStart());
   cout << "Server listening on " << address << endl;
-  hw2::WorkerInfo wi;
+  auto wi = new hw2::WorkerInfo;
   int masterPort = port + 1; // port other Worker Threads can contact me at
 	char hostname[100];
 	size_t len;
 	gethostname(hostname, len);
-  wi.set_host(std::string(hostname));
-  wi.set_port(masterPort);
-  wi.set_client_port(port);
-  string masterConnectionInfo = string(MASTER_HOST) + ":" + to_string(MASTER_PORT);
+  wi->set_host(std::string(hostname));
+  wi->set_port(masterPort);
+  wi->set_client_port(port);
+  string masterConnectionInfo = masterHost + ":" + to_string(MASTER_PORT);
   auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
-  masterChannel = new MasterChannel(wi, chnl);
+  masterChannel = new MasterChannel(*wi, chnl);
   thread commandThread[1];
   commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel);
   hw2::ServerInfo si;
-  si.set_allocated_worker(&wi);
+  si.set_allocated_worker(wi);
   si.set_message_type(hw2::ServerInfo::REGISTER);
   masterChannel->sendCommand(si);
   // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
@@ -171,9 +171,9 @@ void RunServer(const int port){
 
 
 int main(int argc, char** argv) {
-	if(argc < 2 || argc > 3){
+	if(argc < 3 || argc > 3){
 		printf("Invalid arguments.\n");
-		printf("USAGE: ./fbsd <Port>\n");
+		printf("USAGE: ./fbsd <Port> <Master Host>\n");
 		return 1;
 	}
 	int port = -1;
@@ -185,7 +185,8 @@ int main(int argc, char** argv) {
 		printf("USAGE: ./fbsd <Port>\n");
 		return 2;
 	}
-	RunServer(port);
+  std::string host(argv[2]);
+	RunServer(port, host);
 	return 0;
 }
 
