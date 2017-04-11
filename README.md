@@ -39,7 +39,7 @@ Usage: MasterStartup.sh <User Name> [Master Address]
 ```
 
 ## Running on Different Machines
-Run each command on a different machine (obviously master should be started lenss-comp1):
+Run each command on a different machine (obviously master should be started on lenss-comp1):
 ```
  MasterStartup.sh
 ```

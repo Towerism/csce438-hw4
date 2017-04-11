@@ -35,6 +35,7 @@
 #include "common.h"
 #include "server_functions.h"
 #include "MasterChannel.h"
+#include "file_locking.h"
 
 vector<WorkerInfo> otherWorkers;
 std::mutex workersMutex;
