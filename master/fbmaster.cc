@@ -127,15 +127,12 @@ class MasterServiceImpl final : public MasterServer::Service{
 									newWorkers.push_back(mi);
 								}
 							}
-							cout << "added all workers with same host to vector" << endl;
 						// Assign to other workers so they know to communicate with this server too
 						for(auto worker:workerThreads){
 							MasterInfo *mi = *select_randomly(newWorkers.begin(), newWorkers.end());
 							worker.pipe->Write(*mi);
 						}
-						cout << "Sent new host info to all workers" << endl;
 					}
-					cout << "New Host commands sent succesfully" << endl;
 					break;
 				}
 				case ServerInfo::UPDATE_CLIENT:{
@@ -170,10 +167,8 @@ class MasterServiceImpl final : public MasterServer::Service{
 		vector<WorkerProcess> backupWorkers;
 		for(auto worker:workerThreads){
 			if(worker.host == myself.host){
-				worker.pipe->Write(instruction);
 				backupWorkers.push_back(worker);
 				foundReplica = true;
-				break;
 			}
 		}
 		if(!foundReplica){
@@ -197,6 +192,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 				wi->set_client_count(wp.clientsConnected);
 				wi->set_host(wp.host);
 				wi->set_port(wp.port);
+				wi->set_client_port(wp.clientPort);
 				mi.set_allocated_worker(wi);
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
 				worker.pipe->Write(mi);

@@ -81,7 +81,10 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 			cout << "Message to clone received" << endl;
             // Spawn a clone
 		    if(fork() == 0){
-		 	    execl("sh","../WorkerStartup.sh", masterHost.c_str(), (char*)0);
+		 	    char cwdBuf[200];
+				size_t len;
+				char *ptr = getcwd(cwdBuf, len);
+				execl("/bin/sh","sh","WorkerStartup.sh", masterHost.c_str(), (char*)0);
 				return 1;
              }
 	    
