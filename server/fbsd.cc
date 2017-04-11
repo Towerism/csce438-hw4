@@ -36,6 +36,7 @@
 #include "common.h"
 #include "server_functions.h"
 #include "MasterChannel.h"
+#include "file_locking.h"
 
 MasterChannel *masterChannel;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
