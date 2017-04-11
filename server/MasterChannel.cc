@@ -9,7 +9,7 @@ void MasterChannel::sendCommand(hw2::ServerInfo &value){
 		cvMutex.notify_one();
 	}
 }
-int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost){
+int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
 
@@ -37,7 +37,10 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
             // Check if wi.host() matches with any host in workerDB
 		workersMutex.lock();
 		if(wi.host() == myHost){
-			otherWorkers.insert(otherWorkers.begin(), wi);
+			if(wi.port() != myPort){
+				otherWorkers.insert(otherWorkers.begin(), wi);
+				cout << "Local Worker added" << endl;
+			}
 			workersMutex.unlock();
 			break;
 		}
@@ -49,6 +52,7 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 		}
 		if (addNew){
 			otherWorkers.push_back(wi);
+			cout << "Remote Worker added" << endl;
 		}
 		workersMutex.unlock();
             // If not, add wi
@@ -68,15 +72,18 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 		}
 		if(removeLoc != -1){
 			otherWorkers.erase(otherWorkers.begin() + removeLoc);
+			cout << "Worker removed a disconnected partner" << endl;
 		}
 		workersMutex.unlock();
             break;
           }
           case hw2::MasterInfo::SPAWN_CLONE:{
+			cout << "Message to clone received" << endl;
             // Spawn a clone
-	    //if(fork() == 0){
-	    // execl("WorkerStartup.sh", masterHost.c_str(), (char*)0);
-            // }
+		    if(fork() == 0){
+		 	    execl("sh","../WorkerStartup.sh", masterHost.c_str(), (char*)0);
+				return 1;
+             }
 	    
             break;
           }
