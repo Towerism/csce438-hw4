@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <thread>
 #include <chrono>
+#include <functional>
+#include <mutex>
 
 using google::protobuf::Timestamp;
 using google::protobuf::Duration;

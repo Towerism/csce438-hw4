@@ -18,5 +18,5 @@ class MasterChannel{
 	MasterChannel(hw2::WorkerInfo wi, std::shared_ptr<grpc::ChannelInterface> channel):myInfo( wi),stub(hw2::MasterServer::NewStub(channel)){
 		}
 		
-		int CommandChat();
+		int CommandChat(vector<WorkerInfo>&, std::mutex&, string, string);
 };

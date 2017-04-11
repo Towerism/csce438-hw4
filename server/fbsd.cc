@@ -31,11 +31,13 @@
  *
  */
 #define MASTER_PORT 123456
-#define MASTER_HOST "localhost"
 
 #include "common.h"
 #include "server_functions.h"
 #include "MasterChannel.h"
+
+vector<WorkerInfo> otherWorkers;
+std::mutex workersMutex;
 
 MasterChannel *masterChannel;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
@@ -158,7 +160,7 @@ void RunServer(const int port, std::string masterHost){
   auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
   masterChannel = new MasterChannel(*wi, chnl);
   thread commandThread[1];
-  commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel);
+  commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel, std::ref(otherWorkers), std::ref(workersMutex), std::string(hostname), masterHost);
   hw2::ServerInfo si;
   si.set_allocated_worker(wi);
   si.set_message_type(hw2::ServerInfo::REGISTER);
@@ -182,7 +184,7 @@ int main(int argc, char** argv) {
 	}
 	catch(...){
 		printf("Error converting port to int!\n");
-		printf("USAGE: ./fbsd <Port>\n");
+		printf("USAGE: ./fbsd <Port> <Master Host>\n");
 		return 2;
 	}
   std::string host(argv[2]);

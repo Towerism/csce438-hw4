@@ -9,7 +9,7 @@ void MasterChannel::sendCommand(hw2::ServerInfo &value){
 		cvMutex.notify_one();
 	}
 }
-int MasterChannel::CommandChat(){
+int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
 
@@ -35,6 +35,22 @@ int MasterChannel::CommandChat(){
           case hw2::MasterInfo::UPDATE_WORKER:{
             WorkerInfo wi = m.worker();
             // Check if wi.host() matches with any host in workerDB
+		workersMutex.lock();
+		if(wi.host() == myHost){
+			otherWorkers.insert(otherWorkers.begin(), wi);
+			workersMutex.unlock();
+			break;
+		}
+		bool addNew = true;
+		for(auto worker:otherWorkers){
+			if (worker.host() == wi.host()){
+				addNew = false;
+			}
+		}
+		if (addNew){
+			otherWorkers.push_back(wi);
+		}
+		workersMutex.unlock();
             // If not, add wi
             break;
           }
@@ -42,10 +58,26 @@ int MasterChannel::CommandChat(){
             // Check if wi.host() matches with any host in workerDB
             // If so, remove wi
             WorkerInfo wi = m.worker();
+		workersMutex.lock();
+		int removeLoc = -1;
+		for(int i = 0; i < otherWorkers.size(); ++i){
+			if(otherWorkers[i].host() == wi.host()){
+				removeLoc = i;
+				break;
+			}
+		}
+		if(removeLoc != -1){
+			otherWorkers.erase(otherWorkers.begin() + removeLoc);
+		}
+		workersMutex.unlock();
             break;
           }
           case hw2::MasterInfo::SPAWN_CLONE:{
             // Spawn a clone
+	    //if(fork() == 0){
+	    // execl("WorkerStartup.sh", masterHost.c_str(), (char*)0);
+            // }
+	    
             break;
           }
         }
