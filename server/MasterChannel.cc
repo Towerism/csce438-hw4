@@ -12,13 +12,15 @@ void MasterChannel::sendCommand(hw2::ServerInfo &value){
 int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
-
+  atomic<bool> streamBroken = ATOMIC_VAR_INIT(false);
   std::thread writer([&] {
       while(true){
 		  std::unique_lock<std::mutex> lk(sendMutex);
 		  cvMutex.wait(lk, [&]{return ready;});
 		  ready = false;
-		  
+		  if(streamBroken){
+			break;
+			}
           stream->Write(outMessage);
 		  lk.unlock();
 		  cvMutex.notify_one();
@@ -92,6 +94,10 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
           }
         }
       }
+	cerr << "Reader:" << myPort << " disconnected" << endl;
+	streamBroken = true;
+	hw2::ServerInfo si;
+	sendCommand(si);
     });
 
   writer.join();
@@ -110,15 +116,20 @@ void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int
 	// Run infinitely so if master crashes a new connection is established
 		if(GLOBAL_Master_Channel_ != NULL){
 			delete GLOBAL_Master_Channel_;
-		}
+		}		
 		string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
+		cerr <<"[" << myself->port()<< "]Previous global channel freed" << endl;
 	 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
+			cerr <<"[" << myself->port()<< "] chnl allocated" << endl;
   		GLOBAL_Master_Channel_ = new MasterChannel(*myself, chnl);
+		cerr << "[" << myself->port()<< "] GlobalChannel set" << endl;
 		std::thread CCThread(&MasterChannel::CommandChat, GLOBAL_Master_Channel_,           std::ref(otherWorkers), std::ref(workersMutex), myself->host(), masterHost, myself->port());
-  		hw2::ServerInfo si;
+		cerr << "[" << myself->port()<< "] CcThread created" << endl;
+		hw2::ServerInfo si;
 	    si.set_allocated_worker(myself);
         si.set_message_type(hw2::ServerInfo::REGISTER);
         WriteMasterChannel(si);
+		cerr << myself->port() << " Connected to master." << endl;
  		CCThread.join();
 		cerr << myself->port() << " Disconnected  from master. Reconnecting" << endl;
 	}	
