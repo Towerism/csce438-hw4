@@ -13,6 +13,10 @@ using grpc::Status;
 using namespace hw2;
 FbClient::FbClient(std::string username, std::shared_ptr<ChannelInterface> channel)
   : username(username), masterClient(channel) {
+  ConnectToServer();
+}
+
+void FbClient::ConnectToServer() {
   std::string worker_location;
   auto result = masterClient.ConnectionPoint(worker_location);
   if (!result.ok()) {
@@ -23,7 +27,6 @@ FbClient::FbClient(std::string username, std::shared_ptr<ChannelInterface> chann
   }
   auto client_worker_channel = grpc::CreateChannel(worker_location,
                                                    grpc::InsecureChannelCredentials());
-  std::cout << "worker location received at " << worker_location << std::endl;
   stub = hw2::MessengerServer::NewStub(client_worker_channel);
 }
 
@@ -42,7 +45,7 @@ bool FbClient::Register() {
 bool FbClient::PrintPossibleStatusFailuresForBasicReply() {
   if (status.ok())
     return PrintReplyMessage();
-  PrintStatusError();
+  Reconnect();
   return false;
 }
 
@@ -52,9 +55,10 @@ bool FbClient::PrintReplyMessage() {
   return true;
 }
 
-void FbClient::PrintStatusError() {
-  std::cout << status.error_code() << ": " << status.error_message()
-            << std::endl;
+void FbClient::Reconnect() {
+  std::cout << "Lost connection with server. Reconnecting... ";
+  ConnectToServer();
+  Register();
 }
 
 bool FbClient::Join(std::string channelname) {
@@ -98,34 +102,52 @@ void FbClient::List() {
       std::cout << "\t" << user << std::endl;
     }
   } else {
-    PrintStatusError();
+    Reconnect();
   }
 }
 
 bool FbClient::Chat() {
-  ClientContext context;
-  auto stream(stub->Chat(&context));
+  bool request_whatsnew = true;
+  std::string input;
+  Message m;
+  while (true) {
+    ClientContext context;
+    auto stream(stub->Chat(&context));
+    std::thread writer([&] {
+        if (request_whatsnew) {
+          input  = "Set Stream";
+          m = MakeMessage(username, input);
+          stream->Write(m);
+          //request_whatsnew = false;
+        }
+        while(getline(std::cin, input)){
+          m = MakeMessage(username, input);
+          try {
+            if (!stream->Write(m))
+              return;
+          } catch (...) {
+            return;
+          }
+        }
+        stream->WritesDone();
+      });
 
-  std::thread writer([&] {
-      std::string input = "Set Stream";
-      Message m = MakeMessage(username, input);
-      stream->Write(m);
-      while(getline(std::cin, input)){
-        m = MakeMessage(username, input);
-        stream->Write(m);
-      }
-      stream->WritesDone();
-    });
+    std::thread reader([&] {
+        Message m;
+        try {
+          while(stream->Read(&m)){
+            std::cout << m.username() << ": " << m.msg() << std::endl;
+          }
+        }
+        catch (...) {
+          return;
+        }
+      });
 
-  std::thread reader([&]() {
-      Message m;
-      while(stream->Read(&m)){
-        std::cout << m.username() << ": " << m.msg() << std::endl;
-      }
-    });
-
-  writer.join();
-  reader.join();
+    writer.join();
+    reader.join();
+    Reconnect();
+  }
 
   return PrintPossibleStatusFailuresForBasicReply();
 }

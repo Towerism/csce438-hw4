@@ -1,6 +1,8 @@
 #pragma once
 
 #include <fb.grpc.pb.h>
+#include <mutex>
+#include <condition_variable>
 
 #include <string>
 #include <memory>
@@ -32,7 +34,9 @@ private:
   hw2::Message mostRecentMessage;
   MasterClient masterClient;
 
-  void PrintStatusError();
+  void ConnectToServer();
+
+  void Reconnect();
   bool PrintPossibleStatusFailuresForBasicReply();
   bool PrintReplyMessage();
   hw2::Message MakeMessage(const std::string& username, const std::string& msg);

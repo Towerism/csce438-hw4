@@ -12,4 +12,4 @@ if [[ $# -gt 1 ]]; then master_address=$2; fi
 
 connection="$master_address:123456"
 
-./fbc $1 "$connection" 2>/dev/null
+./fbc $1 "$connection"
