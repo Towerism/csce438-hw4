@@ -39,8 +39,11 @@
 
 vector<WorkerInfo> otherWorkers;
 std::mutex workersMutex;
-
-MasterChannel *masterChannel;
+// Idea: Create a function that establishes MasterChannel
+// This function can be called from within the writer class thing
+// If masterChannel  = null then just create new one
+// if not, delete master, then create new one
+MasterChannel *masterChannel= NULL;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
 
 class MessengerServiceImpl final : public MessengerServer::Service{
@@ -149,27 +152,19 @@ void RunServer(const int port, std::string masterHost){
   // Assemble server
   std::unique_ptr<Server> server(builder.BuildAndStart());
   cout << "Server listening on " << address << endl;
-  auto wi = new hw2::WorkerInfo;
+  hw2::WorkerInfo wi;
   int masterPort = port + 1; // port other Worker Threads can contact me at
 	char hostname[100];
 	size_t len;
 	gethostname(hostname, len);
-  wi->set_host(std::string(hostname));
-  wi->set_port(masterPort);
-  wi->set_client_port(port);
-  string masterConnectionInfo = masterHost + ":" + to_string(MASTER_PORT);
-  auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
-  masterChannel = new MasterChannel(*wi, chnl);
-  thread commandThread[1];
-  commandThread[0] = thread(&MasterChannel::CommandChat, masterChannel, std::ref(otherWorkers), std::ref(workersMutex), std::string(hostname), masterHost, masterPort);
-  hw2::ServerInfo si;
-  si.set_allocated_worker(wi);
-  si.set_message_type(hw2::ServerInfo::REGISTER);
-  masterChannel->sendCommand(si);
+  wi.set_host(std::string(hostname));
+  wi.set_port(masterPort);
+  wi.set_client_port(port);
+  thread commandThread(EstablishMasterChannel,&wi,masterHost,MASTER_PORT, std::ref(otherWorkers), std::ref(workersMutex));
   // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
   
   server->Wait();
-  commandThread[0].join();
+  commandThread.join();
 }
 
 

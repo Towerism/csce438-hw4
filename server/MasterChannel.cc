@@ -99,3 +99,23 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 
 	return 0;
 }
+
+
+
+void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
+	for(;;){
+	// Run infinitely so if master crashes a new connection is established
+		if(GLOBAL_Master_Channel_ != NULL){
+			delete GLOBAL_Master_Channel_;
+		}
+		string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
+	 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
+  		GLOBAL_Master_Channel_ = new MasterChannel(*myself, chnl);
+		std::thread CCThread(&MasterChannel::CommandChat, GLOBAL_Master_Channel_,           std::ref(otherWorkers), std::ref(workersMutex), myself->host(), masterHost, myself->port());
+  		hw2::ServerInfo si;
+	    si.set_allocated_worker(myself);
+        si.set_message_type(hw2::ServerInfo::REGISTER);
+        GLOBAL_Master_Channel_->sendCommand(si);
+ 		CCThread.join();
+	}	
+}

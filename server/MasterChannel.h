@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MASTER_CHANNEL_HEADER_GUARD
+#define MASTER_CHANNEL_HEADER_GUARD
 #include "common.h"
 #include <mutex>
 #include <condition_variable>
@@ -20,3 +21,9 @@ class MasterChannel{
 		
 		int CommandChat(vector<WorkerInfo>&, std::mutex&, string, string, int);
 };
+
+MasterChannel *GLOBAL_Master_Channel_ = NULL;
+
+void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex);
+
+#endif

@@ -223,42 +223,13 @@ void RunServer(){
     server->Wait();
 }
 
-void monitorIO(){
-	// Monitor the assigned Input feed for this thread such that worker threads can be added.
-	cout << "To add worker threads, use the format <address> <port>" << endl;
-	cout << "EX: The following code adds 2 worker threads, one on current server, one on another\n 10.2.45.32 13346 \n localhost 123123" << endl;
-	while(true){
-		fd_set fd;
-		FD_ZERO(&fd);
-		FD_SET(0, &fd); 
-		int selRes = select(1, &fd, NULL, NULL, NULL);
-		if (selRes == -1){
-			cerr << "Select generated error" << endl;
-			break;
-		}
-		string address;
-		int clientsConnected = 0;
-		int port;
-		cin >> address >> port; 
-		
-		// Validate that address is a real place
-		cout << address << " Succesfully imported. INPUT NOT VALIDATED  " << endl;
-		WorkerProcess wp;
-		wp.host = address;
-		wp.port = port;
-		insertOrdered(wp);
-	}
-}
-
 int main(int argc, char** argv) {
   if(argc > 2 ){
     printf("Invalid arguments.\n");
     printf("USAGE: %s \n", argv[0]);
     return 1;
   }
-  thread t(monitorIO);
   RunServer();
-  t.join();
   return 0;
 }
 
