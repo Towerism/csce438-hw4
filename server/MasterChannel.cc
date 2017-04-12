@@ -100,7 +100,10 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 	return 0;
 }
 
-
+MasterChannel *GLOBAL_Master_Channel_ = NULL;
+void WriteMasterChannel(hw2::ServerInfo s){
+	GLOBAL_Master_Channel_->sendCommand(s);
+}
 
 void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
 	for(;;){
@@ -115,7 +118,8 @@ void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int
   		hw2::ServerInfo si;
 	    si.set_allocated_worker(myself);
         si.set_message_type(hw2::ServerInfo::REGISTER);
-        GLOBAL_Master_Channel_->sendCommand(si);
+        WriteMasterChannel(si);
  		CCThread.join();
+		cerr << myself->port() << " Disconnected  from master. Reconnecting" << endl;
 	}	
 }

@@ -22,7 +22,6 @@ class MasterChannel{
 		int CommandChat(vector<WorkerInfo>&, std::mutex&, string, string, int);
 };
 
-MasterChannel *GLOBAL_Master_Channel_ = NULL;
 
 void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex);
 
