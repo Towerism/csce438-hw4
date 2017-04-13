@@ -6,6 +6,7 @@
 class MasterClient
 {
 public:
+  MasterClient() = default;
   MasterClient(std::shared_ptr<grpc::ChannelInterface> channel)
     : stub(hw2::MasterServer::NewStub(channel)) {}
 

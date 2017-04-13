@@ -10,7 +10,7 @@
 
 class FbClient {
 public:
-  FbClient(std::string username, std::shared_ptr<grpc::ChannelInterface> channel);
+  FbClient(std::string username, std::string masterConnectionString);
 
   // Register a user name
   bool Register();
@@ -27,14 +27,16 @@ public:
   bool Chat();
 
 private:
+  uint32_t tries = 0;
   std::string username;
   std::unique_ptr<hw2::MessengerServer::Stub> stub;
   grpc::Status status;
   hw2::Reply reply;
   hw2::Message mostRecentMessage;
   MasterClient masterClient;
-
+  std::string masterConnectionString;
   void ConnectToServer();
+  void ResetMasterChannel();
 
   void Reconnect();
   bool PrintPossibleStatusFailuresForBasicReply();

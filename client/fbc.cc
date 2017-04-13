@@ -17,9 +17,7 @@ int main(int argc, char **argv) {
   auto arguments = argsParser.Parse();
   if (!arguments.Valid)
     printUsage(argv[0]);
-  auto channel = grpc::CreateChannel(arguments.ConnectionString,
-                                     grpc::InsecureChannelCredentials());
-  FbClient client(arguments.Username, channel);
+  FbClient client(arguments.Username, arguments.ConnectionString);
   if (!client.Register())
     return 1;
   CommandLine::Run(client);
