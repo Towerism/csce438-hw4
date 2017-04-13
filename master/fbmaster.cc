@@ -93,6 +93,20 @@ class MasterServiceImpl final : public MasterServer::Service{
 		return Status::OK;
 	}
 
+	Status MasterMasterCommunication(ServerContext *context, ServerReaderWriter<Empty, Empty>* stream) override{
+	// Doesn't actually do anything, just functions as a heartbeat between master and replicas
+	Empty message;
+	while(stream->Read(&message)){
+
+	}
+	// Man down!
+	// If master down, hold election for who is new master
+	// if replica is down, spawn a new one if you are master
+	return Status::OK;
+}
+
+
+
 	Status MasterWorkerCommunication(ServerContext *context, ServerReaderWriter<MasterInfo, ServerInfo>* stream) override{
 		ServerInfo message;
 		WorkerProcess myself;
@@ -108,7 +122,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 					myself.clientPort = request.client_port();
 					myself.pipe = stream;
 			        bool newHost = insertOrdered(myself);
-					if(newHost){
+					if(newHost && request.previously_connected()){
 						// Spawn 2 clones
 							MasterInfo instruction;
 							instruction.set_message_type(MasterInfo::SPAWN_CLONE);

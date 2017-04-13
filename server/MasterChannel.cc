@@ -27,6 +27,9 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 			break;
 			}
           stream->Write(outMessage);
+			// We've made it this far, pipe was open at least long enough to write Register command
+		  connectedPrimaryTime = true;
+		
 		  lk.unlock();
 		  cvMutex.notify_one();
       }

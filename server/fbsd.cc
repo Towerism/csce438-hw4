@@ -222,27 +222,29 @@ void WriteMasterChannel(hw2::ServerInfo s){
 void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
 
 	string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
+	hw2::WorkerInfo *me = new hw2::WorkerInfo();
+	me->set_host(myself.host());
+	me->set_port(myself.port());
+	me->set_client_port(myself.client_port());
+	hw2::ServerInfo si;
+	si.set_allocated_worker(me);
+    si.set_message_type(hw2::ServerInfo::REGISTER);
+
+
 	for(;;){
 	//	cerr << "Top of for loop in Establish Channel" << endl;
 		auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 		// Run infinitely so if master crashes a new connection is established
-		hw2::WorkerInfo *me = new hw2::WorkerInfo();
-		me->set_host(myself.host());
-		me->set_port(myself.port());
-		me->set_client_port(myself.client_port());
-
 		if(GLOBAL_Master_Channel != NULL){
 			GLOBAL_Master_Channel->SetStub(chnl);
 		}
 	  	else{
 			GLOBAL_Master_Channel = new MasterChannel(*me, chnl);
 		}
+		me->set_previously_connected(GLOBAL_Master_Channel->connectedBefore());
 		std::thread CCThread(&MasterChannel::CommandChat, GLOBAL_Master_Channel, std::ref(otherWorkers), std::ref(workersMutex), myself.host(), masterHost, myself.port());
 	//	cerr << "[" << myself.port()<< "] CcThread created" << endl;
-		hw2::ServerInfo si;
-	    si.set_allocated_worker(me);
-        si.set_message_type(hw2::ServerInfo::REGISTER);
-        WriteMasterChannel(si);
+	    WriteMasterChannel(si);
 	//	cerr << myself.port() << " Connected to master." << endl;
  		CCThread.join();
 	//	cerr << myself.port() << " Disconnected  from master. Reconnecting" << endl;
