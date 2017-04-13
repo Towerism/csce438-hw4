@@ -122,7 +122,7 @@ class MasterServiceImpl final : public MasterServer::Service{
 					myself.clientPort = request.client_port();
 					myself.pipe = stream;
 			        bool newHost = insertOrdered(myself);
-					if(newHost && request.previously_connected()){
+					if(newHost && !request.previously_connected()){
 						// Spawn 2 clones
 							MasterInfo instruction;
 							instruction.set_message_type(MasterInfo::SPAWN_CLONE);
