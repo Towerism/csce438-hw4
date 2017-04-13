@@ -153,15 +153,13 @@ void RunServer(const int port, std::string masterHost){
   builder.RegisterService(&service);
   // Assemble server
   std::unique_ptr<Server> server(builder.BuildAndStart());
-  cout << "Server listening on " << address << endl;
+  cout << "Worker listening on " << address << " for clients" << endl;
   hw2::WorkerInfo wi;
   int masterPort = port + 1; // port other Worker Threads can contact me at
 	size_t len = 128;
 	char hostname[len];
 	gethostname(hostname, len);
-  cout << "detected hostname: " << hostname << endl;
   wi.set_host(std::string(hostname));
-  cout << "Host of wi set to: " << wi.host() << endl;
   wi.set_port(masterPort);
   wi.set_client_port(port);
   thread commandThread(EstablishMasterChannel,wi,masterHost,MASTER_PORT, std::ref(otherWorkers), std::ref(workersMutex));
