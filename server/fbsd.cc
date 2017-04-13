@@ -159,6 +159,7 @@ void RunServer(const int port, std::string masterHost){
 	char hostname[100];
 	size_t len;
 	gethostname(hostname, len);
+  cout << "detected hostname: " << hostname << endl;
   wi.set_host(std::string(hostname));
   wi.set_port(masterPort);
   wi.set_client_port(port);
