@@ -156,11 +156,12 @@ void RunServer(const int port, std::string masterHost){
   cout << "Server listening on " << address << endl;
   hw2::WorkerInfo wi;
   int masterPort = port + 1; // port other Worker Threads can contact me at
-	char hostname[100];
-	size_t len;
+	size_t len = 128;
+	char hostname[len];
 	gethostname(hostname, len);
   cout << "detected hostname: " << hostname << endl;
   wi.set_host(std::string(hostname));
+  cout << "Host of wi set to: " << wi.host() << endl;
   wi.set_port(masterPort);
   wi.set_client_port(port);
   thread commandThread(EstablishMasterChannel,wi,masterHost,MASTER_PORT, std::ref(otherWorkers), std::ref(workersMutex));
@@ -221,7 +222,6 @@ void WriteMasterChannel(hw2::ServerInfo s){
 }
 
 void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
-
 	string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
 	hw2::WorkerInfo *me = new hw2::WorkerInfo();
 	me->set_host(myself.host());
@@ -245,6 +245,7 @@ void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int 
 		me->set_previously_connected(GLOBAL_Master_Channel->connectedBefore());
 		std::thread CCThread(&MasterChannel::CommandChat, GLOBAL_Master_Channel, std::ref(otherWorkers), std::ref(workersMutex), myself.host(), masterHost, myself.port());
 	//	cerr << "[" << myself.port()<< "] CcThread created" << endl;
+	    
 	    WriteMasterChannel(si);
 	//	cerr << myself.port() << " Connected to master." << endl;
  		CCThread.join();
