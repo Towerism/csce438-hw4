@@ -9,6 +9,11 @@ void MasterChannel::sendCommand(hw2::ServerInfo &value){
 		cvMutex.notify_one();
 	}
 }
+
+void MasterChannel::SetStub(std::shared_ptr<grpc::Channel> newStub){
+
+	stub = hw2::MasterServer::NewStub(newStub);
+}
 int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
@@ -106,31 +111,3 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 	return 0;
 }
 
-MasterChannel *GLOBAL_Master_Channel_ = NULL;
-void WriteMasterChannel(hw2::ServerInfo s){
-	GLOBAL_Master_Channel_->sendCommand(s);
-}
-
-void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
-	for(;;){
-	// Run infinitely so if master crashes a new connection is established
-		if(GLOBAL_Master_Channel_ != NULL){
-			delete GLOBAL_Master_Channel_;
-		}		
-		string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
-		cerr <<"[" << myself->port()<< "]Previous global channel freed" << endl;
-	 	auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
-			cerr <<"[" << myself->port()<< "] chnl allocated" << endl;
-  		GLOBAL_Master_Channel_ = new MasterChannel(*myself, chnl);
-		cerr << "[" << myself->port()<< "] GlobalChannel set" << endl;
-		std::thread CCThread(&MasterChannel::CommandChat, GLOBAL_Master_Channel_,           std::ref(otherWorkers), std::ref(workersMutex), myself->host(), masterHost, myself->port());
-		cerr << "[" << myself->port()<< "] CcThread created" << endl;
-		hw2::ServerInfo si;
-	    si.set_allocated_worker(myself);
-        si.set_message_type(hw2::ServerInfo::REGISTER);
-        WriteMasterChannel(si);
-		cerr << myself->port() << " Connected to master." << endl;
- 		CCThread.join();
-		cerr << myself->port() << " Disconnected  from master. Reconnecting" << endl;
-	}	
-}

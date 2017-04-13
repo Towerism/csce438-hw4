@@ -37,6 +37,7 @@
 #include "MasterChannel.h"
 #include "file_locking.h"
 
+MasterChannel *GLOBAL_Master_Channel = NULL;
 vector<WorkerInfo> otherWorkers;
 std::mutex workersMutex;
 // Idea: Create a function that establishes MasterChannel
@@ -45,6 +46,7 @@ std::mutex workersMutex;
 // if not, delete master, then create new one
 MasterChannel *masterChannel= NULL;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
+void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex);
 
 class MessengerServiceImpl final : public MessengerServer::Service{
 	Status Login(ServerContext* context, const Request * request, Reply *reply) override{
@@ -160,7 +162,7 @@ void RunServer(const int port, std::string masterHost){
   wi.set_host(std::string(hostname));
   wi.set_port(masterPort);
   wi.set_client_port(port);
-  thread commandThread(EstablishMasterChannel,&wi,masterHost,MASTER_PORT, std::ref(otherWorkers), std::ref(workersMutex));
+  thread commandThread(EstablishMasterChannel,wi,masterHost,MASTER_PORT, std::ref(otherWorkers), std::ref(workersMutex));
   // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
   
   server->Wait();
@@ -213,3 +215,36 @@ void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  ato
     }
 }
 
+void WriteMasterChannel(hw2::ServerInfo s){
+	GLOBAL_Master_Channel->sendCommand(s);
+}
+
+void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
+
+	string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
+	for(;;){
+		cerr << "Top of for loop in Establish Channel" << endl;
+		auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
+		// Run infinitely so if master crashes a new connection is established
+		hw2::WorkerInfo *me = new hw2::WorkerInfo();
+		me->set_host(myself.host());
+		me->set_port(myself.port());
+		me->set_client_port(myself.client_port());
+
+		if(GLOBAL_Master_Channel != NULL){
+			GLOBAL_Master_Channel->SetStub(chnl);
+		}
+	  	else{
+			GLOBAL_Master_Channel = new MasterChannel(*me, chnl);
+		}
+		std::thread CCThread(&MasterChannel::CommandChat, GLOBAL_Master_Channel, std::ref(otherWorkers), std::ref(workersMutex), myself.host(), masterHost, myself.port());
+		cerr << "[" << myself.port()<< "] CcThread created" << endl;
+		hw2::ServerInfo si;
+	    si.set_allocated_worker(me);
+        si.set_message_type(hw2::ServerInfo::REGISTER);
+        WriteMasterChannel(si);
+		cerr << myself.port() << " Connected to master." << endl;
+ 		CCThread.join();
+		cerr << myself.port() << " Disconnected  from master. Reconnecting" << endl;
+	}	
+}

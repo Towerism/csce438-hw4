@@ -12,7 +12,6 @@ class MasterChannel{
 	std::condition_variable cvMutex;
 	bool ready = false;
 	hw2::ServerInfo outMessage;
-	
 	public:
 	// Send new information to master
 	void sendCommand(hw2::ServerInfo&);
@@ -20,9 +19,8 @@ class MasterChannel{
 		}
 		
 		int CommandChat(vector<WorkerInfo>&, std::mutex&, string, string, int);
+		void SetStub(std::shared_ptr<grpc::Channel> newStub);
 };
 
-
-void EstablishMasterChannel(hw2::WorkerInfo *myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex);
 
 #endif
