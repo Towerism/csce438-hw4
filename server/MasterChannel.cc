@@ -102,7 +102,6 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
           }
         }
       }
-	cerr << "Reader:" << myPort << " disconnected" << endl;
 	streamBroken = true;
 	hw2::ServerInfo si;
 	sendCommand(si);
