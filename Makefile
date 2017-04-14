@@ -1,7 +1,7 @@
 # List the source file names here for compilation
 CLIENT_FILES = fbc.cc arguments_parser.cc fb_client.cc command_stream.cc \
                join_command.cc list_command.cc chat_command.cc leave_command.cc \
-               command_factory.cc command_line.cc master_client.cc
+               command_factory.cc command_line.cc master_client.cc chatter.cc
 SERVER_FILES = fbsd.cc MasterChannel.cc file_locking.cc
 MASTER_FILES = fbmaster.cc
 

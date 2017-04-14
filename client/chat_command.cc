@@ -3,8 +3,8 @@
 #include <thread>
 #include <chrono>
 
-void ChatCommand::Execute() {
+bool ChatCommand::ExecuteMainAction() {
   std::cout << "You are now in CHAT mode...\n";
-  client.Chat();
+  return client.Chat();
 }
 

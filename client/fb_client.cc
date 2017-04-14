@@ -114,7 +114,7 @@ bool FbClient::Leave(std::string channelname) {
   return PrintReplyMessageOrReconnect();
 }
 
-void FbClient::List() {
+bool FbClient::List() {
   Request request;
   request.set_username(username);
 
@@ -132,70 +132,19 @@ void FbClient::List() {
     }
   } else {
     Reconnect();
+    return false;
   }
+  return true;
 }
 
 bool FbClient::Chat() {
-  std::string input;
-  const std::string controlMessage = "Set Stream";
-  Message m;
-  while (true) {
-    ClientContext context;
-    auto stream(stub->Chat(&context));
-    std::thread writer([&] {
-      bool resendInput = !input.empty() && input != controlMessage;
-      std::string prevInput = input;
-      input = "Set Stream";
-      m = MakeMessage(username, input);
-      try {
-        if (!stream->Write(m))
-          return;
-      } catch (...) {
-        return;
-      }
-      if (resendInput) {
-        m = MakeMessage(username, prevInput);
-        stream->Write(m);
-      }
-      while (getline(std::cin, input)) {
-        m = MakeMessage(username, input);
-        try {
-          if (!stream->Write(m))
-            return;
-        } catch (...) {
-          return;
-        }
-      }
-      stream->WritesDone();
-    });
+  ClientContext context;
+  auto stream = stub->Chat(&context);
+  Chatter chatter(username, std::move(stream));
 
-    std::thread reader([&] {
-      Message m;
-      try {
-        while (stream->Read(&m)) {
-          std::cout << m.username() << ": " << m.msg() << std::endl;
-        }
-      } catch (...) {
-        return;
-      }
-    });
+  chatter.Chat();
 
-    writer.join();
-    reader.join();
-    Reconnect();
-  }
+  Reconnect();
 
-  return PrintReplyMessageOrReconnect();
-}
-
-Message FbClient::MakeMessage(const std::string &username,
-                              const std::string &msg) {
-  Message m;
-  m.set_username(username);
-  m.set_msg(msg);
-  google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
-  timestamp->set_seconds(time(NULL));
-  timestamp->set_nanos(0);
-  m.set_allocated_timestamp(timestamp);
-  return m;
+  return false;
 }

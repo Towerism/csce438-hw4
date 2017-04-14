@@ -34,3 +34,6 @@ message Message {
   google.protobuf.Timestamp timestamp = 3;
 }
 
+message FollowedBy {
+  repeated string username = 1;
+}

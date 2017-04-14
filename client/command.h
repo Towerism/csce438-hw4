@@ -2,9 +2,18 @@
 
 #include <string>
 
-// Chain of Command Pattern
 class Command {
 public:
   virtual ~Command() = default;
-  virtual void Execute() = 0;
+  void Execute() {
+    if (!Parse())
+      return;
+    bool result;
+    do {
+      result = ExecuteMainAction();
+    } while (!result);
+  }
+protected:
+  virtual bool ExecuteMainAction() = 0;
+  virtual bool Parse() { return true; }
 };
