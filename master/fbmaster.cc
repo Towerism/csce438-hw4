@@ -43,8 +43,15 @@ struct WorkerProcess{
 		host = ""; port = 0; clientsConnected = 0;
 	}
 };
+struct MasterProcess{
+  string host;
+  int port;
+  ServerReaderWriter<WorkerInfo, WorkerInfo> *pipe;
+};
 
 vector<WorkerProcess> workerThreads; 
+vector<MasterProcess> masterReplicas;
+int GLOBAL_NEXT_REPLICA_ID;
 
 /// Returns TRUE if new host, FALSE otherwise
 bool insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
@@ -93,15 +100,43 @@ class MasterServiceImpl final : public MasterServer::Service{
 		return Status::OK;
 	}
 
-	Status MasterMasterCommunication(ServerContext *context, ServerReaderWriter<Empty, Empty>* stream) override{
+	Status MasterMasterCommunication(ServerContext *context, ServerReaderWriter<WorkerInfo, WorkerInfo>* stream) override{
 	// Doesn't actually do anything, just functions as a heartbeat between master and replicas
-	Empty message;
+	// also passes along information about new replicas
+	WorkerInfo message;
+	MasterProcess myProcess;
+        myProcess.pipe = stream;
 	while(stream->Read(&message)){
-
+	  myProcess.host = message.host();
+          myProcess.port = message.port();
+          masterReplicas.push_back(myProcess);
 	}
 	// Man down!
-	// If master down, hold election for who is new master
 	// if replica is down, spawn a new one if you are master
+        int removeLoc = -1;
+        for(int i = 0; i < masterReplicas.size(); ++i){
+ 	  if(masterReplicas[i].port == myProcess.port){
+ 	    removeLoc = i;
+	    break;
+	  }
+	}
+	masterReplicas.erase(masterReplicas.begin() + removeLoc);
+	WorkerInfo wi;
+	wi.set_host(myProcess.host);
+	wi.set_port(myProcess.port);
+	wi.set_previously_connected(true);
+ 	for(auto replica:masterReplicas){
+	  replica.pipe->Write(wi);
+	}
+	// Spawn a new replica
+	if(fork() == 0){
+	  size_t len=200;
+          char cwdBuf[len];
+          char *ptr = getcwd(cwdBuf, len);
+          execl("/bin/sh","sh","MasterReplicaStartup.sh", GLOBAL_NEXT_REPLICA_ID++, (char*)0);
+          return Status::CANCELLED;
+
+	}
 	return Status::OK;
 }
 
@@ -144,7 +179,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 						// Assign to other workers so they know to communicate with this server too
 						for(auto worker:workerThreads){
 							MasterInfo *mi = *select_randomly(newWorkers.begin(), newWorkers.end());
-							worker.pipe->Write(*mi);
+							// other worker may have disconnected, but not been removed from the list of available yet
+							try{
+							auto res = worker.pipe->Write(*mi);
+							}
+							catch(...){}
 						}
 					}
 					break;
@@ -191,7 +230,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 			mi.set_message_type(MasterInfo::REMOVE_SERVER);
 			mi.set_allocated_worker(downed);
 			for(auto worker:workerThreads){
-				worker.pipe->Write(mi);
+				// Have to try-catch. In the time between when this thread disconnected and an attempt to write to seomeone else occurs, they may also have disconnected
+				try{
+					auto res = worker.pipe->Write(mi);
+				}
+				catch(...){}
 			}
 			cerr << "Worker with port: " << myself.clientPort << " disconnected. No more workers on server: "<< myself.host << endl;
 		}
@@ -209,7 +252,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 				wi->set_client_port(wp.clientPort);
 				mi.set_allocated_worker(wi);
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
-				worker.pipe->Write(mi);
+				// have to try-catch incase 'worker' disconnected since this was started
+				try{
+				auto res = worker.pipe->Write(mi);
+				}
+				catch(...){}
 			}
 			cerr << "Worker with port: " << myself.clientPort << " disconnected. Told other workers to use other workers on host: " << myself.host<< endl; 
 		}
