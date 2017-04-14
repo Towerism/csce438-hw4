@@ -2,8 +2,10 @@
 
 #include <grpc++/grpc++.h>
 #include <iostream>
-#include <thread>
 #include <stdexcept>
+#include <thread>
+
+#define MAX_TRIES 3
 
 using grpc::Channel;
 using grpc::ChannelInterface;
@@ -11,23 +13,48 @@ using grpc::ClientContext;
 using grpc::Status;
 
 using namespace hw2;
-FbClient::FbClient(std::string username, std::shared_ptr<ChannelInterface> channel)
-  : username(username), masterClient(channel) {
+FbClient::FbClient(std::string username, std::string masterConnectionString)
+    : username(username), masterConnectionString(masterConnectionString) {
   ConnectToServer();
 }
 
 void FbClient::ConnectToServer() {
+  ResetMasterChannel();
   std::string worker_location;
-  auto result = masterClient.ConnectionPoint(worker_location);
+  grpc::Status result;
+  try {
+    result = masterClient.ConnectionPoint(worker_location);
+  } catch(...) {
+    result = grpc::Status(grpc::StatusCode::ABORTED, "");
+  }
   if (!result.ok()) {
     if (result.error_code() == grpc::StatusCode::CANCELLED)
       throw std::runtime_error(result.error_message());
-    else
-      throw std::runtime_error("Unable to connect to master.");
+    else {
+      if (tries == 0)
+        std::cout << "\nMaster is unavailable. Attempting reconnect.";
+      else
+        std::cout << '.';
+      std::cout << std::flush;
+      std::this_thread::sleep_for(std::chrono::seconds(3));
+      ++tries;
+      if (tries >= MAX_TRIES) {
+        throw std::runtime_error("Unable to connect to master");
+      }
+      ConnectToServer();
+      return;
+    }
   }
-  auto client_worker_channel = grpc::CreateChannel(worker_location,
-                                                   grpc::InsecureChannelCredentials());
+  tries = 0;
+  auto client_worker_channel =
+      grpc::CreateChannel(worker_location, grpc::InsecureChannelCredentials());
   stub = hw2::MessengerServer::NewStub(client_worker_channel);
+}
+
+void FbClient::ResetMasterChannel() {
+  auto channel = grpc::CreateChannel(masterConnectionString,
+                                     grpc::InsecureChannelCredentials());
+  masterClient = MasterClient(channel);
 }
 
 // Register a user name with the server
@@ -39,10 +66,12 @@ bool FbClient::Register() {
   ClientContext context;
   status = stub->Login(&context, request, &reply);
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  std::cout << " " << std::endl;
+
+  return PrintReplyMessageOrReconnect();
 }
 
-bool FbClient::PrintPossibleStatusFailuresForBasicReply() {
+bool FbClient::PrintReplyMessageOrReconnect() {
   if (status.ok())
     return PrintReplyMessage();
   Reconnect();
@@ -56,7 +85,7 @@ bool FbClient::PrintReplyMessage() {
 }
 
 void FbClient::Reconnect() {
-  std::cout << "Lost connection with server. Reconnecting... ";
+  std::cout << "Lost connection with server. Reconnecting...";
   ConnectToServer();
   Register();
 }
@@ -70,7 +99,7 @@ bool FbClient::Join(std::string channelname) {
   ClientContext context;
   status = stub->Join(&context, request, &reply);
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  return PrintReplyMessageOrReconnect();
 }
 
 bool FbClient::Leave(std::string channelname) {
@@ -82,7 +111,7 @@ bool FbClient::Leave(std::string channelname) {
   ClientContext context;
   status = stub->Leave(&context, request, &reply);
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  return PrintReplyMessageOrReconnect();
 }
 
 void FbClient::List() {
@@ -107,59 +136,66 @@ void FbClient::List() {
 }
 
 bool FbClient::Chat() {
-  bool request_whatsnew = true;
   std::string input;
+  const std::string controlMessage = "Set Stream";
   Message m;
   while (true) {
     ClientContext context;
     auto stream(stub->Chat(&context));
     std::thread writer([&] {
-        if (request_whatsnew) {
-          input  = "Set Stream";
-          m = MakeMessage(username, input);
-          stream->Write(m);
-          //request_whatsnew = false;
-        }
-        while(getline(std::cin, input)){
-          m = MakeMessage(username, input);
-          try {
-            if (!stream->Write(m))
-              return;
-          } catch (...) {
-            return;
-          }
-        }
-        stream->WritesDone();
-      });
-
-    std::thread reader([&] {
-        Message m;
+      bool resendInput = !input.empty() && input != controlMessage;
+      std::string prevInput = input;
+      input = "Set Stream";
+      m = MakeMessage(username, input);
+      try {
+        if (!stream->Write(m))
+          return;
+      } catch (...) {
+        return;
+      }
+      if (resendInput) {
+        m = MakeMessage(username, prevInput);
+        stream->Write(m);
+      }
+      while (getline(std::cin, input)) {
+        m = MakeMessage(username, input);
         try {
-          while(stream->Read(&m)){
-            std::cout << m.username() << ": " << m.msg() << std::endl;
-          }
-        }
-        catch (...) {
+          if (!stream->Write(m))
+            return;
+        } catch (...) {
           return;
         }
-      });
+      }
+      stream->WritesDone();
+    });
+
+    std::thread reader([&] {
+      Message m;
+      try {
+        while (stream->Read(&m)) {
+          std::cout << m.username() << ": " << m.msg() << std::endl;
+        }
+      } catch (...) {
+        return;
+      }
+    });
 
     writer.join();
     reader.join();
     Reconnect();
   }
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  return PrintReplyMessageOrReconnect();
 }
 
-Message FbClient::MakeMessage(const std::string& username, const std::string& msg) {
+Message FbClient::MakeMessage(const std::string &username,
+                              const std::string &msg) {
   Message m;
   m.set_username(username);
   m.set_msg(msg);
-  google::protobuf::Timestamp* timestamp = new google::protobuf::Timestamp();
+  google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(NULL));
   timestamp->set_nanos(0);
   m.set_allocated_timestamp(timestamp);
   return m;
 }
-
