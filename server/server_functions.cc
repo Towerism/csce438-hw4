@@ -7,6 +7,8 @@
 #define FOLLOWED_BY_LIST "_followed_by_list.txt"
 #define NEW_MESSAGE "_new_messages.txt"
 
+using namespace hw2;
+
 int readFile(string filename, vector<string> &result){
   lockFile(filename);
 	//if( access( filename.c_str(), F_OK ) == -1 ){
@@ -59,6 +61,7 @@ int listCommand(string client, vector<string> &allUsers, vector<string> &clientF
 		// User file is missing. Did they forget to validate?
 		return -1;
 	}
+  clientFollowing = parseOperations(clientFollowing);
 	return 0;
 }
 
@@ -89,65 +92,35 @@ int postMessage(string client, string message){
 	if(readFile(string(USER_FOLDER) + client + string(FOLLOWED_BY_LIST), followers) != 0){
 		return 1;
 	}
+  followers = parseOperations(followers);
 	for(auto follower:followers){
 		// IMPLEMENT: Safety checks for files existing
-		vector<string> followerNewMessages;
-		readFile(string(USER_FOLDER) + follower + string(NEW_MESSAGE), followerNewMessages);
-		followerNewMessages.push_back(message);
-		while(followerNewMessages.size() > 20){
-			followerNewMessages.erase(followerNewMessages.begin());
-		}
-		writeFile(string(USER_FOLDER) + follower + string(NEW_MESSAGE), followerNewMessages, true);
+		vector<string> followerNewMessages = { message };
+		writeFile(string(USER_FOLDER) + follower + string(NEW_MESSAGE), followerNewMessages);
 	}
 	return 0;
-}
-
-int removeFromFile(string fileUse, string removeFrom, string removeName, bool isMessages){
-	vector<string> clientFollowing;
-	readFile(string(USER_FOLDER) + removeFrom + fileUse, clientFollowing);
-	if(isMessages){
-		clientFollowing.erase(std::remove_if(clientFollowing.begin(), clientFollowing.end(), [&](string s){
-		s = "\n" + s;
-		Message msg;
-		msg.ParseFromString(s);
-		if(msg.username() == removeName){
-			return true;
-		}
-		return false;
-	}), clientFollowing.end());
-	}
-	else{
-		int removeLocation = -1;
-		for	(int i= 0; i< clientFollowing.size(); ++i){
-			if(clientFollowing[i] == removeName){
-				removeLocation = i;
-			}
-		}
-		if(removeLocation == -1){
-			// User was not part of the clients following list anyways
-			return 1;
-		}
-		clientFollowing.erase(clientFollowing.begin() + removeLocation);
-	}
-	writeFile(string(USER_FOLDER) + removeFrom + fileUse, clientFollowing, true);
-	return 0;
-
 }
 
 int leaveUser(string client, string user){
 	// Remove USER from CLIENT following list
-	if(	removeFromFile(string(FOLLOWING_LIST), client, user) != 0){
+  UserOperation removeUser;
+  removeUser.set_operation(UserOperation::REMOVE);
+  removeUser.set_username(user);
+  vector<string> removeUserOperation(1);
+  removeUser.SerializeToString(&removeUserOperation[0]);
+  UserOperation removeClient;
+  removeClient.set_operation(UserOperation::REMOVE);
+  removeClient.set_username(client);
+  vector<string> removeClientOperation(1);
+  removeClient.SerializeToString(&removeClientOperation[0]);
+	if(	writeFile(string(USER_FOLDER) + client + string(FOLLOWING_LIST), removeUserOperation) != 0){
 		// Failed to remove user from client following list
 		return 1;
 	}
 	// Remove CLIENT from USER followed_by list
-	if( removeFromFile(string(FOLLOWED_BY_LIST), user, client) != 0){
+	if( writeFile(string(USER_FOLDER) + user + string(FOLLOWED_BY_LIST), removeClientOperation) != 0){
 		// Failed to remove client from user followed by list
 		return 2;
-	}
-	// Remove USER messages from CLIENT NEW_MESSAGE
-	if( removeFromFile(string(NEW_MESSAGE), client, user, true) != 0){
-		return 3;
 	}
 	return 0;
 }
@@ -172,16 +145,17 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 
 	if (receivedPosition == recentMessages.size() - 1){
 		// Last received message is most recent message, return empty vector
-		return 0;
+    return 0;
 	}
 	if (receivedPosition == -1){
 		// lastReceived message was so old there are at least 20 new messages
 		// Or, an empty string was given in order to retrieve all messages
-		newMessages = recentMessages;
-		return 0;
+    receivedPosition = recentMessages.size() - 21;
 	}
 	for(int i = receivedPosition + 1; i< recentMessages.size(); ++i){
 		newMessages.push_back(recentMessages[i]);
+    if (newMessages.size() >= 20)
+      break;
 	}
 	return 0;
 }
@@ -200,6 +174,7 @@ int joinFriend(string client, string user){
 		// Friend either doesn't exist or their account has errors
 		return 1;
 	}
+  friendResult = parseOperations(friendResult);
 	// Check if user is already being followed by client
 //	if(std::find(friendResult.begin(), friendResult.end(), user) != friendResult.end()){
 	for(auto following:friendResult){
@@ -208,13 +183,21 @@ int joinFriend(string client, string user){
 		}
 	}
 //	}	
-	vector<string> clientVec = {client};
+  UserOperation addClientOperation;
+  addClientOperation.set_operation(UserOperation::ADD);
+  addClientOperation.set_username(client);
+	vector<string> clientVec(1);
+  addClientOperation.SerializeToString(&clientVec[0]);
 	if(writeFile(string(USER_FOLDER) + user + string(FOLLOWED_BY_LIST), clientVec) != 0){
 		// Couldn't access friends file for some reason. 
 		return 2;
 	}
 
-	vector<string> friendVec = {user};
+  UserOperation addFriendOperation;
+  addFriendOperation.set_operation(UserOperation::ADD);
+  addFriendOperation.set_username(user);
+	vector<string> friendVec(1);
+  addFriendOperation.SerializeToString(&friendVec[0]);
 	if(writeFile(string(USER_FOLDER) + client + string(FOLLOWING_LIST), friendVec) != 0){
 		//cerr << "Error: " + client + " failed to JOIN " + user << endl;
 		return 2;
@@ -222,6 +205,20 @@ int joinFriend(string client, string user){
 	return 0;
 }
 
-
+vector<string> parseOperations(const vector<string>& operations) {
+  std::unordered_map<string, string> lookupTable;
+  for (auto& operation : operations) {
+    UserOperation userOperation;
+    userOperation.ParseFromString(operation);
+    if (userOperation.operation() == UserOperation::ADD)
+      lookupTable[userOperation.username()] = userOperation.username();
+    else // UserOperation::REMOVE
+      lookupTable.erase(userOperation.username());
+  }
+  std::vector<string> result;
+  transform(lookupTable.begin(), lookupTable.end(), back_inserter(result),
+            [](pair<string, string> item) { return item.second;});
+  return result;
+}
 
 

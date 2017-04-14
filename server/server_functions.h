@@ -153,37 +153,6 @@ int registerUser(const string client);
 /// </Output>
 int postMessage(string client, string message);
 
-// <Title>  removeFromFile  </Title>
-/// <Purpose> helper function for leaveUser. Removes an undesired line from a file </Purpose>
-/// <Inputs>
-/// 	<Param>
-///			<Title> fileUse </Title>
-///			<Value> file extension (_following_list.txt) </Value>
-///		</Param>
-///		<Param>
-///			<Title> removeFrom </Title>
-///			<Value> The username that data is being removed from  </Value>
-///		</Param>
-///		<Param>
-///			<Title> removeName </Title>
-///			<Value> the line (username) to be removed </Value>
-///		</Param>
-///	</Inputs>
-/// <Output>
-///		<Param>
-///			<Title> Success </Title>
-/// 		<Value> 0 </Value>
-///		</Param>
-///		<Param>
-///			<Title> Client not following user to begin with </Title>
-///			<Value> 1 </Value>
-///		<Param>
-///			<Title> Failure </Title>
-///			<Value> - 1 </Value>
-///		</Param>
-/// </Output>
-int removeFromFile(string fileUse, string removeFrom, string removeName, bool isMessages = false);
-
 // <Title>  leaveUser  </Title>
 /// <Purpose> Unsubscribe CLIENT from USER </Purpose>
 /// <Inputs>
@@ -288,3 +257,5 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 ///		</Param>
 // </Output>
 int joinFriend(string client, string user);
+
+vector<string> parseOperations(const vector<string> &operations);

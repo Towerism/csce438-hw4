@@ -5,6 +5,7 @@
 #include <google/protobuf/duration.pb.h>
 #include <google/protobuf/util/time_util.h>
 #include <string>
+#include <unordered_map>
 #include <atomic>
 #include <vector>
 #include <fstream>
