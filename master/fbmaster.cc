@@ -51,8 +51,29 @@ struct MasterProcess{
 
 vector<WorkerProcess> workerThreads; 
 vector<MasterProcess> masterReplicas;
-int GLOBAL_NEXT_REPLICA_ID;
+int GLOBAL_NEXT_REPLICA_ID = 0;
 
+/// Ensures there are always 2 replicas running
+void ensureReplicas(){
+  while(true){
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); 
+    if(masterReplicas.size() < 2){
+      GLOBAL_NEXT_REPLICA_ID = GLOBAL_NEXT_REPLICA_ID + 1;
+
+      if(fork() == 0){
+        size_t len=200;
+        char cwdBuf[len];
+        char *ptr = getcwd(cwdBuf, len);
+	std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("MasterReplicaStartup.sh"); 
+        auto res = execl("/bin/sh","sh",execAddress.c_str(),
+		std::string(to_string( GLOBAL_NEXT_REPLICA_ID)).c_str(),
+		(char*)0);
+	cerr << "Execl returned: " << res << " With error code: " << strerror(errno) << endl;
+	return;
+      }
+    }
+  }
+}
 /// Returns TRUE if new host, FALSE otherwise
 bool insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
 
@@ -109,6 +130,15 @@ class MasterServiceImpl final : public MasterServer::Service{
 	while(stream->Read(&message)){
 	  myProcess.host = message.host();
           myProcess.port = message.port();
+	  message.set_previously_connected(false);
+          WorkerInfo repWi;
+          repWi.set_previously_connected(false);
+	  for(auto replica:masterReplicas){
+	    replica.pipe->Write(message);
+	    repWi.set_host(replica.host);
+	    repWi.set_port(replica.port);
+	    stream->Write(repWi);
+	  }
           masterReplicas.push_back(myProcess);
 	}
 	// Man down!
@@ -128,15 +158,7 @@ class MasterServiceImpl final : public MasterServer::Service{
  	for(auto replica:masterReplicas){
 	  replica.pipe->Write(wi);
 	}
-	// Spawn a new replica
-	if(fork() == 0){
-	  size_t len=200;
-          char cwdBuf[len];
-          char *ptr = getcwd(cwdBuf, len);
-          execl("/bin/sh","sh","MasterReplicaStartup.sh", GLOBAL_NEXT_REPLICA_ID++, (char*)0);
-          return Status::CANCELLED;
-
-	}
+	// Spawning a new replica is handled by the ensureReplicas thread.
 	return Status::OK;
 }
 
@@ -280,15 +302,24 @@ void RunServer(){
     // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
 
 
-
+    thread replicaCheck(ensureReplicas);
     server->Wait();
+    replicaCheck.join();
 }
 
 int main(int argc, char** argv) {
-  if(argc > 2 ){
+  if(argc !=  2 ){
     printf("Invalid arguments.\n");
-    printf("USAGE: %s \n", argv[0]);
+    printf("USAGE: %s <id> \n", argv[0]);
     return 1;
+  }
+  try{
+    GLOBAL_NEXT_REPLICA_ID = stoi(argv[1]);
+  }
+  catch(...){
+    printf("Invalid argument, id should be an integer.\n");
+    printf("USAGE: %s <id> \n", argv[0]);
+    return 2;
   }
   RunServer();
   return 0;

@@ -38,11 +38,9 @@ class MasterServiceImpl final : public MasterServer::Service{
   Status MasterMasterChat(ServerContext *context, const MasterChat *request, MasterChat *reply) override{
     // Election process of who gets to become master
     reply->set_spawnid(GLOBAL_SPAWN_ID);
+    reply->set_replicate(false);
     if(request->spawnid() > GLOBAL_SPAWN_ID){
       reply->set_replicate(true);
-    }
-    else{
-      reply->set_replicate(false);
     }
     return Status::OK;
   }
@@ -59,7 +57,7 @@ void RunServer(int myPort){
   builder.RegisterService(&service);
   // Assemble server
   std::unique_ptr<Server> server(builder.BuildAndStart());
-  cout << "Master replica listening on " << address << " for comms" << endl;
+  cout << "Master replica listening on " << address << " for comms. myID: " << GLOBAL_SPAWN_ID << endl;
   size_t len = 128;
   char hostname[len];
   gethostname(hostname, len);
@@ -84,7 +82,7 @@ int main(int argc, char** argv) {
   int myId = -1;
   try{
     port = stoi(argv[1]);
-    myId = stoi(argv[1]);
+    myId = stoi(argv[2]);
   }
   catch(...){
     printf("Error converting port|id to int!\n");

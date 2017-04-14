@@ -94,7 +94,8 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 				size_t len=200;
 				char cwdBuf[len];
 				char *ptr = getcwd(cwdBuf, len);
-				execl("/bin/sh","sh","WorkerStartup.sh", masterHost.c_str(), (char*)0);
+				std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("WorkerStartup.sh");
+				execl("/bin/sh","sh",execAddress.c_str(), masterHost.c_str(), (char*)0);
 				return 1;
              }
 	    

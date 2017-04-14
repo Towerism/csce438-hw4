@@ -17,6 +17,7 @@ class MasterMasterChannel{
       while(stream->Read(&other)){
         if(!other.previously_connected()){
           others.push_back(other);
+	  cerr << "Replica " << myInfo.port() << " Just added replica: " << other.port() << endl;
         }
         else{
           int removeLoc = -1;
@@ -27,14 +28,19 @@ class MasterMasterChannel{
 	    }
           }
           if(removeLoc != -1){
+	    cerr << "Replica" << myInfo.port() << " Just removed replica: " << other.port() << endl;
 	    others.erase(others.begin() + removeLoc);
           }
         }
       }
     });
    myInfo.set_previously_connected(false); // Using this as a flag for add/remove of replicas
-   stream->Write(myInfo);
+   bool writeRes = stream->Write(myInfo);
+
    reader.join();
+   if(!writeRes)
+	return;
+   cout << "Replica "<< myInfo.port() << " determined tehre are currently " << others.size() << " other replicas rn" << endl;
    // Disconnected from master. Chat with other replicas to determine who is the new master
    for(int i = 0; i < others.size(); ++i){
         std::string replicaConnectionInfo = std::string(others[i].host()) + ":" + std::to_string(others[i].port());
@@ -53,7 +59,8 @@ class MasterMasterChannel{
    char cwdBuf[200];
    size_t len = 200;
    char *ptr = getcwd(cwdBuf, len);
-   execl("/bin/sh","sh","MasterStartup.sh", myId, (char*)0);
+   std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("MasterStartup.sh");
+   execl("/bin/sh","sh",execAddress.c_str(), std::to_string(myId).c_str(), (char*)0);
    return ;
 
   } 
