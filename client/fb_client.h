@@ -39,7 +39,7 @@ private:
   void ResetMasterChannel();
 
   void Reconnect();
-  bool PrintPossibleStatusFailuresForBasicReply();
+  bool PrintReplyMessageOrReconnect();
   bool PrintReplyMessage();
   hw2::Message MakeMessage(const std::string& username, const std::string& msg);
 };

@@ -31,6 +31,11 @@ void FbClient::ConnectToServer() {
     if (result.error_code() == grpc::StatusCode::CANCELLED)
       throw std::runtime_error(result.error_message());
     else {
+      if (tries == 0)
+        std::cout << "\nMaster is unavailable. Attempting reconnect.";
+      else
+        std::cout << '.';
+      std::cout << std::flush;
       std::this_thread::sleep_for(std::chrono::seconds(3));
       ++tries;
       if (tries >= MAX_TRIES) {
@@ -61,10 +66,12 @@ bool FbClient::Register() {
   ClientContext context;
   status = stub->Login(&context, request, &reply);
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  std::cout << " " << std::endl;
+
+  return PrintReplyMessageOrReconnect();
 }
 
-bool FbClient::PrintPossibleStatusFailuresForBasicReply() {
+bool FbClient::PrintReplyMessageOrReconnect() {
   if (status.ok())
     return PrintReplyMessage();
   Reconnect();
@@ -78,7 +85,7 @@ bool FbClient::PrintReplyMessage() {
 }
 
 void FbClient::Reconnect() {
-  std::cout << "Lost connection with server. Reconnecting... ";
+  std::cout << "Lost connection with server. Reconnecting...";
   ConnectToServer();
   Register();
 }
@@ -92,7 +99,7 @@ bool FbClient::Join(std::string channelname) {
   ClientContext context;
   status = stub->Join(&context, request, &reply);
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  return PrintReplyMessageOrReconnect();
 }
 
 bool FbClient::Leave(std::string channelname) {
@@ -104,7 +111,7 @@ bool FbClient::Leave(std::string channelname) {
   ClientContext context;
   status = stub->Leave(&context, request, &reply);
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  return PrintReplyMessageOrReconnect();
 }
 
 void FbClient::List() {
@@ -178,7 +185,7 @@ bool FbClient::Chat() {
     Reconnect();
   }
 
-  return PrintPossibleStatusFailuresForBasicReply();
+  return PrintReplyMessageOrReconnect();
 }
 
 Message FbClient::MakeMessage(const std::string &username,

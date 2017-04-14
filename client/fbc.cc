@@ -17,9 +17,13 @@ int main(int argc, char **argv) {
   auto arguments = argsParser.Parse();
   if (!arguments.Valid)
     printUsage(argv[0]);
-  FbClient client(arguments.Username, arguments.ConnectionString);
-  if (!client.Register())
-    return 1;
-  CommandLine::Run(client);
+  try {
+    FbClient client(arguments.Username, arguments.ConnectionString);
+    if (!client.Register())
+      return 1;
+    CommandLine::Run(client);
+  } catch(std::runtime_error& e) {
+    std::cerr << "\n\nError: " << e.what() << std::endl;
+  }
   return 0;
 }
