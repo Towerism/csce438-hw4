@@ -68,7 +68,9 @@ void ensureReplicas(){
         auto res = execl("/bin/sh","sh",execAddress.c_str(),
 		std::string(to_string( GLOBAL_NEXT_REPLICA_ID)).c_str(),
 		(char*)0);
+#ifdef DEBUG
 	cerr << "Execl returned: " << res << " With error code: " << strerror(errno) << endl;
+#endif
 	return;
       }
     }
@@ -172,7 +174,9 @@ class MasterServiceImpl final : public MasterServer::Service{
 				case ServerInfo::REGISTER:{
 					// REGISTER WORKER
 					WorkerInfo request = message.worker();
+#ifdef DEBUG
 					cout << "Request to register from: " << request.host() << ":" << request.port() << endl;
+#endif
 			        myself.host = request.host();
 			        myself.clientsConnected = request.client_count();
 			        myself.port = request.port();
@@ -258,7 +262,9 @@ class MasterServiceImpl final : public MasterServer::Service{
 				}
 				catch(...){}
 			}
+#ifdef DEBUG
 			cerr << "Worker with port: " << myself.clientPort << " disconnected. No more workers on server: "<< myself.host << endl;
+#endif
 		}
 		else{
 			WorkerProcess wi = *select_randomly(backupWorkers.begin(), backupWorkers.end());
@@ -280,7 +286,9 @@ class MasterServiceImpl final : public MasterServer::Service{
 				}
 				catch(...){}
 			}
+#ifdef DEBUG
 			cerr << "Worker with port: " << myself.clientPort << " disconnected. Told other workers to use other workers on host: " << myself.host<< endl; 
+#endif
 		}
 		return Status::OK;
 	}

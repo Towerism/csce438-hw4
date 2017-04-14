@@ -57,7 +57,9 @@ void RunServer(int myPort){
   builder.RegisterService(&service);
   // Assemble server
   std::unique_ptr<Server> server(builder.BuildAndStart());
+#ifdef DEBUG
   cout << "Master replica listening on " << address << " for comms. myID: " << GLOBAL_SPAWN_ID << endl;
+#endif
   size_t len = 128;
   char hostname[len];
   gethostname(hostname, len);

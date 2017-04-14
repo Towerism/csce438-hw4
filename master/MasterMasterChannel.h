@@ -17,7 +17,9 @@ class MasterMasterChannel{
       while(stream->Read(&other)){
         if(!other.previously_connected()){
           others.push_back(other);
+#ifdef DEBUG
 	  cerr << "Replica " << myInfo.port() << " Just added replica: " << other.port() << endl;
+#endif
         }
         else{
           int removeLoc = -1;
@@ -28,7 +30,9 @@ class MasterMasterChannel{
 	    }
           }
           if(removeLoc != -1){
+#ifdef DEBUG
 	    cerr << "Replica" << myInfo.port() << " Just removed replica: " << other.port() << endl;
+#endif
 	    others.erase(others.begin() + removeLoc);
           }
         }
@@ -40,7 +44,9 @@ class MasterMasterChannel{
    reader.join();
    if(!writeRes)
 	return;
+#ifdef DEBUG
    cout << "Replica "<< myInfo.port() << " determined tehre are currently " << others.size() << " other replicas rn" << endl;
+#endif
    // Disconnected from master. Chat with other replicas to determine who is the new master
    for(int i = 0; i < others.size(); ++i){
         std::string replicaConnectionInfo = std::string(others[i].host()) + ":" + std::to_string(others[i].port());

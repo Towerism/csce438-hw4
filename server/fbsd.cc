@@ -153,7 +153,9 @@ void RunServer(const int port, std::string masterHost){
   builder.RegisterService(&service);
   // Assemble server
   std::unique_ptr<Server> server(builder.BuildAndStart());
+#ifdef DEBUG
   cout << "Worker listening on " << address << " for clients" << endl;
+#endif
   hw2::WorkerInfo wi;
   int masterPort = port + 1; // port other Worker Threads can contact me at
 	size_t len = 128;
@@ -231,8 +233,9 @@ void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int 
 
 	int connectionAttempts = 0;
 	for(;;){
-	//	cerr << "Top of for loop in Establish Channel" << endl;
+#ifdef DEBUG
 		cerr << "Connection #: " << connectionAttempts++ << endl;
+#endif
 		auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 		// Run infinitely so if master crashes a new connection is established
 		if(GLOBAL_Master_Channel != NULL){
