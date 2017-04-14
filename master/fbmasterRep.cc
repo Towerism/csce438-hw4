@@ -47,10 +47,10 @@ class MasterServiceImpl final : public MasterServer::Service{
     return Status::OK;
   }
 };
-void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherReplicas, std::mutex &replicasMutex);
+void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort );
 
-void RunServer(int myPort, int myId){
-  string address = "0.0.0.0:" + to_string(port);
+void RunServer(int myPort){
+  string address = "0.0.0.0:" + to_string(myPort);
   MasterServiceImpl service;
   ServerBuilder builder;
   //Listen on address without authentication
@@ -65,8 +65,8 @@ void RunServer(int myPort, int myId){
   gethostname(hostname, len);
   WorkerInfo wi;
   wi.set_host(std::string(hostname));
-  wi.set_port(port);
-  thread commandThread(EstablishMasterChannel,wi,hostname,MASTER_PORT, myId);
+  wi.set_port(myPort);
+  thread commandThread(EstablishMasterChannel,wi,std::string(hostname),MASTER_PORT);
   // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
 
   server->Wait();
@@ -92,16 +92,16 @@ int main(int argc, char** argv) {
     return 2;
   }
   GLOBAL_SPAWN_ID = myId;
-  RunServer(port, myId);
+  RunServer(port);
   return 0;
 }
-void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, int myId ){
+void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort ){
 
   string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
   for(;;){
     auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
-    MasterMasterChannel mmc(myself, myId, chnl); 
-    mmc.hearbeatMaster();
+    MasterMasterChannel mmc(myself, GLOBAL_SPAWN_ID , chnl); 
+    mmc.heartbeatMaster();
   }
 
 }

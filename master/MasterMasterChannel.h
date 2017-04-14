@@ -10,7 +10,7 @@ class MasterMasterChannel{
   MasterMasterChannel(hw2::WorkerInfo wi, int id,  std::shared_ptr<grpc::ChannelInterface> channel): myInfo(wi), stub(hw2::MasterServer::NewStub(channel)), myId(id){}
   void heartbeatMaster(){
     vector<WorkerInfo> others;
-    ClientContext context;
+    grpc::ClientContext context;
     auto stream(stub->MasterMasterCommunication(&context));
     std::thread reader([&](){
       WorkerInfo other;
@@ -21,7 +21,7 @@ class MasterMasterChannel{
         else{
           int removeLoc = -1;
  	  for(int i = 0; i < others.size(); ++ i){
-	    if(others[i].port() == other.port(){
+	    if(others[i].port() == other.port()){
  	      removeLoc = i;
 	      break;
 	    }
@@ -42,9 +42,9 @@ class MasterMasterChannel{
 	auto stub = hw2::MasterServer::NewStub(chnl);
         hw2::MasterChat mcRequest;
         hw2::MasterChat mcReply;
-	ClientContext context;
-        mc.set_spawnid(myId);
-        mc.set_replicate(true);
+	grpc::ClientContext context;
+        mcRequest.set_spawnid(myId);
+        mcRequest.set_replicate(true);
  	auto res = stub->MasterMasterChat(&context, mcRequest, &mcReply);
         if(!mcReply.replicate()) return;
    }
@@ -54,7 +54,7 @@ class MasterMasterChannel{
    size_t len = 200;
    char *ptr = getcwd(cwdBuf, len);
    execl("/bin/sh","sh","MasterStartup.sh", myId, (char*)0);
-   return 1;
+   return ;
 
   } 
 

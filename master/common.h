@@ -40,6 +40,7 @@ using hw2::ConnectionReply;
 using hw2::WorkerInfo;
 using hw2::ServerInfo;
 using hw2::MasterInfo;
+using hw2::MasterChat;
 using namespace std;
 
 

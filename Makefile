@@ -4,6 +4,7 @@ CLIENT_FILES = fbc.cc arguments_parser.cc fb_client.cc command_stream.cc \
                command_factory.cc command_line.cc master_client.cc
 SERVER_FILES = fbsd.cc MasterChannel.cc file_locking.cc
 MASTER_FILES = fbmaster.cc
+MASTER_REPLICA_FILES = fbmasterRep.cc
 
 PROTO_FILES = fb.proto master.proto
 
@@ -13,40 +14,44 @@ CXX_CONVENTION = .cc
 PROTO_SOURCE_FILES = $(PROTO_FILES:.proto=.pb.cc) $(PROTO_FILES:.proto=.grpc.pb.cc)
 
 # Convenience variable to hold all of the files
-FILES = $(CLIENT_FILES) $(SERVER_FILES) $(PROTO_SOURCE_FILES) $(MASTER_FILES)
+FILES = $(CLIENT_FILES) $(SERVER_FILES) $(PROTO_SOURCE_FILES) $(MASTER_FILES) $(MASTER_REPLICA_FILES)
 
 # Directory names
 CLIENT_DIR = client
 SERVER_DIR = server
 PROTO_DIR = protocol
 MASTER_DIR = master
+MASTER_REPLICA_DIR = master
 DIRS = $(CLIENT_DIR) $(SERVER_DIR) $(PROTO_DIR) $(MASTER_DIR)
 
 # Executable names
 CLIENT = fbc
 SERVER = fbsd
 MASTER = fbmaster
+MASTER_REPLICA = fbmasterRep
 
 # Generate the full path names for our files
 CLIENT_SOURCES = $(patsubst %,$(CLIENT_DIR)/%,$(CLIENT_FILES))
 SERVER_SOURCES = $(patsubst %,$(SERVER_DIR)/%,$(SERVER_FILES))
 MASTER_SOURCES = $(patsubst %,$(MASTER_DIR)/%,$(MASTER_FILES))
+MASTER_REPLICA_SOURCES = $(patsubst %,$(MASTER_REPLICA_DIR)/%,$(MASTER_REPLICA_FILES))
 PROTO_SOURCES = $(patsubst %,$(PROTO_DIR)/%,$(PROTO_SOURCE_FILES))
-SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
+SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES) $(MASTER_SOURCES) $(MASTER_REPLICA_SOURCES)
 
 # Tempdir where are object files will be
 OBJECTS_DIR = objects
 OBJECTS_DIRS = $(patsubst %,$(OBJECTS_DIR)/%,$(DIRS))
 
 # List of stuff to clean
-CLEAN = $(CLIENT) $(SERVER) $(MASTER) $(OBJECTS_DIR) $(PROTO_DIR)/*.cc $(PROTO_DIR)/*.h
+CLEAN = $(CLIENT) $(SERVER) $(MASTER) $(MASTER_REPLICA) $(OBJECTS_DIR) $(PROTO_DIR)/*.cc $(PROTO_DIR)/*.h
 
 # Generate the object names for our files
 PROTO_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(PROTO_DIR)/%.o,$(PROTO_SOURCE_FILES))
 CLIENT_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(CLIENT_DIR)/%.o,$(CLIENT_FILES)) $(PROTO_OBJECTS)
 SERVER_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(SERVER_DIR)/%.o,$(SERVER_FILES)) $(PROTO_OBJECTS)
 MASTER_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(MASTER_DIR)/%.o,$(MASTER_FILES)) $(PROTO_OBJECTS)
-OBJECTS = $(CLIENT_OBJECTS) $(SERVER_OBJECTS)
+MASTER_REPLICA_OBJECTS = $(patsubst %$(CXX_CONVENTION),$(OBJECTS_DIR)/$(MASTER_REPLICA_DIR)/%.o,$(MASTER_REPLICA_FILES)) $(PROTO_OBJECTS)
+OBJECTS = $(CLIENT_OBJECTS) $(SERVER_OBJECTS) $(MASTER_OBJECTS) $(MASTER_REPLICA_OBJECTS)
 
 # Generate the dependencies of our source files
 DEPS = $(OBJECTS:.o=.d)
@@ -78,11 +83,11 @@ RM = rm -rf
 # mkdir comman
 MKDIR = mkdir -p
 
-vpath %$(CXX_CONVENTION) $(CLIENT_DIR):$(SERVER_DIR):$(MASTER_DIR):$(PROTO_DIR) 
+vpath %$(CXX_CONVENTION) $(CLIENT_DIR):$(SERVER_DIR):$(MASTER_DIR):$(MASTER_REPLICA_DIR):$(PROTO_DIR) 
 
 .DEFAULT: all
 
-all: $(PROTO_SOURCES) $(CLIENT) $(SERVER) $(MASTER)
+all: $(PROTO_SOURCES) $(CLIENT) $(SERVER) $(MASTER) $(MASTER_REPLICA)
 
 $(OBJECTS_DIR)/%.o: %$(CXX_CONVENTION) $(PROTO_SOURCES)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -c -o $@
@@ -95,6 +100,9 @@ $(CLIENT): $(CLIENT_OBJECTS)
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 $(MASTER): $(MASTER_OBJECTS)
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+$(MASTER_REPLICA): $(MASTER_REPLICA_OBJECTS)
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 $(SERVER): $(SERVER_OBJECTS)
