@@ -1,8 +1,10 @@
 #include "join_command.h"
 
-void JoinCommand::Execute() {
-  auto argument = commandStream.Argument();
-  if (!commandStream.IsGood())
-    return;
-  client.Join(argument);
+bool JoinCommand::Parse() {
+  argument = commandStream.Argument();
+  return commandStream.IsGood();
+}
+
+bool JoinCommand::ExecuteMainAction() {
+  return client.Join(argument);
 }

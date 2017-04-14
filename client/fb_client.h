@@ -1,12 +1,11 @@
 #pragma once
 
 #include <fb.grpc.pb.h>
-#include <mutex>
-#include <condition_variable>
 
 #include <string>
 #include <memory>
 #include "master_client.h"
+#include "chatter.h"
 
 class FbClient {
 public:
@@ -21,7 +20,7 @@ public:
   bool Leave(std::string channelname);
 
   // List users and joined users
-  void List();
+  bool List();
 
   // Enter chat mode
   bool Chat();
@@ -32,14 +31,13 @@ private:
   std::unique_ptr<hw2::MessengerServer::Stub> stub;
   grpc::Status status;
   hw2::Reply reply;
-  hw2::Message mostRecentMessage;
   MasterClient masterClient;
   std::string masterConnectionString;
+
   void ConnectToServer();
   void ResetMasterChannel();
 
   void Reconnect();
   bool PrintReplyMessageOrReconnect();
   bool PrintReplyMessage();
-  hw2::Message MakeMessage(const std::string& username, const std::string& msg);
 };

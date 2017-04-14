@@ -10,8 +10,7 @@ public:
   ChatCommand(FbClient& client)
     : client(client) {}
 
-  void Execute() override;
+  bool ExecuteMainAction() override;
 private:
   FbClient& client;
-
 };

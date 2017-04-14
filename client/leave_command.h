@@ -10,8 +10,10 @@ public:
   LeaveCommand(FbClient& client, CommandStream& commandStream)
     : client(client), commandStream(commandStream) {}
 
-  void Execute() override;
+  bool Parse() override;
+  bool ExecuteMainAction() override;
 private:
   FbClient& client;
   CommandStream& commandStream;
+  std::string argument;
 };

@@ -1,8 +1,10 @@
 #include "leave_command.h"
 
-void LeaveCommand::Execute() {
-  auto argument = commandStream.Argument();
-  if (!commandStream.IsGood())
-    return;
-  client.Leave(argument);
+bool LeaveCommand::Parse() {
+  argument = commandStream.Argument();
+  return commandStream.IsGood();
+}
+
+bool LeaveCommand::ExecuteMainAction() {
+  return client.Leave(argument);
 }

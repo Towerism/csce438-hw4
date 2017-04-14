@@ -9,8 +9,9 @@ class NullCommand : public Command {
 public:
   NullCommand(CommandStream& commandStream) : commandStream(commandStream) {}
 
-  void Execute() override {
+  bool ExecuteMainAction() override {
     std::cout << "Unfamiliar command line: " << commandStream.CommandLine() << std::endl;
+    return true;
   }
 private:
   CommandStream& commandStream;
