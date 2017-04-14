@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MASTER_CHANNEL_HEADER_GUARD
+#define MASTER_CHANNEL_HEADER_GUARD
 #include "common.h"
 #include <mutex>
 #include <condition_variable>
@@ -11,7 +12,7 @@ class MasterChannel{
 	std::condition_variable cvMutex;
 	bool ready = false;
 	hw2::ServerInfo outMessage;
-	
+	bool connectedPrimaryTime = false;
 	public:
 	// Send new information to master
 	void sendCommand(hw2::ServerInfo&);
@@ -19,4 +20,9 @@ class MasterChannel{
 		}
 		
 		int CommandChat(vector<WorkerInfo>&, std::mutex&, string, string, int);
+		void SetStub(std::shared_ptr<grpc::Channel> newStub);
+		const bool connectedBefore(){return connectedPrimaryTime;}
 };
+
+
+#endif

@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <iostream>
 #include <thread>
+#include <chrono>
 // For maintaining database of how active workers are
 #include <tuple>
 #include <unordered_map>
@@ -40,6 +41,7 @@ using hw2::ConnectionReply;
 using hw2::WorkerInfo;
 using hw2::ServerInfo;
 using hw2::MasterInfo;
+using hw2::MasterChat;
 using namespace std;
 
 

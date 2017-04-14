@@ -9,17 +9,27 @@ void MasterChannel::sendCommand(hw2::ServerInfo &value){
 		cvMutex.notify_one();
 	}
 }
+
+void MasterChannel::SetStub(std::shared_ptr<grpc::Channel> newStub){
+
+	stub = hw2::MasterServer::NewStub(newStub);
+}
 int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
-
+  atomic<bool> streamBroken = ATOMIC_VAR_INIT(false);
   std::thread writer([&] {
       while(true){
 		  std::unique_lock<std::mutex> lk(sendMutex);
 		  cvMutex.wait(lk, [&]{return ready;});
 		  ready = false;
-		  
+		  if(streamBroken){
+			break;
+			}
           stream->Write(outMessage);
+			// We've made it this far, pipe was open at least long enough to write Register command
+		  connectedPrimaryTime = true;
+		
 		  lk.unlock();
 		  cvMutex.notify_one();
       }
@@ -81,10 +91,11 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 			cout << "Message to clone received" << endl;
             // Spawn a clone
 		    if(fork() == 0){
-		 	    char cwdBuf[200];
-				size_t len;
+				size_t len=200;
+				char cwdBuf[len];
 				char *ptr = getcwd(cwdBuf, len);
-				execl("/bin/sh","sh","WorkerStartup.sh", masterHost.c_str(), (char*)0);
+				std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("WorkerStartup.sh");
+				execl("/bin/sh","sh",execAddress.c_str(), masterHost.c_str(), (char*)0);
 				return 1;
              }
 	    
@@ -92,6 +103,9 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
           }
         }
       }
+	streamBroken = true;
+	hw2::ServerInfo si;
+	sendCommand(si);
     });
 
   writer.join();
@@ -99,3 +113,4 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 
 	return 0;
 }
+

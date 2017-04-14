@@ -32,6 +32,7 @@
 /fbc
 /fbsd
 /fbmaster
+/fbmasterRep
 /protocol/*.pb.cc
 /protocol/*.pb.h
 /objects

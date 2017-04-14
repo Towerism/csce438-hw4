@@ -43,9 +43,39 @@ struct WorkerProcess{
 		host = ""; port = 0; clientsConnected = 0;
 	}
 };
+struct MasterProcess{
+  string host;
+  int port;
+  ServerReaderWriter<WorkerInfo, WorkerInfo> *pipe;
+};
 
 vector<WorkerProcess> workerThreads; 
+vector<MasterProcess> masterReplicas;
+int GLOBAL_NEXT_REPLICA_ID = 0;
 
+/// Ensures there are always 2 replicas running
+void ensureReplicas(){
+  while(true){
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); 
+    if(masterReplicas.size() < 2){
+      GLOBAL_NEXT_REPLICA_ID = GLOBAL_NEXT_REPLICA_ID + 1;
+
+      if(fork() == 0){
+        size_t len=200;
+        char cwdBuf[len];
+        char *ptr = getcwd(cwdBuf, len);
+	std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("MasterReplicaStartup.sh"); 
+        auto res = execl("/bin/sh","sh",execAddress.c_str(),
+		std::string(to_string( GLOBAL_NEXT_REPLICA_ID)).c_str(),
+		(char*)0);
+#ifdef DEBUG
+	cerr << "Execl returned: " << res << " With error code: " << strerror(errno) << endl;
+#endif
+	return;
+      }
+    }
+  }
+}
 /// Returns TRUE if new host, FALSE otherwise
 bool insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
 
@@ -93,6 +123,49 @@ class MasterServiceImpl final : public MasterServer::Service{
 		return Status::OK;
 	}
 
+	Status MasterMasterCommunication(ServerContext *context, ServerReaderWriter<WorkerInfo, WorkerInfo>* stream) override{
+	// Doesn't actually do anything, just functions as a heartbeat between master and replicas
+	// also passes along information about new replicas
+	WorkerInfo message;
+	MasterProcess myProcess;
+        myProcess.pipe = stream;
+	while(stream->Read(&message)){
+	  myProcess.host = message.host();
+          myProcess.port = message.port();
+	  message.set_previously_connected(false);
+          WorkerInfo repWi;
+          repWi.set_previously_connected(false);
+	  for(auto replica:masterReplicas){
+	    replica.pipe->Write(message);
+	    repWi.set_host(replica.host);
+	    repWi.set_port(replica.port);
+	    stream->Write(repWi);
+	  }
+          masterReplicas.push_back(myProcess);
+	}
+	// Man down!
+	// if replica is down, spawn a new one if you are master
+        int removeLoc = -1;
+        for(int i = 0; i < masterReplicas.size(); ++i){
+ 	  if(masterReplicas[i].port == myProcess.port){
+ 	    removeLoc = i;
+	    break;
+	  }
+	}
+	masterReplicas.erase(masterReplicas.begin() + removeLoc);
+	WorkerInfo wi;
+	wi.set_host(myProcess.host);
+	wi.set_port(myProcess.port);
+	wi.set_previously_connected(true);
+ 	for(auto replica:masterReplicas){
+	  replica.pipe->Write(wi);
+	}
+	// Spawning a new replica is handled by the ensureReplicas thread.
+	return Status::OK;
+}
+
+
+
 	Status MasterWorkerCommunication(ServerContext *context, ServerReaderWriter<MasterInfo, ServerInfo>* stream) override{
 		ServerInfo message;
 		WorkerProcess myself;
@@ -101,14 +174,16 @@ class MasterServiceImpl final : public MasterServer::Service{
 				case ServerInfo::REGISTER:{
 					// REGISTER WORKER
 					WorkerInfo request = message.worker();
+#ifdef DEBUG
 					cout << "Request to register from: " << request.host() << ":" << request.port() << endl;
+#endif
 			        myself.host = request.host();
 			        myself.clientsConnected = request.client_count();
 			        myself.port = request.port();
 					myself.clientPort = request.client_port();
 					myself.pipe = stream;
 			        bool newHost = insertOrdered(myself);
-					if(newHost){
+					if(newHost && !request.previously_connected()){
 						// Spawn 2 clones
 							MasterInfo instruction;
 							instruction.set_message_type(MasterInfo::SPAWN_CLONE);
@@ -130,7 +205,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 						// Assign to other workers so they know to communicate with this server too
 						for(auto worker:workerThreads){
 							MasterInfo *mi = *select_randomly(newWorkers.begin(), newWorkers.end());
-							worker.pipe->Write(*mi);
+							// other worker may have disconnected, but not been removed from the list of available yet
+							try{
+							auto res = worker.pipe->Write(*mi);
+							}
+							catch(...){}
 						}
 					}
 					break;
@@ -177,9 +256,15 @@ class MasterServiceImpl final : public MasterServer::Service{
 			mi.set_message_type(MasterInfo::REMOVE_SERVER);
 			mi.set_allocated_worker(downed);
 			for(auto worker:workerThreads){
-				worker.pipe->Write(mi);
+				// Have to try-catch. In the time between when this thread disconnected and an attempt to write to seomeone else occurs, they may also have disconnected
+				try{
+					auto res = worker.pipe->Write(mi);
+				}
+				catch(...){}
 			}
+#ifdef DEBUG
 			cerr << "Worker with port: " << myself.clientPort << " disconnected. No more workers on server: "<< myself.host << endl;
+#endif
 		}
 		else{
 			WorkerProcess wi = *select_randomly(backupWorkers.begin(), backupWorkers.end());
@@ -195,9 +280,15 @@ class MasterServiceImpl final : public MasterServer::Service{
 				wi->set_client_port(wp.clientPort);
 				mi.set_allocated_worker(wi);
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
-				worker.pipe->Write(mi);
+				// have to try-catch incase 'worker' disconnected since this was started
+				try{
+				auto res = worker.pipe->Write(mi);
+				}
+				catch(...){}
 			}
+#ifdef DEBUG
 			cerr << "Worker with port: " << myself.clientPort << " disconnected. Told other workers to use other workers on host: " << myself.host<< endl; 
+#endif
 		}
 		return Status::OK;
 	}
@@ -219,46 +310,26 @@ void RunServer(){
     // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
 
 
-
+    thread replicaCheck(ensureReplicas);
     server->Wait();
-}
-
-void monitorIO(){
-	// Monitor the assigned Input feed for this thread such that worker threads can be added.
-	cout << "To add worker threads, use the format <address> <port>" << endl;
-	cout << "EX: The following code adds 2 worker threads, one on current server, one on another\n 10.2.45.32 13346 \n localhost 123123" << endl;
-	while(true){
-		fd_set fd;
-		FD_ZERO(&fd);
-		FD_SET(0, &fd); 
-		int selRes = select(1, &fd, NULL, NULL, NULL);
-		if (selRes == -1){
-			cerr << "Select generated error" << endl;
-			break;
-		}
-		string address;
-		int clientsConnected = 0;
-		int port;
-		cin >> address >> port; 
-		
-		// Validate that address is a real place
-		cout << address << " Succesfully imported. INPUT NOT VALIDATED  " << endl;
-		WorkerProcess wp;
-		wp.host = address;
-		wp.port = port;
-		insertOrdered(wp);
-	}
+    replicaCheck.join();
 }
 
 int main(int argc, char** argv) {
-  if(argc > 2 ){
+  if(argc !=  2 ){
     printf("Invalid arguments.\n");
-    printf("USAGE: %s \n", argv[0]);
+    printf("USAGE: %s <id> \n", argv[0]);
     return 1;
   }
-  thread t(monitorIO);
+  try{
+    GLOBAL_NEXT_REPLICA_ID = stoi(argv[1]);
+  }
+  catch(...){
+    printf("Invalid argument, id should be an integer.\n");
+    printf("USAGE: %s <id> \n", argv[0]);
+    return 2;
+  }
   RunServer();
-  t.join();
   return 0;
 }
 
