@@ -10,7 +10,7 @@ service MasterServer{
 		//     and if master crashes, replacement will be on same port
 	rpc UpdateClientInfo(WorkerInfo) returns(Empty) {}
 	rpc MasterWorkerCommunication(stream ServerInfo) returns(stream MasterInfo){}
-	rpc MasterMasterCommunication(stream Empty) returns(stream Empty){}
+	rpc MasterMasterCommunication(stream WorkerInfo) returns(stream WorkerInfo){}
 	rpc MasterMasterChat( MasterChat) returns(MasterChat){}
 }
 message ConnectionReply{

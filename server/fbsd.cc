@@ -104,8 +104,8 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 		return Status::OK;	
 	}
 	Status Leave(ServerContext* context, const Request * request, Reply *reply) override{
-    string username = request->username();
-    string friendName = request->arguments(0);	
+	    string username = request->username();
+	    string friendName = request->arguments(0);	
 
 		int result = leaveUser(username,friendName);
 		if ( result == 0){
@@ -229,9 +229,10 @@ void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int 
 	si.set_allocated_worker(me);
     si.set_message_type(hw2::ServerInfo::REGISTER);
 
-
+	int connectionAttempts = 0;
 	for(;;){
 	//	cerr << "Top of for loop in Establish Channel" << endl;
+		cerr << "Connection #: " << connectionAttempts++ << endl;
 		auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 		// Run infinitely so if master crashes a new connection is established
 		if(GLOBAL_Master_Channel != NULL){
