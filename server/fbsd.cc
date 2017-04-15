@@ -82,6 +82,16 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 		string username = request->username();
 	    string friendName = request->arguments(0);
 		int result = joinFriend(username,friendName);
+		hw2::NewProposal prop;
+		prop.set_message_type(hw2::NewProposal::JOIN);
+		prop.set_username(username);
+		UserOperation *op = new UserOperation();
+		op->set_operation(UserOperation::ADD);
+		op->set_username(friendName);
+		prop.set_allocated_user_op(op);
+		for(auto worker:otherWorkers){
+		  worker.channel.PushData(prop);
+		}
 		if (result == 0){
 			reply -> set_msg("Join Successful");
 		}

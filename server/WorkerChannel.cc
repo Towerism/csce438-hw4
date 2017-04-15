@@ -3,7 +3,7 @@
 void WorkerChannel::SetStub(std::string connectionInfo){
 
   auto chnl = grpc::CreateChannel(connectionInfo, grpc::InsecureChannelCredentials());
-  stub = hw2::MasterServer::NewStub(chnl);
+  stub = hw2::WorkerComServer::NewStub(chnl);
 
 }
 
