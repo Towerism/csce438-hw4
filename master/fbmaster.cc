@@ -53,29 +53,10 @@ vector<WorkerProcess> workerThreads;
 vector<MasterProcess> masterReplicas;
 int GLOBAL_NEXT_REPLICA_ID = 0;
 
-/// Ensures there are always 2 replicas running
-void ensureReplicas(){
-  while(true){
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); 
-    if(masterReplicas.size() < 2){
-      GLOBAL_NEXT_REPLICA_ID = GLOBAL_NEXT_REPLICA_ID + 1;
-
-      if(fork() == 0){
-        size_t len=200;
-        char cwdBuf[len];
-        char *ptr = getcwd(cwdBuf, len);
-	std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("MasterReplicaStartup.sh"); 
-        auto res = execl("/bin/sh","sh",execAddress.c_str(),
-		std::string(to_string( GLOBAL_NEXT_REPLICA_ID)).c_str(),
-		(char*)0);
-#ifdef DEBUG
-	cerr << "Execl returned: " << res << " With error code: " << strerror(errno) << endl;
-#endif
-	return;
-      }
-    }
-  }
-}
+/// Ensures there are always 2 replicas of master running
+void ensureReplicas();
+/// Ensure there are at least 3 workers on each server
+void ensureWorkerReplicas();
 /// Returns TRUE if new host, FALSE otherwise
 bool insertOrdered(WorkerProcess w); // Used to insert into workerThreads and make sure threads on same host stay together
 
@@ -311,8 +292,10 @@ void RunServer(){
 
 
     thread replicaCheck(ensureReplicas);
+    thread backupWorkerCheck(ensureWorkerReplicas);
     server->Wait();
     replicaCheck.join();
+    backupWorkerCheck.join();
 }
 
 int main(int argc, char** argv) {
@@ -346,4 +329,62 @@ bool insertOrdered(WorkerProcess w){
 	// No matching host
 	workerThreads.push_back(w);
 	return true;
+}
+
+void ensureReplicas(){
+  while(true){
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    if(masterReplicas.size() < 2){
+      GLOBAL_NEXT_REPLICA_ID = GLOBAL_NEXT_REPLICA_ID + 1;
+
+      if(fork() == 0){
+        size_t len=200;
+        char cwdBuf[len];
+        char *ptr = getcwd(cwdBuf, len);
+        std::string execAddress = std::string(cwdBuf) + std::string("/") + std::string("MasterReplicaStartup.sh");
+        auto res = execl("/bin/sh","sh",execAddress.c_str(),
+                std::string(to_string( GLOBAL_NEXT_REPLICA_ID)).c_str(),
+                (char*)0);
+#ifdef DEBUG
+        cerr << "Execl returned: " << res << " With error code: " << strerror(errno) << endl;
+#endif
+        return;
+      }
+    }
+  }
+}
+
+void ensureWorkerReplicas(){
+  while(true){
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    if(workerThreads.size() == 0) continue; // go back to the top 
+    std::string host = workerThreads[0].host;
+    int workerCount = 0;
+    bool sent = false;
+    for(int i = 0; i < workerThreads.size(); ++i){
+      if(workerThreads[i].host == host){
+	workerCount+=1;
+	sent = false;
+      }
+      else{
+	if(workerCount < 3){
+	  // Tell another worker on that host to spawn some friends
+          MasterInfo instruction;
+          instruction.set_message_type(MasterInfo::SPAWN_CLONE);
+
+	  workerThreads[i].pipe->Write(instruction);
+	  sent = true;
+        }
+	host = workerThreads[i].host;
+	workerCount = 1;
+      }
+    }
+    if(!sent && workerCount < 3){
+      // Tell another worker on that host to spawn some friends
+      WorkerProcess wp = workerThreads[workerThreads.size()-1];
+      MasterInfo instruction;
+      instruction.set_message_type(MasterInfo::SPAWN_CLONE);
+      wp.pipe->Write(instruction);
+    }
+  }
 }

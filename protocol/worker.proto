@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package hw2;
+import "google/protobuf/timestamp.proto";
+
+service WorkerComServer {
+	rpc MakeProposal(NewProposal) returns(Empty) {}
+	rpc ICanHasFiles(Empty) returns(AllClientInformation){}
+}
+
+message ListReply {
+  repeated string all_rooms = 1;
+  repeated string joined_rooms = 2;
+}
+
+message vcInput{
+  string host;
+  string port;
+  int32  value;
+}
+message VectorClock{
+  repeated vcInput = 1;
+}
+message FullClientInformation{
+  string username = 1;
+  repeated UserOperation following = 2;
+  repeated UserOperation followed_by = 3;
+  repeated string new_messages = 4; // clocks are embedded in new_messages
+}
+message AllClientInformation{
+  repeated FullClientInformation = 1;
+}
+message NewProposal{
+  enum Action{
+    JOIN = 0;
+    LEAVE = 1;
+    NEW_MESSAGE = 2;
+  }
+  VectorClock clock = 5;
+  string username = 1;
+  Action message_type = 2;
+  UserOperation user_op = 3;
+  string msg = 4;
+}
