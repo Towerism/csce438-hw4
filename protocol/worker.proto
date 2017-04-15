@@ -14,12 +14,12 @@ message ListReply {
 }
 
 message vcInput{
-  string host;
-  string port;
-  int32  value;
+  string host = 1;
+  string port = 2;
+  int32  value = 3;
 }
 message VectorClock{
-  repeated vcInput = 1;
+  repeated vcInput  index= 1;
 }
 message FullClientInformation{
   string username = 1;
@@ -28,8 +28,20 @@ message FullClientInformation{
   repeated string new_messages = 4; // clocks are embedded in new_messages
 }
 message AllClientInformation{
-  repeated FullClientInformation = 1;
+  repeated FullClientInformation files = 1;
 }
+message Empty{
+
+}
+message UserOperation {
+  enum Operation {
+    ADD = 0;
+    REMOVE = 1;
+  }
+  Operation operation = 1;
+  string username = 2;
+}
+
 message NewProposal{
   enum Action{
     JOIN = 0;

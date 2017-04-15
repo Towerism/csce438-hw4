@@ -6,7 +6,7 @@ SERVER_FILES = fbsd.cc MasterChannel.cc file_locking.cc server_functions.cc
 MASTER_FILES = fbmaster.cc
 MASTER_REPLICA_FILES = fbmasterRep.cc
 
-PROTO_FILES = fb.proto master.proto
+PROTO_FILES = fb.proto master.proto worker.proto
 
 CXX_CONVENTION = .cc
 
