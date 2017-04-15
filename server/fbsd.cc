@@ -45,7 +45,7 @@ std::mutex workersMutex;
 // if not, delete master, then create new one
 MasterChannel *masterChannel= NULL;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
-void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex);
+void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerObj> &otherWorkers, std::mutex &workersMutex);
 
 class MessengerServiceImpl final : public MessengerServer::Service{
 	Status Login(ServerContext* context, const Request * request, Reply *reply) override{

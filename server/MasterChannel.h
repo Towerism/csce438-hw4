@@ -5,9 +5,39 @@
 #include <mutex>
 #include <condition_variable>
 
-struct WorkerObj{
+class WorkerObj{
+  public:
   WorkerInfo channelInfo;
   WorkerChannel channel;  
+  WorkerObj(WorkerInfo wi){
+    channelInfo.set_host(wi.host());
+    channelInfo.set_port(wi.port());
+    channelInfo.set_client_count(wi.client_count());
+    channelInfo.set_client_port(wi.client_port());
+    channelInfo.set_previously_connected(wi.previously_connected());
+    auto chnl = grpc::CreateChannel(wi.host() +string( ":" ) + to_string(wi.port()), grpc::InsecureChannelCredentials());
+    channel = WorkerChannel(chnl);
+  }
+  WorkerObj(const WorkerObj& refr){
+    auto chnl = grpc::CreateChannel(refr.channelInfo.host() + string(":") + to_string(refr.channelInfo.port()), grpc::InsecureChannelCredentials());
+    channel = WorkerChannel(chnl);
+    channelInfo.set_host(refr.channelInfo.host());
+    channelInfo.set_port(refr.channelInfo.port());
+    channelInfo.set_client_count(refr.channelInfo.client_count());
+    channelInfo.set_client_port(refr.channelInfo.client_port());
+    channelInfo.set_previously_connected(refr.channelInfo.previously_connected());
+  }
+  WorkerObj& operator=(const WorkerObj& refr){
+    // Delete old data
+    auto chnl = grpc::CreateChannel(refr.channelInfo.host() + string(":") + to_string(refr.channelInfo.port()), grpc::InsecureChannelCredentials());
+    channel = WorkerChannel(chnl);
+    channelInfo.set_host(refr.channelInfo.host());
+    channelInfo.set_port(refr.channelInfo.port());
+    channelInfo.set_client_count(refr.channelInfo.client_count());
+    channelInfo.set_client_port(refr.channelInfo.client_port());
+    channelInfo.set_previously_connected(refr.channelInfo.previously_connected());
+
+  }
 };
 
 

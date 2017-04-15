@@ -46,24 +46,25 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
             WorkerInfo wi = m.worker();
             // Check if wi.host() matches with any host in workerDB
 		workersMutex.lock();
+		/* Not used anymore since file locking prevents workers from accessing a file simultaneously
 		if(wi.host() == myHost){
 			if(wi.port() != myPort){
-				otherWorkers.insert(otherWorkers.begin(), wi);
+				WorkerObj wo(wi);
+				otherWorkers.insert(otherWorkers.begin(), wo);
 				cout << "Local Worker added" << endl;
 			}
 			workersMutex.unlock();
 			break;
 		}
+		*/
 		bool addNew = true;
-		for(auto worker:otherWorkers){
-			if (worker.channelInfo.host() == wi.host()){
+		for(int i = 0; i < otherWorkers.size(); ++i){
+			if (otherWorkers[i].channelInfo.host() == wi.host()){
 				addNew = false;
 			}
 		}
 		if (addNew){
-			WorkerObj wo;
-			wo.channelInfo = wi;
-			
+			WorkerObj wo(wi);
 			otherWorkers.push_back(wo);
 			cout << "Remote Worker added" << endl;
 		}
@@ -78,7 +79,7 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
 		workersMutex.lock();
 		int removeLoc = -1;
 		for(int i = 0; i < otherWorkers.size(); ++i){
-			if(otherWorkers[i].host() == wi.host()){
+			if(otherWorkers[i].channelInfo.host() == wi.host()){
 				removeLoc = i;
 				break;
 			}

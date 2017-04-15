@@ -11,6 +11,7 @@ class WorkerChannel{
         public:
         // Send new information to master
         WorkerChannel(std::shared_ptr<grpc::ChannelInterface> channel):stub(hw2::WorkerComServer::NewStub(channel)){ }
+	WorkerChannel(){}
         void SetStub(std::string workerAddress);
 	hw2::AllClientInformation RequestInfo();
 	void PushData(hw2::NewProposal);
