@@ -6,6 +6,7 @@
 #define FOLLOWING_LIST "_following_list.txt"
 #define FOLLOWED_BY_LIST "_followed_by_list.txt"
 #define NEW_MESSAGE "_new_messages.txt"
+#define MAX_WHATS_NEW 20
 
 using namespace hw2;
 
@@ -150,11 +151,11 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 	if (receivedPosition == -1){
 		// lastReceived message was so old there are at least 20 new messages
 		// Or, an empty string was given in order to retrieve all messages
-    receivedPosition = recentMessages.size() - 21;
+    receivedPosition = recentMessages.size() - MAX_WHATS_NEW - 1;
 	}
 	for(int i = receivedPosition + 1; i< recentMessages.size(); ++i){
 		newMessages.push_back(recentMessages[i]);
-    if (newMessages.size() >= 20)
+    if (newMessages.size() >= MAX_WHATS_NEW)
       break;
 	}
 	return 0;
