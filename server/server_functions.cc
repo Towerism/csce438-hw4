@@ -151,7 +151,7 @@ int checkRecent(string client, string lastReceived, vector<string> &newMessages)
 	if (receivedPosition == -1){
 		// lastReceived message was so old there are at least 20 new messages
 		// Or, an empty string was given in order to retrieve all messages
-    receivedPosition = recentMessages.size() - MAX_WHATS_NEW - 1;
+    receivedPosition = max(-1, (int)recentMessages.size() - MAX_WHATS_NEW - 1);
 	}
 	for(int i = receivedPosition + 1; i< recentMessages.size(); ++i){
 		newMessages.push_back(recentMessages[i]);
