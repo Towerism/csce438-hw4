@@ -41,6 +41,7 @@ message NewProposal{
     JOIN = 0;
     LEAVE = 1;
     NEW_MESSAGE = 2;
+    REGISTER = 3;
   }
   VectorClock clock = 5;
   string username = 1;

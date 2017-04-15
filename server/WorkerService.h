@@ -23,6 +23,10 @@ class WorkerServiceImpl final : public WorkerComServer::Service{
         postMessage(username, request->msg());
         break;
       }
+      case(hw2::NewProposal::REGISTER):{
+	registerUser(request->username());
+	break;
+      }
     }     
     return Status::OK;
   }
