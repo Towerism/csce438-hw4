@@ -13,6 +13,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <fb.grpc.pb.h>
+#include <worker.grpc.pb.h>
 #include <grpc++/grpc++.h>
 #include <algorithm>
 #include <thread>

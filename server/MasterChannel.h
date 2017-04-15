@@ -1,8 +1,16 @@
 #ifndef MASTER_CHANNEL_HEADER_GUARD
 #define MASTER_CHANNEL_HEADER_GUARD
 #include "common.h"
+#include "WorkerChannel.h"
 #include <mutex>
 #include <condition_variable>
+
+struct WorkerObj{
+  WorkerInfo channelInfo;
+  WorkerChannel channel;  
+};
+
+
 class MasterChannel{
 	private:
 	// Establish connection to master
@@ -19,7 +27,7 @@ class MasterChannel{
 	MasterChannel(hw2::WorkerInfo wi, std::shared_ptr<grpc::ChannelInterface> channel):myInfo( wi),stub(hw2::MasterServer::NewStub(channel)){
 		}
 		
-		int CommandChat(vector<WorkerInfo>&, std::mutex&, string, string, int);
+		int CommandChat(vector<WorkerObj>&, std::mutex&, string, string, int);
 		void SetStub(std::shared_ptr<grpc::Channel> newStub);
 		const bool connectedBefore(){return connectedPrimaryTime;}
 };

@@ -33,12 +33,3 @@ message Message {
   //Time the message was sent
   google.protobuf.Timestamp timestamp = 3;
 }
-
-message UserOperation {
-  enum Operation {
-    ADD = 0;
-    REMOVE = 1;
-  }
-  Operation operation = 1;
-  string username = 2;
-}

@@ -33,9 +33,11 @@
 #include "server_functions.h"
 #include "MasterChannel.h"
 #include "file_locking.h"
+#include "WorkerService.h"
+
 
 MasterChannel *GLOBAL_Master_Channel = NULL;
-vector<WorkerInfo> otherWorkers;
+vector<WorkerObj> otherWorkers;
 std::mutex workersMutex;
 // Idea: Create a function that establishes MasterChannel
 // This function can be called from within the writer class thing
@@ -140,6 +142,19 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	}
 };
 
+void RunWorkerChatServer(const int port){
+  string address = "0.0.0.0: " + to_string(port);
+  // Need to listen to this address to handle connections.
+  // Don't need to know what my own address is since everyone else was informed by master
+  WorkerServiceImpl service;
+  ServerBuilder builder;
+  builder.AddListeningPort(address, grpc::InsecureServerCredentials());
+  builder.RegisterService(&service);
+  std::unique_ptr<Server> server(builder.BuildAndStart());
+  server->Wait();
+  // Only gets to this point if the program crashes   
+}
+
 void RunServer(const int port, std::string masterHost){
   string address = "0.0.0.0:" + to_string(port);
   MessengerServiceImpl service;
@@ -163,9 +178,10 @@ void RunServer(const int port, std::string masterHost){
   wi.set_client_port(port);
   thread commandThread(EstablishMasterChannel,wi,masterHost,MASTER_PORT, std::ref(otherWorkers), std::ref(workersMutex));
   // Wait for server to shutdown. Note some other threadc must be responsible for shutting down the server for this call to return.
-  
+  thread workerWorkerCom(RunWorkerChatServer, masterPort);  
   server->Wait();
   commandThread.join();
+  workerWorkerCom.join();
 }
 
 
@@ -218,7 +234,7 @@ void WriteMasterChannel(hw2::ServerInfo s){
 	GLOBAL_Master_Channel->sendCommand(s);
 }
 
-void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex){
+void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerObj> &otherWorkers, std::mutex &workersMutex){
 	string masterConnectionInfo = masterHost + ":" + to_string(masterPort);
 	hw2::WorkerInfo *me = new hw2::WorkerInfo();
 	me->set_host(myself.host());

@@ -4,14 +4,11 @@ package hw2;
 import "google/protobuf/timestamp.proto";
 
 service WorkerComServer {
-	rpc MakeProposal(NewProposal) returns(Empty) {}
-	rpc ICanHasFiles(Empty) returns(AllClientInformation){}
+	rpc MakeProposal(NewProposal) returns(Blank) {}
+	rpc ICanHasFiles(Blank) returns(AllClientInformation){}
 }
 
-message ListReply {
-  repeated string all_rooms = 1;
-  repeated string joined_rooms = 2;
-}
+message Blank{}
 
 message vcInput{
   string host = 1;
@@ -23,15 +20,12 @@ message VectorClock{
 }
 message FullClientInformation{
   string username = 1;
-  repeated UserOperation following = 2;
-  repeated UserOperation followed_by = 3;
+  repeated string following = 2;
+  repeated string followed_by = 3;
   repeated string new_messages = 4; // clocks are embedded in new_messages
 }
 message AllClientInformation{
   repeated FullClientInformation files = 1;
-}
-message Empty{
-
 }
 message UserOperation {
   enum Operation {

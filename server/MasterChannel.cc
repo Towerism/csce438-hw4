@@ -14,7 +14,7 @@ void MasterChannel::SetStub(std::shared_ptr<grpc::Channel> newStub){
 
 	stub = hw2::MasterServer::NewStub(newStub);
 }
-int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
+int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
   ClientContext context;
   auto stream(stub->MasterWorkerCommunication(&context));
   atomic<bool> streamBroken = ATOMIC_VAR_INIT(false);
@@ -56,12 +56,15 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 		}
 		bool addNew = true;
 		for(auto worker:otherWorkers){
-			if (worker.host() == wi.host()){
+			if (worker.channelInfo.host() == wi.host()){
 				addNew = false;
 			}
 		}
 		if (addNew){
-			otherWorkers.push_back(wi);
+			WorkerObj wo;
+			wo.channelInfo = wi;
+			
+			otherWorkers.push_back(wo);
 			cout << "Remote Worker added" << endl;
 		}
 		workersMutex.unlock();

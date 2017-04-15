@@ -9,7 +9,7 @@ void WorkerChannel::SetStub(std::string connectionInfo){
 
 hw2::AllClientInformation WorkerChannel::RequestInfo(){
   grpc::ClientContext context;
-  hw2::Empty request;
+  hw2::Blank request;
   hw2::AllClientInformation reply;
   auto status = stub->ICanHasFiles(&context, request, &reply);
   return reply;
@@ -17,7 +17,7 @@ hw2::AllClientInformation WorkerChannel::RequestInfo(){
 
 void WorkerChannel::PushData(hw2::NewProposal request){
   grpc::ClientContext context;
-  hw2::Empty reply;
+  hw2::Blank reply;
   auto status = stub->MakeProposal(&context, request, &reply);
 
 }
