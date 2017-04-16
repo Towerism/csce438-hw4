@@ -67,7 +67,7 @@ CXX ?= $(which g++)
 CPPFLAGS ?= -I$(INCLUDE_DIR) -I/usr/local/include
 CXXFLAGS ?= -std=c++11 -ggdb
 LDFLAGS ?= $(NON_STANDARD_LDFLAGS) -Wl,--no-as-needed -lgrpc++_reflection \
-	-Wl,--as-needed -lpthread -lprotobuf -ldl
+	-Wl,--as-needed -lpthread -lprotobuf -ldl 
 
 # Specify folders to add to the compiler's Include path
 INCLUDE_DIR = $(PROTO_DIR)

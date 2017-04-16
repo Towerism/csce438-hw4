@@ -6,24 +6,27 @@ class WorkerServiceImpl final : public WorkerComServer::Service{
     // Request to add information to a user 
     switch(request->message_type()){
       case(hw2::NewProposal::JOIN):{
+	cout << "Received 'JOIN' from another worker." << endl;
         std::string username = request->username();
 	hw2::UserOperation op = request->user_op(); 
 	joinFriend(username, op.username());	
         break;
       }
       case(hw2::NewProposal::LEAVE):{
+	cout << "Received 'LEAVE' from another worker." << endl;
         std::string username = request->username();
         hw2::UserOperation op = request->user_op();
         leaveUser(username, op.username());
         break;
       }
       case(hw2::NewProposal::NEW_MESSAGE):{
-
+	cout << "Received 'NewMessage' from another worker." << endl;
         std::string username = request->username();
         postMessage(username, request->msg());
         break;
       }
       case(hw2::NewProposal::REGISTER):{
+	cout << "Recieved 'Register' from another worker. " << endl;
 	registerUser(request->username());
 	break;
       }

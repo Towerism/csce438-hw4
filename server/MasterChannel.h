@@ -2,6 +2,7 @@
 #define MASTER_CHANNEL_HEADER_GUARD
 #include "common.h"
 #include "WorkerChannel.h"
+#include "server_functions.h"
 #include <mutex>
 #include <condition_variable>
 

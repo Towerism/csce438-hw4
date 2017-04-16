@@ -164,6 +164,22 @@ class MasterServiceImpl final : public MasterServer::Service{
 					myself.clientPort = request.client_port();
 					myself.pipe = stream;
 			        bool newHost = insertOrdered(myself);
+				if(newHost){
+					// Get data from another worker 
+					vector<WorkerProcess> onlineWorkers;
+					for(int i = 0; i < workerThreads.size(); ++i){
+					  if(workerThreads[i].host != myself.host)
+					    onlineWorkers.push_back(workerThreads[i]);
+					}
+					WorkerProcess infoTarget = *select_randomly(onlineWorkers.begin(), onlineWorkers.end());
+					MasterInfo mi;
+					WorkerInfo * wp = new WorkerInfo();
+					wp->set_port(infoTarget.port);
+					wp->set_host(infoTarget.host);
+					mi.set_message_type(MasterInfo::REQUEST_INFO);
+					mi.set_allocated_worker(wp);
+					myself.pipe->Write(mi);
+				}
 					if(newHost && !request.previously_connected()){
 						// Spawn 2 clones
 							MasterInfo instruction;

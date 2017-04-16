@@ -56,7 +56,12 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	        return Status::CANCELLED;
 		}
 		else{
-			
+			hw2::NewProposal prop;
+			prop.set_message_type(hw2::NewProposal::REGISTER);
+			prop.set_username(request->username());
+			for(auto worker:otherWorkers){
+			  worker.channel.PushData(prop);
+			}	
 			reply->set_msg("Login Successful");
 		}
 		return Status::OK;

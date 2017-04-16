@@ -41,6 +41,7 @@ message MasterInfo{
 		// When client receives update, add to backups if host not allocated yet.
 		REMOVE_SERVER = 1;
 		SPAWN_CLONE = 2;
+		REQUEST_INFO = 3;
 	}
 	Action message_type = 1;
 	WorkerInfo worker= 2;

@@ -105,6 +105,51 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
 	    
             break;
           }
+	  case hw2::MasterInfo::REQUEST_INFO:{
+	    // Request information from antoher 
+	    WorkerInfo wi = m.worker();
+	    workersMutex.lock();
+	    std::string USER_FOLDER = "users/";
+	    std::string ALL_USERS_LIST= "all_users.txt";
+	  
+	    std::string FOLLOWING_LIST = "_following_list.txt";
+    	    std::string FOLLOWED_BY_LIST =  "_followed_by_list.txt";
+	    std::string NEW_MESSAGE =  "_new_messages.txt";
+	    cout << " Told to copy files from server on: " << wi.host() << endl;
+	    for(auto worker:otherWorkers){
+	      if(worker.channelInfo.host() == wi.host()){
+		// Request information from this host (i.e. their files)
+		hw2::AllClientInformation aci = worker.channel.RequestInfo();
+		vector<string> users;
+		for(int i =0; i < aci.files_size(); ++i){
+		  FullClientInformation info = aci.files(i);
+		  string username = info.username();
+		  users.push_back(username);
+		  vector<string> following, followed_by, messages;
+		  for(int j = 0; j < info.following_size(); ++j){
+		    following.push_back(info.following(j));
+		  }
+		  for(int j =0; j < info.followed_by_size(); ++j){
+		    followed_by.push_back(info.followed_by(j));
+		  }
+		  for(int j = 0; j < info.new_messages_size(); ++j){
+		    messages.push_back(info.new_messages(j));
+		  }
+		  // Information gathered, lets write this bad boy to file
+		  std::string followingFile = USER_FOLDER + username + FOLLOWING_LIST;
+		  writeFile(followingFile,following,true);
+		  std::string followedByFile = USER_FOLDER + username + FOLLOWED_BY_LIST;
+		  writeFile(followedByFile, followed_by, true);
+		  std::string messagesFile = USER_FOLDER + username + NEW_MESSAGE;
+		  writeFile(messagesFile, messages, true);
+		}
+	 	std::string allUsers = USER_FOLDER + ALL_USERS_LIST;
+		writeFile(allUsers, users, true);
+		break;
+	      }
+	    }
+	    break;
+	  }
         }
       }
 	streamBroken = true;
