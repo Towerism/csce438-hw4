@@ -40,7 +40,6 @@ class MasterMasterChannel{
     });
    myInfo.set_previously_connected(false); // Using this as a flag for add/remove of replicas
    bool writeRes = stream->Write(myInfo);
-
    reader.join();
    if(!writeRes)
 	return;

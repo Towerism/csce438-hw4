@@ -275,7 +275,11 @@ class MasterServiceImpl final : public MasterServer::Service{
 				wi->set_host(wp.host);
 				wi->set_port(wp.port);
 				wi->set_client_port(wp.clientPort);
+				WorkerInfo *deadWi = new WorkerInfo();
+				deadWi->set_host(myself.host);
+				deadWi->set_port(myself.port);
 				mi.set_allocated_worker(wi);
+				mi.set_allocated_dead_worker(deadWi);
 				mi.set_message_type(MasterInfo::UPDATE_WORKER);
 				// have to try-catch incase 'worker' disconnected since this was started
 				try{
