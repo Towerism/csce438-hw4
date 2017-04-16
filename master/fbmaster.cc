@@ -163,6 +163,26 @@ class MasterServiceImpl final : public MasterServer::Service{
 			        myself.port = request.port();
 					myself.clientPort = request.client_port();
 					myself.pipe = stream;
+					// OMG SEND INFO ABOUT WORKERS ALREADY CONNECTED YOU DIPSHIT
+					vector<WorkerProcess> connectedWorkers;
+					string prevHost = "";
+					if(workerThreads.size() >0){
+						prevHost = workerThreads[0].host;
+					}
+					for(auto a:workerThreads){
+						if(prevHost != a.host)
+							connectedWorkers.push_back(a);
+					}
+					MasterInfo addOldWorker;
+					addOldWorker.set_message_type(MasterInfo::UPDATE_WORKER);
+					for(auto worker:connectedWorkers){
+						// Push established worker information to new worker
+						WorkerInfo * wi;
+						wi->set_host(worker.host);
+						wi->set_port(worker.port);
+						addOldWorker.set_allocated_worker(wi);
+						stream->Write(addOldWorker);
+					}
 			        bool newHost = insertOrdered(myself);
 				if(newHost){
 					// Get data from another worker 

@@ -130,7 +130,13 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
     	    std::string FOLLOWED_BY_LIST =  "_followed_by_list.txt";
 	    std::string NEW_MESSAGE =  "_new_messages.txt";
 	    cout << " Told to copy files from server on: " << wi.host() << endl;
+#ifdef DEBUG
+		cerr << " Other workers size: " << otherWorkers.size() << endl;
+#endif
 	    for(auto worker:otherWorkers){
+#ifdef DEBUG
+		cerr << " Possible server copy candidate: [" << worker.channelInfo.host() <<":" << worker.channelInfo.port() << "]" << endl;
+#endif
 	      if(worker.channelInfo.host() == wi.host()){
 #ifdef DEBUG
 		  cerr << "Requesting from worker[" << worker.channelInfo.host() << ":" << worker.channelInfo.port() << "]" << endl;
