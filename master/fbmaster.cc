@@ -171,14 +171,25 @@ class MasterServiceImpl final : public MasterServer::Service{
 					  if(workerThreads[i].host != myself.host)
 					    onlineWorkers.push_back(workerThreads[i]);
 					}
-					WorkerProcess infoTarget = *select_randomly(onlineWorkers.begin(), onlineWorkers.end());
-					MasterInfo mi;
-					WorkerInfo * wp = new WorkerInfo();
-					wp->set_port(infoTarget.port);
-					wp->set_host(infoTarget.host);
-					mi.set_message_type(MasterInfo::REQUEST_INFO);
-					mi.set_allocated_worker(wp);
-					myself.pipe->Write(mi);
+					if(onlineWorkers.size() > 0){
+						WorkerProcess infoTarget = *select_randomly(onlineWorkers.begin(), onlineWorkers.end());
+#ifdef DEBUG
+                                   cout << "Requesting information from: " << infoTarget.host << ":" << infoTarget.port << endl;
+#endif
+						MasterInfo mi;
+						WorkerInfo * wp = new WorkerInfo();
+						wp->set_port(infoTarget.port);
+						wp->set_host(infoTarget.host);
+						mi.set_message_type(MasterInfo::REQUEST_INFO);
+						mi.set_allocated_worker(wp);
+						myself.pipe->Write(mi);
+					}
+#ifdef DEBUG
+				        else{
+	                                   cout << "First server to connect to master: " << myself.host << ":" << myself.port << endl;
+					}
+#endif
+
 				}
 					if(newHost && !request.previously_connected()){
 						// Spawn 2 clones

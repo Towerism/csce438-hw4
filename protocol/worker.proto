@@ -47,5 +47,5 @@ message NewProposal{
   string username = 1;
   Action message_type = 2;
   UserOperation user_op = 3;
-  string msg = 4;
+  bytes msg = 4;
 }
