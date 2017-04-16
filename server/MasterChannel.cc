@@ -58,6 +58,10 @@ int MasterChannel::CommandChat(vector<WorkerInfo> &otherWorkers, std::mutex &wor
 		for(auto worker:otherWorkers){
 			if (worker.host() == wi.host()){
 				addNew = false;
+				if(worker.port() == m.dead_worker().port()){
+					// My partner died, & i was unaware of it previously
+					worker.set_port(wi.port());
+				}
 			}
 		}
 		if (addNew){

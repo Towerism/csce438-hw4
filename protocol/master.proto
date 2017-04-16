@@ -44,6 +44,7 @@ message MasterInfo{
 	}
 	Action message_type = 1;
 	WorkerInfo worker= 2;
+	WorkerInfo dead_worker = 3;
 }
 message MasterChat{
 	int32 spawnid = 1;
