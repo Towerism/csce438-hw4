@@ -181,6 +181,9 @@ class MasterServiceImpl final : public MasterServer::Service{
 						wi->set_host(worker.host);
 						wi->set_port(worker.port);
 						addOldWorker.set_allocated_worker(wi);
+#ifdef DEBUG
+				cerr << "Worker[" << myself.host << ":" << myself.port << "] told to add " << wi->host() << ":" << wi->port() << " as a pre-existing worker" << endl;
+#endif
 						stream->Write(addOldWorker);
 					}
 			        bool newHost = insertOrdered(myself);
