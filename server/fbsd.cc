@@ -60,6 +60,9 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 			prop.set_message_type(hw2::NewProposal::REGISTER);
 			prop.set_username(request->username());
 			for(auto worker:otherWorkers){
+#ifdef DEBUG
+    cerr <<  "Pushed Login to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
+#endif
 			  worker.channel.PushData(prop);
 			}	
 			reply->set_msg("Login Successful");
@@ -96,6 +99,9 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 		prop.set_allocated_user_op(op);
 		for(auto worker:otherWorkers){
 		  worker.channel.PushData(prop);
+#ifdef DEBUG
+    cerr <<  "Pushed Join to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
+#endif
 		}
 		if (result == 0){
 			reply -> set_msg("Join Successful");
@@ -122,6 +128,19 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 	    string friendName = request->arguments(0);	
 
 		int result = leaveUser(username,friendName);
+        hw2::NewProposal prop;
+        prop.set_message_type(hw2::NewProposal::LEAVE);
+        prop.set_username(username);
+        UserOperation *op = new UserOperation();
+        op->set_operation(UserOperation::REMOVE);
+        op->set_username(friendName);
+        prop.set_allocated_user_op(op);
+        for(auto worker:otherWorkers){
+          worker.channel.PushData(prop);
+#ifdef DEBUG
+    cerr <<  "Pushed LEAVE to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
+#endif
+        }
 		if ( result == 0){
 			reply -> set_msg("Channel left successfully.");
 		}
@@ -146,6 +165,17 @@ class MessengerServiceImpl final : public MessengerServer::Service{
         string msgSerialize = "";
   	    bool postSuccess = message.SerializeToString(&msgSerialize);
         int result = postMessage(username, msgSerialize);
+        hw2::NewProposal prop;
+        prop.set_message_type(hw2::NewProposal::NEW_MESSAGE);
+        prop.set_username(username);
+		prop.set_msg(msgSerialize);
+        for(auto worker:otherWorkers){
+          worker.channel.PushData(prop);
+#ifdef DEBUG
+    cerr <<  "Pushed Message to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
+#endif
+        }
+
 	  }
 	  else{
 		updateThread[0] = thread(whatsNew, username, stream, ref(clientConnected ));
