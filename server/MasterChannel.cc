@@ -57,12 +57,19 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
 			break;
 		}
 		*/
+#ifdef DEBUG
+          cerr << "worker[" << myHost << ":" << myPort << "]" << " notified of new worker at " << wi.host() << ":" << wi.port() << endl;
+#endif
+
 		bool addNew = true;
 		for(int i = 0; i < otherWorkers.size(); ++i){
 			if (otherWorkers[i].channelInfo.host() == wi.host()){
 				addNew = false;
 				if(otherWorkers[i].channelInfo.port() == m.dead_worker().port()){
 					// My partner died, & i was unaware of it previously
+#ifdef DEBUG
+          cerr << "worker[" << myHost << ":" << myPort << "]" << " replaced worker at " << wi.host() << ":" << otherWorkers[i].channelInfo.port() << " with one at port: " << wi.port() << endl;
+#endif
 					otherWorkers[i].channelInfo.set_port(wi.port());
 					otherWorkers[i].channel.SetStub(wi.host() + string(":") + to_string(wi.port()));
 				}
@@ -71,7 +78,9 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
 		if (addNew){
 			WorkerObj wo(wi);
 			otherWorkers.push_back(wo);
-			cout << "Remote Worker added" << endl;
+#ifdef DEBUG
+          cerr << "worker[" << myHost << ":" << myPort << "]" << " added new worker at " << wi.host() << ":" << wi.port() << endl;
+#endif
 		}
 		workersMutex.unlock();
             // If not, add wi
@@ -123,9 +132,15 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
 	    cout << " Told to copy files from server on: " << wi.host() << endl;
 	    for(auto worker:otherWorkers){
 	      if(worker.channelInfo.host() == wi.host()){
+#ifdef DEBUG
+		  cerr << "Requesting from worker[" << worker.channelInfo.host() << ":" << worker.channelInfo.port() << "]" << endl;
+#endif
 		// Request information from this host (i.e. their files)
 		hw2::AllClientInformation aci = worker.channel.RequestInfo();
 		vector<string> users;
+#ifdef DEBUG
+		cerr << "Returned an object with " << aci.files_size() << " users information" << endl;
+#endif
 		for(int i =0; i < aci.files_size(); ++i){
 		  FullClientInformation info = aci.files(i);
 		  string username = info.username();

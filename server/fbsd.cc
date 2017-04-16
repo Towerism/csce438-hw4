@@ -46,6 +46,9 @@ std::mutex workersMutex;
 MasterChannel *masterChannel= NULL;
 void whatsNew(string username,ServerReaderWriter<Message, Message>* stream,  atomic<bool> &connected);
 void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int masterPort, std::vector<WorkerObj> &otherWorkers, std::mutex &workersMutex);
+#ifdef DEBUG
+string MY_CONNECTION_INFO;
+#endif
 
 class MessengerServiceImpl final : public MessengerServer::Service{
 	Status Login(ServerContext* context, const Request * request, Reply *reply) override{
@@ -61,6 +64,7 @@ class MessengerServiceImpl final : public MessengerServer::Service{
 			prop.set_username(request->username());
 			for(auto worker:otherWorkers){
 #ifdef DEBUG
+	cerr << "[" << MY_CONNECTION_INFO << "] received login from " << request->username() << endl;
     cerr <<  "Pushed Login to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
 #endif
 			  worker.channel.PushData(prop);
@@ -138,7 +142,7 @@ class MessengerServiceImpl final : public MessengerServer::Service{
         for(auto worker:otherWorkers){
           worker.channel.PushData(prop);
 #ifdef DEBUG
-    cerr <<  "Pushed LEAVE to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
+    cerr <<  "[" << MY_CONNECTION_INFO<< "] Pushed LEAVE to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
 #endif
         }
 		if ( result == 0){
@@ -172,7 +176,7 @@ class MessengerServiceImpl final : public MessengerServer::Service{
         for(auto worker:otherWorkers){
           worker.channel.PushData(prop);
 #ifdef DEBUG
-    cerr <<  "Pushed Message to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
+    cerr <<"[" << MY_CONNECTION_INFO <<   "] Pushed Message to " << worker.channelInfo.host() << ":" << worker.channelInfo.port() << endl;
 #endif
         }
 
@@ -218,6 +222,9 @@ void RunServer(const int port, std::string masterHost){
 	size_t len = 128;
 	char hostname[len];
 	gethostname(hostname, len);
+#ifdef DEBUG
+MY_CONNECTION_INFO = std::string(hostname) + to_string(masterPort);
+#endif
   wi.set_host(std::string(hostname));
   wi.set_port(masterPort);
   wi.set_client_port(port);
@@ -292,7 +299,7 @@ void EstablishMasterChannel(hw2::WorkerInfo myself, std::string masterHost, int 
 	int connectionAttempts = 0;
 	for(;;){
 #ifdef DEBUG
-		cerr << "Connection #: " << connectionAttempts++ << endl;
+		cerr <<"[" << MY_CONNECTION_INFO << "] Connection #: " << connectionAttempts++ << endl;
 #endif
 		auto chnl = grpc::CreateChannel(masterConnectionInfo, grpc::InsecureChannelCredentials());
 		// Run infinitely so if master crashes a new connection is established
