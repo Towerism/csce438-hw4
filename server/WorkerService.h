@@ -41,6 +41,9 @@ class WorkerServiceImpl final : public WorkerComServer::Service{
     string FOLLOWED_BY_LIST = "_followed_by_list.txt";
     vector<string> allUsers, clientFollowing;
     auto res = listCommand("", allUsers, clientFollowing); 
+#ifdef DEBUG
+    cerr << "listCommand returned a total of " << allUsers.size() << " users for ICanHasFiles"  << endl;
+#endif 
     for(auto user:allUsers){
 	hw2::FullClientInformation *fci =reply->add_files();
 	fci->set_username(user);
