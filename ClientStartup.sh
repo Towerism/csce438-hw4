@@ -10,6 +10,7 @@ fi
 # check if we should override the default master_address
 if [ $# -gt 1 ]; then master_address=$2; fi
 
-connection="$master_address:123456"
+master_port=$(cat master_port)
+connection="$master_address:$master_port"
 
 ./fbc $1 "$connection"
