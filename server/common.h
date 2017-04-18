@@ -1,6 +1,5 @@
 #ifndef FACEBOOK_CLONE_SERVER_HEADER_GUARD
 #define FACEBOOK_CLONE_SERVER_HEADER_GUARD
-#define DEBUG
 #include <master.grpc.pb.h>
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/duration.pb.h>
