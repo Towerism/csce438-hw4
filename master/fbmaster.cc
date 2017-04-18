@@ -65,7 +65,6 @@ bool insertOrdered(WorkerProcess w); // Used to insert into workerThreads and ma
 		1) Listen and wait for connection
 		2) Connect connecting client to a waiting worker (provide address and port)
 			* Load balance 
-		3) Provide backup worker information to client
 		4) Disconnect
 */
 class MasterServiceImpl final : public MasterServer::Service{
@@ -161,31 +160,34 @@ class MasterServiceImpl final : public MasterServer::Service{
 			        myself.host = request.host();
 			        myself.clientsConnected = request.client_count();
 			        myself.port = request.port();
-					myself.clientPort = request.client_port();
-					myself.pipe = stream;
-					// OMG SEND INFO ABOUT WORKERS ALREADY CONNECTED YOU DIPSHIT
-					vector<WorkerProcess> connectedWorkers;
-					string prevHost = "";
-					if(workerThreads.size() >0){
-						prevHost = workerThreads[0].host;
+				myself.clientPort = request.client_port();
+				myself.pipe = stream;
+				// Send information about workers already connected
+				vector<WorkerProcess> connectedWorkers;
+				string prevHost = "";
+				if(workerThreads.size() >0){
+					prevHost = workerThreads[0].host;
+					connectedWorkers.push_back(workerThreads[0]);
+				}
+				for(auto a:workerThreads){
+					if(prevHost != a.host){
+						connectedWorkers.push_back(a);
+						prevHost = a.host;
 					}
-					for(auto a:workerThreads){
-						if(prevHost != a.host)
-							connectedWorkers.push_back(a);
-					}
-					MasterInfo addOldWorker;
-					addOldWorker.set_message_type(MasterInfo::UPDATE_WORKER);
-					for(auto worker:connectedWorkers){
-						// Push established worker information to new worker
-						WorkerInfo * wi;
-						wi->set_host(worker.host);
-						wi->set_port(worker.port);
-						addOldWorker.set_allocated_worker(wi);
+				}
+				MasterInfo addOldWorker;
+				addOldWorker.set_message_type(MasterInfo::UPDATE_WORKER);
+				for(auto worker:connectedWorkers){
+					// Push established worker information to new worker
+					WorkerInfo * wi;
+					wi->set_host(worker.host);
+					wi->set_port(worker.port);
+					addOldWorker.set_allocated_worker(wi);
 #ifdef DEBUG
-				cerr << "Worker[" << myself.host << ":" << myself.port << "] told to add " << wi->host() << ":" << wi->port() << " as a pre-existing worker" << endl;
+			cerr << "Worker[" << myself.host << ":" << myself.port << "] told to add " << wi->host() << ":" << wi->port() << " as a pre-existing worker" << endl;
 #endif
-						stream->Write(addOldWorker);
-					}
+					stream->Write(addOldWorker);
+				}
 			        bool newHost = insertOrdered(myself);
 				if(newHost){
 					// Get data from another worker 
@@ -216,23 +218,24 @@ class MasterServiceImpl final : public MasterServer::Service{
 				}
 					if(newHost && !request.previously_connected()){
 						// Spawn 2 clones
-							MasterInfo instruction;
-							instruction.set_message_type(MasterInfo::SPAWN_CLONE);
-							stream->Write(instruction);
-							stream->Write(instruction);
-							vector<MasterInfo*> newWorkers;
-							MasterInfo *mi = new MasterInfo();
-							WorkerInfo *wi = new WorkerInfo();
-							for(auto worker:workerThreads){
-								if(worker.host == myself.host){
-									wi->set_host(worker.host);
-									wi->set_port(worker.port);
-									wi->set_client_count(worker.clientsConnected);
-									mi->set_message_type(MasterInfo::UPDATE_WORKER);
-									mi->set_allocated_worker(wi);
-									newWorkers.push_back(mi);
-								}
+						MasterInfo instruction;
+						instruction.set_message_type(MasterInfo::SPAWN_CLONE);
+						stream->Write(instruction);
+						stream->Write(instruction);
+						vector<MasterInfo*> newWorkers;
+						MasterInfo *mi = new MasterInfo();
+						WorkerInfo *wi = new WorkerInfo();
+
+						for(auto worker:workerThreads){
+							if(worker.host == myself.host){
+								wi->set_host(worker.host);
+								wi->set_port(worker.port);
+								wi->set_client_count(worker.clientsConnected);
+								mi->set_message_type(MasterInfo::UPDATE_WORKER);
+								mi->set_allocated_worker(wi);
+								newWorkers.push_back(mi);
 							}
+						}
 						// Assign to other workers so they know to communicate with this server too
 						for(auto worker:workerThreads){
 							MasterInfo *mi = *select_randomly(newWorkers.begin(), newWorkers.end());

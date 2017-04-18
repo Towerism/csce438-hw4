@@ -1,7 +1,8 @@
 #include "MasterChannel.h"
 using grpc::ClientContext;
-
+// Used for communicating with the master process
 void MasterChannel::sendCommand(hw2::ServerInfo &value){
+ // Send a command to master
 	outMessage = value;
 	{
 		std::lock_guard<std::mutex> lk(sendMutex);
@@ -11,7 +12,7 @@ void MasterChannel::sendCommand(hw2::ServerInfo &value){
 }
 
 void MasterChannel::SetStub(std::shared_ptr<grpc::Channel> newStub){
-
+// Create a new communication stub since the old one crashed
 	stub = hw2::MasterServer::NewStub(newStub);
 }
 int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &workersMutex, string myHost, string masterHost, int myPort){
@@ -46,17 +47,12 @@ int MasterChannel::CommandChat(vector<WorkerObj> &otherWorkers, std::mutex &work
             WorkerInfo wi = m.worker();
             // Check if wi.host() matches with any host in workerDB
 		workersMutex.lock();
-		/* Not used anymore since file locking prevents workers from accessing a file simultaneously
+		// Not used anymore since file locking prevents workers from accessing a file simultaneously
 		if(wi.host() == myHost){
-			if(wi.port() != myPort){
-				WorkerObj wo(wi);
-				otherWorkers.insert(otherWorkers.begin(), wo);
-				cout << "Local Worker added" << endl;
-			}
 			workersMutex.unlock();
 			break;
 		}
-		*/
+		
 #ifdef DEBUG
           cerr << "worker[" << myHost << ":" << myPort << "]" << " notified of new worker at " << wi.host() << ":" << wi.port() << endl;
 #endif
