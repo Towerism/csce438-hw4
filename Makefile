@@ -65,7 +65,7 @@ NON_STANDARD_LDFLAGS = $(shell pkg-config --libs $(NON_STANDARD_LIBS))
 # Conventional environment variables
 CXX ?= $(which g++)
 CPPFLAGS ?= -I$(INCLUDE_DIR) -I/usr/local/include
-CXXFLAGS ?= -std=c++11 -ggdb
+CXXFLAGS ?= -std=c++11 -ggdb -DDEBUG
 LDFLAGS ?= $(NON_STANDARD_LDFLAGS) -Wl,--no-as-needed -lgrpc++_reflection \
 	-Wl,--as-needed -lpthread -lprotobuf -ldl
 
