@@ -1,6 +1,5 @@
 #ifndef MASTER_HEADER_GUARD
 #define MASTER_HEADER_GUARD
-#define DEBUG
 #include <ctime>
 #include <master.grpc.pb.h>
 #include <google/protobuf/timestamp.pb.h>
