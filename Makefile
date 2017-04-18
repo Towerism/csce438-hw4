@@ -62,10 +62,13 @@ NON_STANDARD_LIBS = grpc++ grpc
 # Generate ldflags for non standard libs
 NON_STANDARD_LDFLAGS = $(shell pkg-config --libs $(NON_STANDARD_LIBS))
 
+# Source the configuration for master port
+MASTER_PORT = $(shell cat master_port)
+
 # Conventional environment variables
 CXX ?= $(which g++)
 CPPFLAGS ?= -I$(INCLUDE_DIR) -I/usr/local/include
-CXXFLAGS ?= -std=c++11 -ggdb -DDEBUG
+CXXFLAGS ?= -std=c++11 -DMASTER_PORT=$(MASTER_PORT) -ggdb -DDEBUG
 LDFLAGS ?= $(NON_STANDARD_LDFLAGS) -Wl,--no-as-needed -lgrpc++_reflection \
 	-Wl,--as-needed -lpthread -lprotobuf -ldl 
 

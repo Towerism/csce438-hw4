@@ -31,7 +31,6 @@
  *
  */
 #include "common.h"
-#define MASTER_PORT 123456
 
 struct WorkerProcess{
 	string host;

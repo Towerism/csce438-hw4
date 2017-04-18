@@ -27,8 +27,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#define MASTER_PORT 123456
-
 #include "common.h"
 #include "server_functions.h"
 #include "MasterChannel.h"

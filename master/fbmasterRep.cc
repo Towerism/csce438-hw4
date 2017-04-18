@@ -32,7 +32,6 @@
  */
 #include "common.h"
 #include "MasterMasterChannel.h"
-#define MASTER_PORT 123456
 int GLOBAL_SPAWN_ID = -1;
 class MasterServiceImpl final : public MasterServer::Service{
   Status MasterMasterChat(ServerContext *context, const MasterChat *request, MasterChat *reply) override{
