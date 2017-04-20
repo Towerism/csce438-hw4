@@ -2,7 +2,9 @@
 An improved chat room server and client inspired by twitter feeds. The goal was
 to create a highly available and scalable system that could be distributed
 across multiple machines. We got it working distributed across multiple process
-on a /single/ machine.
+on a /single/ machine. That being said, it is still possible for clients to
+connect from different machines, but master and all of its workers must all be
+on the same machine.
 
 # Architecture
 We use a master-slave architecture. Several workers connect with a single
