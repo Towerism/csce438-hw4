@@ -1,5 +1,19 @@
 # csce438-hw4
-An improved chat room server and client inspired by twitter feeds
+An improved chat room server and client inspired by twitter feeds. The goal was
+to create a highly available and scalable system that could be distributed
+across multiple machines. We got it working distributed across multiple process
+on a /single/ machine.
+
+# Architecture
+We use a master-slave architecture. Several workers connect with a single
+master. Clients connect to the master which load balances the connections across
+the the many workers. When a worker goes down, master spins up a new process to
+replace it. All clients that were connected to the old worker, automatically
+reconnect to a different worker through the master's facilitation. When master
+goes down, it is replaced by one of its replicas of which there are always two.
+Due to time constraints, the design document that accompanies our submission
+reflects our initial design and although it guided us it is not the one we
+ultimately went with.
 
 # Building
 Run `make`
