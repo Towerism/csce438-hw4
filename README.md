@@ -6,6 +6,9 @@ on a /single/ machine. That being said, it is still possible for clients to
 connect from different machines, but master and all of its workers must all be
 on the same machine.
 
+NB: When running on lenss-comp servers, we assume that master and workers run on
+lenss-comp1.
+
 # Architecture
 We use a master-slave architecture. Several workers connect with a single
 master. Clients connect to the master which load balances the connections across
