@@ -7,7 +7,7 @@ on a /single/ machine.
 # Architecture
 We use a master-slave architecture. Several workers connect with a single
 master. Clients connect to the master which load balances the connections across
-the the many workers. When a worker goes down, master spins up a new process to
+the many workers. When a worker goes down, master spins up a new process to
 replace it. All clients that were connected to the old worker, automatically
 reconnect to a different worker through the master's facilitation. When master
 goes down, it is replaced by one of its replicas of which there are always two.
