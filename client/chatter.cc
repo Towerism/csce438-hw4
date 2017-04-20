@@ -23,6 +23,28 @@ void Chatter::Chat() {
   reader.join();
 }
 
+bool Chatter::ChatTest() {
+  using namespace std::chrono;
+  if (!SendControlMessage())
+    return false;
+  const size_t iterations = 100;
+  size_t ns = 1024;
+  std::vector<size_t> sleepTimes = { 32000000, 16000000, 8000000, 4000000, 2000000, 1000000, 1024000, 512000, 256000, 128000, 64000, 32000, 16000, 8000, 4000, 2000, 1000, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1 };
+  for (auto sleepTime : sleepTimes) {
+    std::cout << "Sent 100 chats every " << sleepTime << " ns... ";
+    auto time = steady_clock::now();
+    for (size_t i = 0; i < iterations; ++i) {
+      if (!AttemptWriteToStream("CHATTEST"))
+        return false;
+      std::this_thread::sleep_for(nanoseconds(sleepTime));
+    }
+    auto duration = duration_cast<microseconds>(steady_clock::now() - time).count();
+    std::cout << "took " << duration << " usec\n";
+  }
+  chatStream->WritesDone();
+  return true;
+}
+
 void Chatter::SendChatsOverStream() {
   Message message;
   resendChatInput = !chatInput.empty() && chatInput != controlMessage;
@@ -32,7 +54,6 @@ void Chatter::SendChatsOverStream() {
     return;
   if (!SendChats())
     return;
-  chatStream->WritesDone();
 }
 
 bool Chatter::SendControlMessage() {

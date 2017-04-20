@@ -23,7 +23,8 @@ namespace CommandLine {
               << "\tJOIN <user>\n"
               << "\tLEAVE <user>\n"
               << "\tLIST\n"
-              << "\tCHAT"
+              << "\tCHAT\n"
+              << "\tCHATTEST"
               << std::endl;
   }
 }

@@ -1,6 +1,7 @@
 #include "command_factory.h"
 
 #include "chat_command.h"
+#include "chat_test_command.h"
 #include "join_command.h"
 #include "leave_command.h"
 #include "list_command.h"
@@ -16,6 +17,8 @@ CommandFactory::MakeCommand(std::string command, FbClient &client, CommandStream
     return std::unique_ptr<Command>(new ListCommand(client));
   else if (command == "CHAT")
     return std::unique_ptr<Command>(new ChatCommand(client));
+  else if (command == "CHATTEST")
+    return std::unique_ptr<Command>(new ChatTestCommand(client));
   else
     return std::unique_ptr<Command>(new NullCommand(commandStream));
 }

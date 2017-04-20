@@ -8,14 +8,21 @@
 
 class Chatter {
 public:
-  Chatter(std::string username,
-          std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::hw2::Message, ::hw2::Message>>&& chatStream)
-    : username(username), chatStream(std::move(chatStream)) {}
+  typedef std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::hw2::Message, ::hw2::Message>> stream_t;
+
+  Chatter(std::string username)
+    : username(username) {}
 
   void Chat();
 
+  bool ChatTest();
+
+  void SetStream(stream_t&& stream) {
+    chatStream = stream_t(std::move(stream));
+  }
+
 private:
-  std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::hw2::Message, ::hw2::Message>> chatStream;
+  stream_t chatStream;
   std::string username;
   std::string chatInput;
   std::string prevChatInput;

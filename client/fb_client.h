@@ -25,6 +25,8 @@ public:
   // Enter chat mode
   bool Chat();
 
+  bool SendChatTest();
+
 private:
   uint32_t tries = 0;
   std::string username;
@@ -33,6 +35,8 @@ private:
   hw2::Reply reply;
   MasterClient masterClient;
   std::string masterConnectionString;
+  Chatter chatter;
+  Chatter::stream_t stream;
 
   void ConnectToServer();
   void ResetMasterChannel();

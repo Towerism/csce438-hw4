@@ -14,7 +14,7 @@ using grpc::Status;
 
 using namespace hw2;
 FbClient::FbClient(std::string username, std::string masterConnectionString)
-    : username(username), masterConnectionString(masterConnectionString) {
+  : username(username), masterConnectionString(masterConnectionString), chatter(username) {
   ConnectToServer();
 }
 
@@ -139,12 +139,27 @@ bool FbClient::List() {
 
 bool FbClient::Chat() {
   ClientContext context;
-  auto stream = stub->Chat(&context);
-  Chatter chatter(username, std::move(stream));
+  stream = stub->Chat(&context);
+
+  chatter.SetStream(std::move(stream));
 
   chatter.Chat();
 
   Reconnect();
 
   return false;
+}
+
+bool FbClient::SendChatTest() {
+  ClientContext context;
+  stream = stub->Chat(&context);
+
+  chatter.SetStream(std::move(stream));
+
+  if (!chatter.ChatTest()) {
+    Reconnect();
+    return false;
+  }
+
+  return true;
 }
